@@ -1,0 +1,42 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kierki", "Kierki.vcxproj", "{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		DebugAllLib|x86 = DebugAllLib|x86
+		DebugDll|x86 = DebugDll|x86
+		DebugLib|x86 = DebugLib|x86
+		Release|x86 = Release|x86
+		ReleaseAllLib|x86 = ReleaseAllLib|x86
+		ReleaseDll|x86 = ReleaseDll|x86
+		ReleaseLib|x86 = ReleaseLib|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.Debug|x86.ActiveCfg = Debug|Win32
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.Debug|x86.Build.0 = Debug|Win32
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.DebugAllLib|x86.ActiveCfg = Debug|Win32
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.DebugAllLib|x86.Build.0 = Debug|Win32
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.DebugDll|x86.ActiveCfg = Debug|Win32
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.DebugDll|x86.Build.0 = Debug|Win32
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.DebugLib|x86.ActiveCfg = DebugLib|Win32
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.DebugLib|x86.Build.0 = DebugLib|Win32
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.Release|x86.ActiveCfg = Release|Win32
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.Release|x86.Build.0 = Release|Win32
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.ReleaseAllLib|x86.ActiveCfg = Release|Win32
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.ReleaseAllLib|x86.Build.0 = Release|Win32
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.ReleaseDll|x86.ActiveCfg = Release|Win32
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.ReleaseDll|x86.Build.0 = Release|Win32
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.ReleaseLib|x86.ActiveCfg = Release|Win32
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.ReleaseLib|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C2ECE3EA-3D33-4A27-8DF2-D725FEC3A01D}
+	EndGlobalSection
+EndGlobal

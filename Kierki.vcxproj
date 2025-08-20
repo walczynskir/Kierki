@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugLib|Win32">
+      <Configuration>DebugLib</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugLib|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugLib|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>17.0.35004.147</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(PRODPATH)\include;$(IncludePath)</IncludePath>
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugLib|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(PRODPATH)\include;$(IncludePath)</IncludePath>
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>Release\</OutDir>
+    <IntDir>Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;RDRAW_ALL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>psapi.lib;rcommonsd.lib;rcardsd.lib;comctl32.lib;msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)Kierki.exe</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)Kierki.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>$(CPP_LIB_PATH);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>
+      </Message>
+    </PreBuildEvent>
+    <CustomBuild>
+      <Command>uicc.exe .\HeartsRibbon.xml .\HeartsRibbon.bin /header:HeartsRibbon.h /res:HeartsRibbon.rc /name:HEARTS</Command>
+    </CustomBuild>
+    <CustomBuild>
+      <Message>Windows Ribbon Build</Message>
+    </CustomBuild>
+    <CustomBuild>
+      <Outputs>HeartsRibbon.h;HeartsRibbon.rc;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild>
+      <AdditionalInputs>.\HeartsRibbon.xml;%(AdditionalInputs)</AdditionalInputs>
+    </CustomBuild>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugLib|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;RDRAW_ALL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>psapi.lib;rcommonsd.lib;rcardssd.lib;comctl32.lib;msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)Kierki.exe</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)Kierki.pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalLibraryDirectories>$(CPP_LIB_PATH);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>
+      </Message>
+    </PreBuildEvent>
+    <CustomBuild>
+      <Command>uicc.exe .\HeartsRibbon.xml .\HeartsRibbon.bin /header:HeartsRibbon.h /res:HeartsRibbon.rc /name:HEARTS</Command>
+    </CustomBuild>
+    <CustomBuild>
+      <Message>Windows Ribbon Build</Message>
+    </CustomBuild>
+    <CustomBuild>
+      <Outputs>HeartsRibbon.h;HeartsRibbon.rc;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild>
+      <AdditionalInputs>.\HeartsRibbon.xml;%(AdditionalInputs)</AdditionalInputs>
+    </CustomBuild>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;RDRAW_ALL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <BrowseInformation />
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>psapi.lib;rcommon.lib;rcards.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)Kierki.exe</OutputFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>
+      </Message>
+    </PreBuildEvent>
+    <CustomBuild>
+      <Command>uicc.exe .\HeartsRibbon.xml .\HeartsRibbon.bin /header:HeartsRibbon.h /res:HeartsRibbon.rc /name:HEARTS</Command>
+    </CustomBuild>
+    <CustomBuild>
+      <Message>Windows Ribbon Build</Message>
+    </CustomBuild>
+    <CustomBuild>
+      <Outputs>HeartsRibbon.h;HeartsRibbon.rc;%(Outputs)</Outputs>
+    </CustomBuild>
+    <CustomBuild>
+      <AdditionalInputs>.\HeartsRibbon.xml;%(AdditionalInputs)</AdditionalInputs>
+    </CustomBuild>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="AboutDlg.cpp" />
+    <ClCompile Include="AllowedCards.cpp" />
+    <ClCompile Include="Card.cpp" />
+    <ClCompile Include="CoverRes.cpp" />
+    <ClCompile Include="Decider.cpp" />
+    <ClCompile Include="ExceptionHandler.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugLib|Win32'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="GameData.cpp" />
+    <ClCompile Include="GameWnd.cpp" />
+    <ClCompile Include="GetWinVer.cpp" />
+    <ClCompile Include="Kierki.cpp" />
+    <ClCompile Include="LogonDlg.cpp" />
+    <ClCompile Include="NoBoysDecider.cpp" />
+    <ClCompile Include="NoHeartsDecider.cpp" />
+    <ClCompile Include="NoKingOfHeartDecider.cpp" />
+    <ClCompile Include="NoLadiesDecider.cpp" />
+    <ClCompile Include="NoSixAndLastDecider.cpp" />
+    <ClCompile Include="NoTricksDecider.cpp" />
+    <ClCompile Include="OptionsDlg.cpp" />
+    <ClCompile Include="OptionsPlayerDlg.cpp" />
+    <ClCompile Include="OptionsRulesDlg.cpp" />
+    <ClCompile Include="OptionsTimeDlg.cpp" />
+    <ClCompile Include="OptionsViewDlg.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="Players.cpp" />
+    <ClCompile Include="PuzzleDecider.cpp" />
+    <ClCompile Include="PuzzleRows.cpp" />
+    <ClCompile Include="RBitmapChoiceDlg.cpp" />
+    <ClCompile Include="RChooseBmpWnd.cpp" />
+    <ClCompile Include="RecoverDecider.cpp" />
+    <ClCompile Include="ResultWnd.cpp" />
+    <ClCompile Include="RobberDecider.cpp" />
+    <ClCompile Include="RRegData.cpp" />
+    <ClCompile Include="Score.cpp" />
+    <ClCompile Include="Scores.cpp" />
+    <ClCompile Include="SortCards.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugLib|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="TakenTricks.cpp" />
+    <ClCompile Include="Trick.cpp" />
+    <ClCompile Include="UserCards.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AboutDlg.h" />
+    <ClInclude Include="AllowedCards.h" />
+    <ClInclude Include="Card.h" />
+    <ClInclude Include="CoverRes.h" />
+    <ClInclude Include="CrashFileNames.h" />
+    <ClInclude Include="Decider.h" />
+    <ClInclude Include="ExceptionHandler.h" />
+    <ClInclude Include="GameData.h" />
+    <ClInclude Include="GameWnd.h" />
+    <ClInclude Include="GameWndData.h" />
+    <ClInclude Include="GetWinVer.h" />
+    <ClInclude Include="HeartsData.h" />
+    <ClInclude Include="Kierki.h" />
+    <ClInclude Include="layout.h" />
+    <ClInclude Include="LogonDlg.h" />
+    <ClInclude Include="NoBoysDecider.h" />
+    <ClInclude Include="NoHeartsDecider.h" />
+    <ClInclude Include="NoKingOfHeartDecider.h" />
+    <ClInclude Include="NoLadiesDecider.h" />
+    <ClInclude Include="NoSixAndLastDecider.h" />
+    <ClInclude Include="NoTricksDecider.h" />
+    <ClInclude Include="OptionsDlg.h" />
+    <ClInclude Include="OptionsPlayerDlg.h" />
+    <ClInclude Include="OptionsRulesDlg.h" />
+    <ClInclude Include="OptionsTimeDlg.h" />
+    <ClInclude Include="OptionsViewDlg.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Players.h" />
+    <ClInclude Include="PuzzleDecider.h" />
+    <ClInclude Include="PuzzleRows.h" />
+    <ClInclude Include="RBitmapChoiceDlg.h" />
+    <ClInclude Include="RChooseBmpWnd.h" />
+    <ClInclude Include="RecoverDecider.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="ResultWnd.h" />
+    <ClInclude Include="RFile.h" />
+    <ClInclude Include="RobberDecider.h" />
+    <ClInclude Include="RRegData.h" />
+    <ClInclude Include="Score.h" />
+    <ClInclude Include="Scores.h" />
+    <ClInclude Include="SortCards.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="TakenTricks.h" />
+    <ClInclude Include="Trick.h" />
+    <ClInclude Include="TypeDefs.h" />
+    <ClInclude Include="UserCards.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Kierki.ico" />
+    <Image Include="res\AddTableL.bmp" />
+    <Image Include="res\AddTableS.bmp" />
+    <Image Include="res\bitmap1.bmp" />
+    <Image Include="res\Button_Image.bmp" />
+    <Image Include="res\Copy.bmp" />
+    <Image Include="res\Cut.bmp" />
+    <Image Include="res\DeleteTableL.bmp" />
+    <Image Include="res\DeleteTableS.bmp" />
+    <Image Include="res\ExitL.bmp" />
+    <Image Include="res\kierki.ico" />
+    <Image Include="res\Kopia notrumps.bmp" />
+    <Image Include="res\notrumps.bmp" />
+    <Image Include="res\pass.bmp" />
+    <Image Include="res\pass.org.bmp" />
+    <Image Include="res\pass_old.bmp" />
+    <Image Include="res\Paste.bmp" />
+    <Image Include="res\PrintRelationshipsL.bmp" />
+    <Image Include="res\PrintRelationshipsS.bmp" />
+    <Image Include="small.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\RCards\RCards.rc" />
+    <ResourceCompile Include="Kierki.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="Kierki.exe.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

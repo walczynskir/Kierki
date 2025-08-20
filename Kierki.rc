@@ -1,0 +1,405 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#define APSTUDIO_HIDDEN_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_HIDDEN_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Polish resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_PLK)
+#ifdef _WIN32
+LANGUAGE LANG_POLISH, SUBLANG_DEFAULT
+#pragma code_page(1250)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RT_MANIFEST
+//
+
+1                       RT_MANIFEST             "Kierki.exe.manifest"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDC_KIERKI MENU 
+BEGIN
+    POPUP "&Gra"
+    BEGIN
+        MENUITEM "&Nowa\tF2",                   IDM_GAME_NEW
+        MENUITEM "&Otwórz\tCtrl-O",             IDM_GAME_OPEN
+        MENUITEM "&Zapisz\tCtrl-S",             IDM_GAME_SAVE, GRAYED
+        MENUITEM "Z&apisz jako...",             IDM_GAME_SAVEAS, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "O&pcje ...",                  IDM_GAME_OPTIONS
+        MENUITEM SEPARATOR
+        MENUITEM "Za&koñcz\tAlt-F4",            IDM_GAME_EXIT
+    END
+    POPUP "&Pomoc"
+    BEGIN
+        MENUITEM "Kierki - &informacje",        IDM_HELP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDC_KIERKI ACCELERATORS 
+BEGIN
+    "/",            IDM_HELP_ABOUT,         ASCII,  ALT, NOINVERT
+    "?",            IDM_HELP_ABOUT,         ASCII,  ALT, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_INFO DIALOGEX 0, 0, 196, 63
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Karty - informacje"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,138,7,51,14,WS_GROUP
+    PUSHBUTTON      "O systemie ...",IDB_INFO_SYSTEMINFO,138,28,51,14,
+                    WS_GROUP
+    ICON            IDI_KIERKI,IDC_STATIC,7,7,20,20
+    CONTROL         "Kierki wersja:",IDC_INFO_VERSION,"Static",
+                    SS_LEFTNOWORDWRAP | SS_NOPREFIX | WS_GROUP,49,20,85,8,
+                    WS_EX_TRANSPARENT
+    CONTROL         "",IDC_INFO_MAILTO,"RHYPERLINKWND",0x1,7,49,182,8
+END
+
+IDD_LOGON DIALOGEX 0, 0, 195, 46
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Logowanie do kierek"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    EDITTEXT        IDC_NAME,66,20,71,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,146,7,42,14
+    PUSHBUTTON      "Zakoñcz",IDCANCEL,146,24,42,14
+    CONTROL         "Witamy w programie Kierki",IDC_STATIC,"Static",
+                    SS_LEFTNOWORDWRAP | WS_GROUP,7,7,112,11
+    LTEXT           "Podaj swoje imiê:",IDC_STATIC,7,22,55,12
+END
+
+IDD_OPTIONS DIALOGEX 0, 0, 233, 183
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Opcje"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_TAB,"SysTabControl32",TCS_FOCUSONBUTTONDOWN | 
+                    WS_TABSTOP,7,7,220,150
+    DEFPUSHBUTTON   "&Ok",IDOK,93,162,40,14
+    PUSHBUTTON      "&Anuluj",IDCANCEL,140,162,40,14
+    PUSHBUTTON      "&Zapisz",IDSAVE,187,162,40,14
+    LTEXT           "Wersja:",IDC_STATIC,7,162,26,14
+    LTEXT           "",IDC_VERSION,39,162,41,14
+END
+
+IDD_OPT_VIEW DIALOGEX 0, 0, 221, 176
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "Custom1",IDC_VIEW_TABLECOLOR,"RCOLORWND",WS_TABSTOP,62,
+                    7,40,14
+    CONTROL         "Custom1",IDC_VIEW_RESULTCOLOR,"RCOLORWND",WS_TABSTOP,62,
+                    26,40,14
+    PUSHBUTTON      "Zmieñ  ...",IDC_CHANGECOVER,163,45,40,14
+    LTEXT           "Kolor sto³u:",IDC_STATIC,7,7,54,12
+    LTEXT           "Kolor wyników:",IDC_STATIC,7,27,54,12
+    LTEXT           "Koszulka:",IDC_STATIC,7,45,54,12
+    CONTROL         "Custom1",IDC_VIEW_COVER,"RCHOOSEBMPWND",WS_TABSTOP | 
+                    0x1,62,45,15,13
+    PUSHBUTTON      "Domyœlny",IDC_VIEW_DEFUALTTABLE,107,7,40,14
+    PUSHBUTTON      "Domyœlny",IDC_VIEW_DEFUALTRESULT,107,26,40,14
+END
+
+IDD_OPT_TIME DIALOGEX 0, 0, 186, 90
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_AFTERCARD,76,7,38,14,ES_NUMBER
+    CONTROL         "Spin2",IDS_AFTERCARD,"msctls_updown32",UDS_SETBUDDYINT | 
+                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
+                    UDS_NOTHOUSANDS,116,7,11,14,WS_EX_TRANSPARENT | 
+                    WS_EX_CLIENTEDGE
+    EDITTEXT        IDC_AFTERTRICK,76,25,38,14,ES_NUMBER
+    CONTROL         "Spin2",IDS_AFTERTRICK,"msctls_updown32",UDS_SETBUDDYINT | 
+                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
+                    UDS_NOTHOUSANDS,115,26,11,14,WS_EX_TRANSPARENT | 
+                    WS_EX_CLIENTEDGE
+    EDITTEXT        IDC_AFTERPASS,76,43,38,14,ES_NUMBER
+    CONTROL         "Spin2",IDS_AFTERPASS,"msctls_updown32",UDS_SETBUDDYINT | 
+                    UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | 
+                    UDS_NOTHOUSANDS,113,44,11,14,WS_EX_TRANSPARENT | 
+                    WS_EX_CLIENTEDGE
+    RTEXT           "Po rzuceniu &karty:",IDC_STATIC,14,8,61,14
+    RTEXT           "Po wziêciu &lewy:",IDC_STATIC,14,27,62,14
+    RTEXT           "Po &pas:",IDC_STATIC,14,46,62,14
+END
+
+IDD_OPT_PLAYERS DIALOGEX 0, 0, 219, 142
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_PLAYER1,65,7,147,14
+    EDITTEXT        IDC_PLAYER2,65,28,147,14
+    EDITTEXT        IDC_PLAYER3,65,49,147,14
+    EDITTEXT        IDC_PLAYER4,65,70,147,14
+    LTEXT           "Imiê gracza 1:",IDC_STATIC,7,7,49,14
+    LTEXT           "Imiê gracza 2:",IDC_STATIC,7,28,49,14
+    LTEXT           "Imiê gracza 3:",IDC_STATIC,7,49,49,14
+    LTEXT           "Imiê gracza 4:",IDC_STATIC,7,70,49,14
+END
+
+IDD_DLLBITMAP DIALOGEX 0, 0, 164, 138
+STYLE DS_SETFONT | DS_3DLOOK | DS_CONTROL | WS_CHILD | WS_CLIPSIBLINGS
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    LTEXT           "",1119,7,7,82,81
+    CONTROL         "Custom1",IDC_IMAGE,"RCHOOSEBMPWND",WS_TABSTOP,101,27,56,
+                    69
+END
+
+IDD_OPT_RULES DIALOGEX 0, 0, 186, 90
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "Potwierdzaj lewê klikniêciem",IDC_RULES_CONFIRMTRICK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,106,10
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#define APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "#include ""windows.h""\r\n"
+    "#undef APSTUDIO_HIDDEN_SYMBOLS\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_KIERKI              ICON                    "res\\kierki.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_INFO, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 189
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 56
+    END
+
+    IDD_OPTIONS, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 176
+    END
+
+    IDD_OPT_VIEW, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 214
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 169
+    END
+
+    IDD_OPT_TIME, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 83
+    END
+
+    IDD_OPT_PLAYERS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 212
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 135
+    END
+
+    IDD_DLLBITMAP, DIALOG
+    BEGIN
+        RIGHTMARGIN, 157
+        BOTTOMMARGIN, 133
+    END
+
+    IDD_OPT_RULES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 83
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041504b0"
+        BEGIN
+            VALUE "FileDescription", "Kierki Application"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "Kierki"
+            VALUE "LegalCopyright", "Copyright (C) 2006"
+            VALUE "OriginalFilename", "Kierki.exe"
+            VALUE "ProductName", " Kierki Application"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x415, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_NOTRUMPS            BITMAP                  "res\\notrumps.bmp"
+IDB_PASS                BITMAP                  "res\\pass.bmp"
+IDB_NEWGAME             BITMAP                  "res\\menu_new.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_APP_TITLE           "Kierki"
+    IDS_MSGBOXTITLE         "Uwaga"
+    IDS_TABTITLE_GAME       "Bie¿¹ca gra"
+    IDS_ERR_MAINWIN         "Nie mo¿na utworzyæ g³ównego okna"
+    IDS_NEWGAME             "Czy rozpocz¹æ now¹ grê?"
+    IDS_DECISION            "Decyzja"
+    IDC_KIERKI              "KIERKI"
+    IDS_TABTITLE_RESULT     "Seria %d"
+    IDS_CHOOSETRUMPS        "Wybierz atu"
+    IDS_PLAYCARD            "Zagraj kartê"
+    IDS_PROMPT_NEWGAME      "Seria zakoñczona. Czy rozpocz¹æ now¹ grê?"
+    IDS_COLOR_NOTRUMP       "bez atu"
+    IDS_TITLE_NOTRICKS      "Nie braæ lew"
+    IDS_TITLE_NOHEARTS      "Nie braæ kierów"
+    IDS_TITLE_NOBOYS        "Nie braæ ch³opaków"
+    IDS_TITLE_NOLADIES      "Nie braæ dam"
+    IDS_TITLE_NOKINGOFHEART "Nie braæ króla kier"
+    IDS_TITLE_NOSIXANDLAST  "Nie braæ szóstej i ostatniej"
+    IDS_TITLE_ROBBER        "Rozbójnik"
+    IDS_TITLE_RECOVER       "Odgrywka, atu"
+    IDS_TITLE_PUZZLE        "Uk³adanka"
+    IDS_COLOR_CLUB          "trefle"
+    IDS_COLOR_SPADE         "piki"
+    IDS_COLOR_DIAMOND       "kara"
+    IDS_DEFNAME1            "Marek"
+    IDS_DEFNAME2            "Micha³"
+    IDS_DEFNAME3            "Janusz"
+    IDS_SAVEGAMEBEFOREOPENQUESTION 
+                            "Bie¿¹ca gra jest niezapisana. Zapisaæ grê?"
+    IDS_CHOOSEBMP_FILTER    "Wszystkie pliki obrazów\000*.bmp;*.jpg;*.jprg;*.jpe;*.jfif;*.gif;*.tiff;*.png;*.exe;*.dll\000Pliki wykonywalne\000*.exe;*.dll\000Mapy bitowe\000*.bmp\000JPEG\000*.jpg;*.jpeg;*.jpe;*.jfif\000GIF\000*.gif\000TIFF\000*.tif;*.tiff\000PNG\000*.png\000Programy EXE\000*.exe\000Biblioteki dynamiczne DLL\000*.dll"
+    IDS_NO_BITMAPS          "Brakuje biblioteki bitmap dla rysowania kart (%s)."
+    IDS_FILE_RESULTS        "results.out"
+    IDS_READY               "Gotowy"
+    IDS_TABTITLE_VIEW       "Wygl¹d"
+    IDS_TABTITLE_TIME       "Czasy"
+    IDS_TABTITLE_PLAYER     "Imiona"
+    IDS_CHOOSEBMP_SELBTN    "Wybierz"
+    IDS_KIERKIFILTERNAME    "Pliki gry"
+    IDS_KIERKIFILTEREXT     ".hsv"
+    IDS_INFO_AUTHORCONTACT  "Kontakt z autorem:"
+    IDS_INFO_AUTHORURL      "mailto:walczynskir@wp.pl"
+    IDS_SAVEGAMEQUESTION    "Zapisaæ grê?"
+    IDS_CONFIRMTRICK        "Kliknij, aby kontynuowaæ"
+    IDS_TABTITLE_RULES      "Zasady"
+    IDS_CHOOSEBMP_TITLE     "Wybierz koszulkê"
+END
+
+#endif    // Polish resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

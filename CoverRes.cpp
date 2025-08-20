@@ -102,7 +102,7 @@ void RCoverRes_Set(LPRCOVERRES a_pCoverRes, bool a_bExec, LPCTSTR a_sPath, bool 
 	a_pCoverRes->psPath = new TCHAR[a_pCoverRes->iPathSize];
 	ASSERT(a_pCoverRes->psPath != NULL);
 
-	_tcsncpy(a_pCoverRes->psPath, a_sPath, a_pCoverRes->iPathSize);
+	_tcsncpy_s(a_pCoverRes->psPath, a_pCoverRes->iPathSize, a_sPath, _TRUNCATE);
 	if (a_bInt)
 	{
 		SetIntResource(a_pCoverRes, a_psRes);
@@ -157,7 +157,7 @@ void SetStringResource(LPRCOVERRES a_pCoverRes, LPCTSTR a_psRes)
 		a_pCoverRes->iResSize = l_iLen;
 	}
 	a_pCoverRes->bInt = false;
-	_tcsncpy(a_pCoverRes->psRes, a_psRes, l_iLen);
+	_tcsncpy_s(a_pCoverRes->psRes, l_iLen, a_psRes, _TRUNCATE);
 	a_pCoverRes->psRes[l_iLen - 1] = _T('\0');
 }
 

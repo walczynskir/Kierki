@@ -2053,7 +2053,7 @@ void TrickTaking(HWND a_hWnd)
 	// przy wyborze atu czekamy jeszcze
 	else 
 	{
-		::SendMessage(l_pData->m_hWndApp, WM_APP_SETTITLE, 0, 0);
+		::SendMessage(GetData(a_hWnd)->m_hWndApp, WM_APP_SETTITLE, 0, 0);
 		if (!l_pData->IsTrumpsChoice())
 		{
 			if (l_pData->GetGame() == E_GM_PUZZLE)

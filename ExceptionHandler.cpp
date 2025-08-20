@@ -562,7 +562,7 @@ int __cdecl RecordExceptionInfo(PEXCEPTION_POINTERS a_pExceptPtrs,
 
 	TCHAR l_sFile[MAX_PATH];
 	ZeroMemory(l_sFile, sizeof(l_sFile));
-	_tcsncpy(l_sFile, l_sPath, _countof(l_sFile) - 1);
+	_tcsncpy_s(l_sFile, _countof(l_sFile) - 1, l_sPath, _TRUNCATE);
 	_tcsncat(l_sFile, XCRASHREPORT_ERROR_LOG_FILE, _countof(l_sFile) - _tcslen(l_sFile) - 1);
 
 	HANDLE l_hLogFile = CreateFile(l_sFile, GENERIC_WRITE, 0, 0,
@@ -702,7 +702,7 @@ void GetPathAndModuleName(LPTSTR a_psPath, int a_iPathLen, LPTSTR a_psModule, in
 	if (::GetModuleFileName(0, l_sModule, _countof(l_sModule)) <= 0)
 	{
 		// sthg bad happened - do not nned to know what
-		_tcsncpy(a_psModule, _T("Unknown"), a_iModuleLen - 1);
+		_tcsncpy_s(a_psModule, a_iModuleLen - 1, L"Unknown", _TRUNCATE);
 		return;
 	}
 

@@ -15,6 +15,8 @@ static INT_PTR CALLBACK OptionsViewDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wP
 inline static void SetCtrlValues(HWND a_hDlg);
 static RRegData::RViewRegData* GetRData(HWND a_hDlg);
 inline static void GetCtrlValues(HWND a_hDlg);
+static void MoveDlgItem(HWND a_hDlg, UINT a_idItem, LONG a_x, LONG a_y);
+static void ResizeDlgItem(HWND a_hDlg, UINT a_idItem, LONG a_dx, LONG a_dy);
 
 
 
@@ -29,9 +31,7 @@ HWND CreateOptViewDlg(HWND a_hParent, RRegData::RBaseRegData* a_pData, LPVOID a_
 
 static void OnInitDialog(HWND a_hDlg, RRegData::RViewRegData* a_pData)
 {
-#pragma warning(disable: 4244)
 	::SetWindowLongPtr(a_hDlg, GWL_USERDATA, reinterpret_cast<LONG_PTR>(a_pData));
-#pragma warning(default: 4244)
 	HWND l_hWndImage = ::GetDlgItem(a_hDlg, IDC_VIEW_COVER);
 	RChooseBmpWnd_SetPictureSize(l_hWndImage, c_dxCard, c_dyCard);
 	SIZE l_size;
@@ -43,11 +43,20 @@ static void OnInitDialog(HWND a_hDlg, RRegData::RViewRegData* a_pData)
 	::GetWindowRect(l_hWndImage, &l_rectImage);
 	POINT l_ptImage = { l_rectImage.left, l_rectImage.top };
 	::ScreenToClient(a_hDlg, &l_ptImage);
-	::SetWindowPos(::GetDlgItem(a_hDlg, IDC_CHANGECOVER), NULL, 
-		l_ptImage.x + l_size.cx + 7, l_ptImage.y, 
+
+	LONG l_xButtons = l_ptImage.x + l_size.cx + 7;
+	MoveDlgItem(a_hDlg, IDC_CHANGECOVER, l_xButtons, l_ptImage.y);
+/*	::SetWindowPos(::GetDlgItem(a_hDlg, IDC_CHANGECOVER), NULL,
+		l_xButtons, l_ptImage.y, 
 		0, 0, 
 		SWP_NOZORDER | SWP_NOSIZE);
-	
+*/	
+	MoveDlgItem(a_hDlg, IDC_VIEW_DEFUALTTABLE, l_xButtons, 0);
+	MoveDlgItem(a_hDlg, IDC_VIEW_DEFUALTRESULT, l_xButtons, 0);
+
+	ResizeDlgItem(a_hDlg, IDC_VIEW_TABLECOLOR, l_size.cx, 0);
+	ResizeDlgItem(a_hDlg, IDC_VIEW_RESULTCOLOR, l_size.cx, 0);
+
 	SetCtrlValues(a_hDlg);
 }
 
@@ -122,9 +131,7 @@ void SetCtrlValues(HWND a_hDlg)
 
 static RRegData::RViewRegData* GetRData(HWND a_hDlg)
 {
-	#pragma warning(disable: 4312)
 	return reinterpret_cast<RRegData::RViewRegData*>(::GetWindowLong(a_hDlg, GWL_USERDATA));
-	#pragma warning(default: 4312)
 }
 
 
@@ -136,3 +143,35 @@ static void GetCtrlValues(HWND a_hDlg)
 
 	RChooseBmpWnd_GetChosen(::GetDlgItem(a_hDlg, IDC_VIEW_COVER), &(l_pData->m_resCover));
 }
+
+
+static void MoveDlgItem(HWND a_hDlg, UINT a_idItem, LONG a_x, LONG a_y)
+{
+	
+	HWND l_hWndItem = ::GetDlgItem(a_hDlg, a_idItem);
+	RECT l_rcItem;
+	::GetWindowRect(l_hWndItem, &l_rcItem);						// Get screen coordinates
+	::MapWindowPoints(NULL, a_hDlg, (LPPOINT)&l_rcItem, 2);		// Convert to dialog-relative coordinates
+
+	l_rcItem.left = (a_x > 0) ? a_x : l_rcItem.left;
+	l_rcItem.top = (a_y > 0) ? a_y : l_rcItem.top;
+	::SetWindowPos(l_hWndItem, NULL, l_rcItem.left, l_rcItem.top, 0, 0, SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSIZE);
+}
+
+
+static void ResizeDlgItem(HWND a_hDlg, UINT a_idItem, LONG a_dx, LONG a_dy)
+{
+	HWND l_hWndItem = ::GetDlgItem(a_hDlg, a_idItem);
+	RECT l_rcItem;
+	::GetWindowRect(l_hWndItem, &l_rcItem);						// Get screen coordinates
+	::MapWindowPoints(NULL, a_hDlg, (LPPOINT)&l_rcItem, 2);		// Convert to dialog-relative coordinates
+
+	l_rcItem.left = (a_dx > 0) ? a_dx : l_rcItem.left;
+	l_rcItem.top = (a_dy > 0) ? a_dy : l_rcItem.top;
+
+	LONG l_dx = (a_dx > 0) ? a_dx : l_rcItem.right - l_rcItem.left;
+	LONG l_dy = (a_dy > 0) ? a_dy : l_rcItem.bottom - l_rcItem.top;
+
+	::SetWindowPos(l_hWndItem, NULL, 0, 0, l_dx, l_dy, SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOMOVE);
+}
+

@@ -44,7 +44,6 @@ static const int c_dyCard = 90;
 #define CP_XT4	230
 #define CP_YT4	CP_YT2
 
-static const unsigned int c_iDefCover = 57;			// odleg³oœæ miêdzy kartami poziomymi i pionowymi
 
 /*
 #ifdef _DEBUG

@@ -3,26 +3,45 @@
 
 #include "stdafx.h"
 #include "Kierki.h"
-#include "ExceptionHandler.h"
+#include <rcommon/ExceptionHandler.h>
 #include <rcommon/RException.h>
 #include <rcommon/ROwnExc.h>
+#include <rcommon/RSystemExc.h>
 #include <commctrl.h>
 #include <commdlg.h>
 #include <rcommon/rstring.h>
 #include "GameWnd.h"
 #include "ResultWnd.h"
 #include "LogonDlg.h"
-#include "AboutDlg.h"
 #include "OptionsDlg.h"
 #include "GameData.h"
 #include "layout.h"
 #include <RCards/RCards.h>
 #include "HeartsData.h"
+#include <rcommon/DrawUtl.h>
+#include <rcommon/RMemDC.h>
 
 
-//TODO: MessageBox (DecisionBox) centered over main wnd
-//TODO: bad rendering of covers (background), ie CePeLek
-//TODO: possibility of changing pass button
+
+#pragma todo("change pass indicator image, as it is ugly")
+#pragma todo("check behaviour of cover, when app used for the first time")
+#pragma todo("Add Own Toolbar behaviour on LButtonDown")
+#pragma todo("Add statusbar messages on Hover on OwnToolbar items")
+#pragma todo("Rethink OwnToolbar architecture, add to library of components")
+#pragma todo("MessageBox (DecisionBox) centered over main wnd")
+#pragma todo("disabling items in own toolbar, as previously with menu items: check and remove function OnEnterMenuLoop")
+#pragma todo("About system button doesn't work")
+#pragma todo("remove unused resources")
+#pragma todo("check all resources for unicode")
+#pragma todo("remove unused code")	
+#pragma todo("bad rendering of covers (background)")
+#pragma todo("refactor of cover selecting")
+#pragma todo("possibility of changing pass button")
+#pragma todo("improve color picker / add to toolbar")
+#pragma todo("imporve selecting covers, at least a few from own reources, not from exes or dlls")
+#pragma todo("improve loading cards - check how they bmps are loaded")
+#pragma todo("add option to load other cards decks")
+#pragma todo("do refactor of all graphics")
 
 
 
@@ -37,15 +56,24 @@ inline static int RunApp(HINSTANCE a_hInst, HINSTANCE a_hPrevInstance, LPTSTR a_
 inline static int RunAppThrow(HINSTANCE a_hInst, HINSTANCE a_hPrevInstance, LPTSTR a_lpCmdLine, int a_nCmdShow);
 inline static HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow);
 static LRESULT CALLBACK	Kierki_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
+
+static inline void SetupOwnToolbar(HWND a_hWnd);
 inline static void ConfigureStatusbar(HWND a_hWndStatusbar);
 static void AddTab(HWND a_hWnd, LPTSTR a_sTabName);
 
 inline static LRESULT OnCreate(HWND a_hWnd);
+inline static void OnPaint(HWND a_hWnd);
 inline static void OnDestroy(HWND a_hWnd);
 inline static void OnClose(HWND a_hWnd);
 inline static void OnNcDestroy(HWND a_hWnd);
 inline static void OnSize(HWND a_hWnd, WPARAM a_wParam, int a_dxWidth, int a_dyHeight);
+
 inline static void OnCommand(HWND a_hWnd, WPARAM a_wParam, LPARAM a_lParam);
+
+inline static void OnMouseMove(HWND a_hWnd, LONG a_x, LONG a_y);
+inline static void OnLButtonDown(HWND a_hWnd, int a_x, int a_y);
+inline static void OnLButtonUp(HWND a_hWnd, int a_x, int a_y);
+
 inline static void OnGetMinMaxInfo(HWND a_hWnd, LPMINMAXINFO a_lpMinMaxInfo);
 
 inline static void OnNotify(HWND a_hWnd, int a_idCtrl, LPNMHDR a_pNmHdr);
@@ -68,6 +96,8 @@ inline static void OnAppReady(HWND a_hWnd);
 inline static void OnAppChooseTrumps(HWND a_hWnd);
 inline static void OnAppConfirmTrick(HWND a_hWnd);
 
+static void Draw(HWND a_hWnd, HDC a_hDC);
+
 inline static void ConfigureMenu(HWND a_hWNd);
 
 inline static void SetTitle(HWND a_hWnd);
@@ -85,7 +115,8 @@ static void SetStatusBarText(HWND a_hWnd, UINT a_idStr);
 inline static void GetMinSize(HWND a_hWnd, LPSIZE a_pSize);
 
 static void EnableSaveMenu(HWND a_hWnd, BOOL a_bEnable);
-static const TCHAR cc_cAsterisk = _T('*');
+static const TCHAR cc_cAsterisk = L'*';
+
 
 #ifdef _DEBUG
 #define NOLOGON
@@ -96,12 +127,19 @@ static const TCHAR cc_cAsterisk = _T('*');
 #endif
 
 
+
+
+
+
+
 int APIENTRY _tWinMain(_In_ HINSTANCE a_hInst,
                      _In_opt_ HINSTANCE a_hPrevInstance,
                      _In_ LPTSTR    a_lpCmdLine,
                      _In_ int       a_nCmdShow)
 {
 	int l_iRes;
+
+	
 	// run-time debugging 
 	__try
 	{
@@ -138,6 +176,7 @@ int RunAppThrow(HINSTANCE a_hInst,
                      LPTSTR    a_lpCmdLine,
                      int       a_nCmdShow)
 {
+
 
 	RegisterKierki(a_hInst);
 	INITCOMMONCONTROLSEX l_icc;
@@ -211,7 +250,7 @@ ATOM RegisterKierki(HINSTANCE a_hInst)
 	l_wcex.hIcon			= ::LoadIcon(a_hInst, MAKEINTRESOURCE(IDI_KIERKI));
 	l_wcex.hCursor			= ::LoadCursor(NULL, IDC_ARROW);
 	l_wcex.hbrBackground	= NULL;
-	l_wcex.lpszMenuName		= reinterpret_cast<LPCTSTR>(IDC_KIERKI);
+	l_wcex.lpszMenuName		= NULL;
 	l_wcex.lpszClassName	= c_sWindowClass;
 	l_wcex.hIconSm			= ::LoadIcon(a_hInst, MAKEINTRESOURCE(IDI_KIERKI));
 	return ::RegisterClassEx(&l_wcex);
@@ -227,16 +266,24 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, a_hInst, NULL);
 	if (l_hWndKierki == NULL)
 	{
-		throw ROwnExc(a_hInst, IDS_ERR_MAINWIN);
+		throw RSystemExc(::GetLastError(), _T("HWNDKIERKI"));
 	}
 
 	CHeartsData* l_pData = CHeartsData::GetData(l_hWndKierki);
 	ASSERT(l_pData != NULL);
 
+	// create own toolbar setup
+	SetupOwnToolbar(l_hWndKierki);
+
 	l_pData->m_hWndTab = ::CreateWindow(WC_TABCONTROL, NULL, 
 	   WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 
 	   0, 0, CW_USEDEFAULT, 18, 
 	   l_hWndKierki, reinterpret_cast<HMENU>(IDC_MAINTAB), a_hInst, NULL);
+
+	if (l_pData->m_hWndTab == NULL)
+	{
+		throw RSystemExc(::GetLastError(), _T("HWNDTAB"));
+	}
 
 	HFONT l_hFont = GetStockFont(DEFAULT_GUI_FONT);
 	::SendMessage(l_pData->m_hWndTab, WM_SETFONT, reinterpret_cast<WPARAM>(l_hFont), 1);
@@ -245,6 +292,12 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 	l_pData->SetGameWnd(GameWnd_Create(0, WS_CHILD | WS_VISIBLE, 
 	   0, 0, CW_USEDEFAULT, CW_USEDEFAULT, 
 	   l_hWndKierki, a_hInst, l_hWndKierki, &(l_pData->m_gameData)));
+
+	if (l_pData->GetGameWnd() == NULL)
+	{
+		throw RSystemExc(::GetLastError(), _T("HWNDGAME"));
+	}
+
 	TCHAR l_sTabTitle[128];
 	::LoadString(::GetModuleHandle(NULL), IDS_TABTITLE_GAME, l_sTabTitle, ArraySize(l_sTabTitle));
 	AddTab(l_hWndKierki, l_sTabTitle);
@@ -254,10 +307,19 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 	   0, 0, CW_USEDEFAULT, CW_USEDEFAULT, 
 	   l_hWndKierki, a_hInst, E_SR_1, &(l_pData->m_gameData)));
 
-	l_pData->m_hWndStatusbar = ::CreateWindow(STATUSCLASSNAME, NULL, 
+	if (l_pData->GetResultWnd() == NULL)
+	{
+		throw RSystemExc(::GetLastError(), _T("HWNDRESULTS"));
+	}
+
+	l_pData->m_hWndStatusbar = ::CreateWindow(STATUSCLASSNAME, NULL,
 	   WS_CHILD | SBARS_SIZEGRIP | WS_VISIBLE, 
 	   0, 0, CW_USEDEFAULT, 18, 
 	   l_hWndKierki, NULL, a_hInst, NULL);
+	if (l_pData->m_hWndStatusbar == NULL)
+	{
+		throw RSystemExc(::GetLastError());
+	}
 	ConfigureStatusbar(l_pData->m_hWndStatusbar);
 
 	::SetWindowPos(l_hWndKierki, NULL, 0, 0, 1, 1, SWP_NOZORDER | SWP_NOMOVE);
@@ -295,6 +357,10 @@ LRESULT CALLBACK Kierki_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARA
 		OnSize(a_hWnd, a_wParam, LOWORD(a_lParam), HIWORD(a_lParam));
 		break;
 
+	case WM_PAINT:
+		OnPaint(a_hWnd);
+		break;
+
 	case WM_NOTIFY:
 		OnNotify(a_hWnd, static_cast<int>(a_wParam), reinterpret_cast<LPNMHDR>(a_lParam));
 		break;
@@ -313,6 +379,18 @@ LRESULT CALLBACK Kierki_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARA
 
 	case WM_COMMAND:
 		OnCommand(a_hWnd, a_wParam, a_lParam);
+		break;
+
+	case WM_MOUSEMOVE:
+		OnMouseMove(a_hWnd, LOWORD(a_lParam), HIWORD(a_lParam));
+		break;
+
+	case WM_LBUTTONDOWN:
+		OnLButtonDown(a_hWnd, GET_X_LPARAM(a_lParam), GET_Y_LPARAM(a_lParam));
+		break;
+
+	case WM_LBUTTONUP:
+		OnLButtonUp(a_hWnd, GET_X_LPARAM(a_lParam), GET_Y_LPARAM(a_lParam));
 		break;
 
 	case WM_ENTERMENULOOP:
@@ -377,7 +455,7 @@ LRESULT OnCreate(HWND a_hWnd)
 void OnClose(HWND a_hWnd)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-#ifndef NOSAVE
+#ifdef LOGIN_DIALOG
 	if (l_pData->m_gameData.GetGame() != E_GM_NOTHING)
 	{
 		if (DecisionBox(a_hWnd, IDS_SAVEGAMEQUESTION))
@@ -391,6 +469,8 @@ void OnClose(HWND a_hWnd)
 
 void OnDestroy(HWND a_hWnd)
 {
+	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
+	l_pData->m_toolbar.DeleteBitmaps();
 	::PostQuitMessage(0);
 }
 
@@ -420,7 +500,32 @@ void OnSize(HWND a_hWnd, WPARAM a_wParam, int a_dxWidth, int a_dyHeight)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
 	ResizeTab(a_hWnd, a_dxWidth, a_dyHeight);
+	l_pData->m_toolbar.Resize(a_dxWidth);
 	::SendMessage(l_pData->m_hWndStatusbar, WM_SIZE, a_wParam, MAKELPARAM(a_dxWidth, a_dyHeight));
+}
+
+// ---------------------------------------------------------
+// Painting own toolbar
+void OnPaint(
+	HWND a_hWnd		//IN game wnd
+)
+{
+	PAINTSTRUCT l_ps;
+	HDC l_hdc = ::BeginPaint(a_hWnd, &l_ps);
+
+	RECT l_rectWin;
+	::GetClientRect(a_hWnd, &l_rectWin);
+	{
+		// prepare correct DC
+#ifdef _DEBUG 
+		HDC l_hPaintDC = l_hdc;
+#else
+		RMemDC l_memDC(l_hdc, &l_rectWin);
+		HDC l_hPaintDC = l_memDC;
+#endif
+		Draw(a_hWnd, l_hPaintDC);
+	}
+	::EndPaint(a_hWnd, &l_ps);
 }
 
 
@@ -452,12 +557,14 @@ void ResizeTab(HWND a_hWnd, int a_dxWidth, int a_dyHeight)
 	RECT l_rectKierki;
 	::GetClientRect(a_hWnd, &l_rectKierki);
 	RECT l_rectStatusbar = { 0 };
-	int l_dyRibbon = 0;
+
+	// TODO here to change if own toolbar can change position
+	int l_dyRibbon = l_pData->m_toolbar.GetExtent();
 
 	::GetWindowRect(l_pData->m_hWndStatusbar, &l_rectStatusbar);
 
 	int l_dxTab = RectWidth(l_rectKierki);
-	int l_dyTab = RectHeight(l_rectKierki) - RectHeight(l_rectStatusbar) - l_dyRibbon;
+	int l_dyTab = RectHeight(l_rectKierki) - RectHeight(l_rectStatusbar) - l_dyRibbon ;
 
 	RECT l_rectTab;
 	::SetRect(&l_rectTab, 0, 0, l_dxTab, l_dyTab); 
@@ -480,6 +587,48 @@ void ResizeTab(HWND a_hWnd, int a_dxWidth, int a_dyHeight)
 }
 
 
+static void SetupOwnToolbar(HWND a_hWnd)
+{
+	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
+
+
+	l_pData->m_toolbar.SetExtent(56);
+	l_pData->m_toolbar.SetSpacing(3);
+	// all bitmaps will be released in OnDestroy (with m_toolbar.DeleteBitmaps)	
+	// new game icon
+	TCHAR l_sNewGame[128];
+	::LoadString(::GetModuleHandle(NULL), IDS_NEWGAME, l_sNewGame, ArraySize(l_sNewGame));
+	HBITMAP l_hBmpNewGame = RDraw::LoadImageFromResource(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_PNG_NEWGAME), L"PNG");
+	l_pData->m_toolbar.AddItem(l_sNewGame, IDM_GAME_NEW, l_hBmpNewGame, OWNTOOLBAR_TYPE_BMP, true);
+
+	// open game icon
+	TCHAR l_sOpenGame[128];
+	::LoadString(::GetModuleHandle(NULL), IDS_OPENGAME, l_sOpenGame, ArraySize(l_sOpenGame));
+	HBITMAP l_hBmpOpenGame = RDraw::LoadImageFromResource(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_PNG_OPENGAME), L"PNG");
+	l_pData->m_toolbar.AddItem(l_sOpenGame, IDM_GAME_OPEN, l_hBmpOpenGame, OWNTOOLBAR_TYPE_BMP, true);
+
+	// save game icon
+	TCHAR l_sSaveGame[128];
+	::LoadString(::GetModuleHandle(NULL), IDS_SAVEGAME, l_sSaveGame, ArraySize(l_sSaveGame));
+	HBITMAP l_hBmpSaveGame = RDraw::LoadImageFromResource(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_PNG_SAVEGAME), L"PNG");
+	l_pData->m_toolbar.AddItem(l_sSaveGame, IDM_GAME_SAVE, l_hBmpSaveGame, OWNTOOLBAR_TYPE_BMP, true);
+
+	// save game as icon
+	TCHAR l_sSaveGameAs[128];
+	::LoadString(::GetModuleHandle(NULL), IDS_SAVEGAMEAS, l_sSaveGameAs, ArraySize(l_sSaveGameAs));
+	HBITMAP l_hBmpSaveGameAs = RDraw::LoadImageFromResource(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_PNG_SAVEGAMEAS), L"PNG");
+	l_pData->m_toolbar.AddItem(l_sSaveGameAs, IDM_GAME_SAVEAS, l_hBmpSaveGameAs, OWNTOOLBAR_TYPE_BMP, true);
+
+	// options
+	TCHAR l_sOptions[128];
+	::LoadString(::GetModuleHandle(NULL), IDS_OPTIONS, l_sOptions, ArraySize(l_sOptions));
+	HBITMAP l_hBmpOptions = RDraw::LoadImageFromResource(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_PNG_OPTIONS), L"PNG");
+	l_pData->m_toolbar.AddItem(l_sOptions, IDM_GAME_OPTIONS, l_hBmpOptions, OWNTOOLBAR_TYPE_BMP, false);
+
+}
+
+
+
 void ConfigureStatusbar(HWND a_hWndStatusbar)
 {
 }
@@ -493,6 +642,26 @@ void AddTab(HWND a_hWnd, LPTSTR a_sTabName)
 
 	l_tabItem.pszText = a_sTabName;
 	::SendMessage(l_pData->m_hWndTab, TCM_INSERTITEM, 0, reinterpret_cast<LPARAM>(&l_tabItem));
+}
+
+
+// ---------------------------------------------------------
+// Draws own toolbar
+void
+Draw(
+	HWND a_hWnd,	//IN game wnd
+	HDC a_hDC		//IN device context
+)
+{
+	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
+	RECT l_rectWin;
+	::GetClientRect(a_hWnd, &l_rectWin);
+
+	// TODO here to change if own toolbar can change position (horizontal / vertical)
+	l_rectWin.bottom = l_pData->m_toolbar.GetExtent();
+
+	l_pData->m_toolbar.Draw(a_hDC, l_rectWin);
+
 }
 
 
@@ -520,6 +689,7 @@ void OnNotifyTab(HWND a_hWnd, LPNMHDR a_pNmHdr)
 
 void OnCommand(HWND a_hWnd, WPARAM a_wParam, LPARAM a_lParam)
 {
+
 	switch (LOWORD(a_wParam))
 	{
 
@@ -546,10 +716,78 @@ void OnCommand(HWND a_hWnd, WPARAM a_wParam, LPARAM a_lParam)
 		::SendMessage(a_hWnd, WM_CLOSE, 0, 0L);
 		break;
 
-	case IDM_HELP_ABOUT:
-		AboutDlg_DoModal(a_hWnd);
-		break;
 	}
+}
+
+
+void OnMouseMove(HWND a_hWnd, LONG a_x, LONG a_y)
+{
+	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
+	POINT l_pt = { a_x, a_y };
+
+	// check if mouse is over toolbar
+
+	UINT l_iPrevHover = l_pData->m_toolbar.GetHover();
+	UINT l_iNewHover = l_pData->m_toolbar.HitTest(l_pt);
+
+	// hover on the same item as before?
+	if (l_iPrevHover == l_iNewHover)
+	{
+		return;
+	}
+
+
+	l_pData->m_toolbar.SetHover(l_iNewHover);
+	if (l_pData->m_toolbar.IsHover())
+		::SetCapture(a_hWnd);
+	else
+		if (!(GetAsyncKeyState(VK_LBUTTON) != 0))
+			::ReleaseCapture();
+	
+	// invalidate toolbar
+	l_pData->m_toolbar.InvalidateRect(a_hWnd, l_iPrevHover);
+	l_pData->m_toolbar.InvalidateRect(a_hWnd, l_iNewHover);
+
+}
+
+
+void OnLButtonDown(HWND a_hWnd, int a_x, int a_y)
+{
+	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
+	POINT l_pt = { a_x, a_y };
+
+	// check if mouse is over toolbar
+
+	l_pData->m_toolbar.SetHover(l_pData->m_toolbar.HitTest(l_pt));
+
+
+	// invalidate toolbar
+	if (l_pData->m_toolbar.IsHover())
+	{
+		l_pData->m_toolbar.SetPressed(l_pData->m_toolbar.GetHover());
+		::SetCapture(a_hWnd);
+	}
+	l_pData->m_toolbar.InvalidateRect(a_hWnd, l_pData->m_toolbar.GetHover());
+}
+
+
+void OnLButtonUp(HWND a_hWnd, int a_x, int a_y)
+{
+	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
+	POINT l_pt = { a_x, a_y };
+
+	// check if mouse is over toolbar
+
+	UINT l_iHover = l_pData->m_toolbar.HitTest(l_pt);
+
+	::ReleaseCapture();
+	l_pData->m_toolbar.SetPressed(-1);
+	l_pData->m_toolbar.InvalidateRect(a_hWnd, l_pData->m_toolbar.GetHover());
+	if (l_iHover != -1)
+	{
+		::SendMessage(a_hWnd, WM_COMMAND, MAKEWPARAM(l_pData->m_toolbar.GetHoverIdCmd(), 0), 0);
+	}
+
 }
 
 
@@ -802,9 +1040,11 @@ void GetMinSize(HWND a_hWnd, LPSIZE a_pSize)
 	::SetRect(&l_rectTab, 0, 0, a_pSize->cx, a_pSize->cy); 
 	TabCtrl_AdjustRect(l_pData->m_hWndTab, TRUE, &l_rectTab); 
 
+	// TODO here to change if own toolbar can change position
 	a_pSize->cy = 
 		::GetSystemMetrics(SM_CYCAPTION) +	// nag³ówek okna
 		::GetSystemMetrics(SM_CYMENU) +		
+		l_pData->m_toolbar.GetExtent() +
 		::GetSystemMetrics(SM_CYFRAME) * 2 + 
 		RectHeight(l_rectSB) + 					// wysokosæ status bar'a
 		RectHeight(l_rectTab);	// nag³ówek okna

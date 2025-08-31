@@ -2,8 +2,6 @@
 // Microsoft Visual C++ generated include file.
 // Used by Kierki.rc
 //
-
-
 #define IDC_MYICON                      2
 #define IDC_PHYSICAL_MEM                101
 #define IDC_TAB                         101
@@ -21,10 +19,9 @@
 #define IDD_LOGON                       105
 #define IDS_TABTITLE_GAME               105
 #define IDB_INFO_SYSTEMINFO             105
-#define IDD_INFO                        106
 #define IDS_ERR_MAINWIN                 106
 #define IDD_OPTIONS                     107
-#define IDS_NEWGAME                     107
+#define IDS_QUESTION_NEWGAME            107
 #define IDD_OPT_VIEW                    108
 #define IDS_DECISION                    108
 #define IDC_KIERKI                      109
@@ -33,65 +30,72 @@
 #define IDS_TABTITLE_RESULT             110
 #define IDD_OPT_PLAYERS                 110
 #define IDD_DLLBITMAP                   111
-#define IDS_AFTERCARD                   111
-#define IDS_CHOOSETRUMPS                111
-#define IDC_BMPWND                      112
-#define IDC_AFTERTRICK                  112
-#define IDS_NO_BITMAPS                  112
-#define IDD_OPT_RULES                   112
-#define IDS_AFTERTRICK                  113
-#define IDS_FILE_RESULTS                113
-#define IDC_AFTERPASS                   114
-#define IDS_READY                       114
-#define IDS_AFTERPASS                   115
-#define IDS_TABTITLE_VIEW               115
-#define IDS_TABTITLE_TIME               116
-#define IDS_TABTITLE_PLAYER             117
-#define IDS_CHOOSEBMP_SELBTN            118
-#define IDS_KIERKIFILTERNAME            119
-#define IDS_KIERKIFILTEREXT             120
-#define IDS_INFO_AUTHORCONTACT          121
-#define IDS_INFO_AUTHORURL              122
-#define IDS_SAVEGAMEQUESTION            123
-#define IDS_CONFIRMTRICK                124
-#define IDS_TABTITLE_RULES              125
-#define IDS_CHOOSEBMP_SELBTN2           126
-#define IDS_CHOOSEBMP_TITLE             126
-#define IDR_MAINFRAME                   128
-#define IDS_PLAYCARD                    129
-#define IDS_PROMPT_NEWGAME              130
-#define IDS_COLOR_NOTRUMP               131
-#define IDS_TITLE_NOTRICKS              132
-#define IDI_KIERKI                      132
-#define IDS_TITLE_NOHEARTS              133
-#define IDD_VIEW                        133
-#define IDS_TITLE_NOBOYS                134
-#define IDB_NOTRUMPS                    134
-#define IDS_TITLE_NOLADIES              135
-#define IDS_TITLE_NOKINGOFHEART         136
-#define IDS_TITLE_NOSIXANDLAST          137
-#define IDS_TITLE_ROBBER                138
-#define IDS_TITLE_RECOVER               139
-#define IDS_TITLE_PUZZLE                140
-#define IDS_COLOR_CLUB                  141
-#define IDS_COLOR_SPADE                 142
-#define IDS_COLOR_HEART                 143
-#define IDS_COLOR_DIAMOND               144
-#define IDS_DEFNAME1                    145
-#define IDS_DEFNAME2                    146
-#define IDS_DEFNAME3                    147
-#define IDC_NAME                        148
-#define IDS_SAVEGAMEBEFOREOPENQUESTION  148
-#define IDS_BITMAPFILTER                149
-#define IDS_CHOOSEBMP_FILTER            149
-#define IDB_PASS                        150
-#define IDB_NEWGAME						151
-
-// these values are used only for RIBBON framework, maybe not used in this project
-#define IDI_SIMPLERIBBON        152
-#define IDI_SMALL               153
-#define IDC_SIMPLERIBBON        154
-
+#define IDS_AFTERCARD                   112
+#define IDS_CHOOSETRUMPS                113
+#define IDC_BMPWND                      114
+#define IDC_AFTERTRICK                  115
+#define IDS_NO_BITMAPS                  116
+#define IDD_OPT_RULES                   117
+#define IDS_AFTERTRICK                  118
+#define IDS_FILE_RESULTS                119
+#define IDC_AFTERPASS                   120
+#define IDS_READY                       121
+#define IDS_AFTERPASS                   122
+#define IDS_TABTITLE_VIEW               123
+#define IDS_TABTITLE_TIME               124
+#define IDS_TABTITLE_PLAYER             125
+#define IDS_CHOOSEBMP_SELBTN            126
+#define IDS_KIERKIFILTERNAME            127
+#define IDS_KIERKIFILTEREXT             128
+#define IDS_INFO_AUTHORCONTACT          129
+#define IDS_INFO_AUTHORURL              130
+#define IDS_SAVEGAMEQUESTION            131
+#define IDS_CONFIRMTRICK                132
+#define IDS_TABTITLE_RULES              133
+#define IDS_CHOOSEBMP_SELBTN2           134
+#define IDS_CHOOSEBMP_TITLE             135
+#define IDR_MAINFRAME                   136
+#define IDS_PLAYCARD                    137
+#define IDS_PROMPT_NEWGAME              138
+#define IDS_COLOR_NOTRUMP               139
+#define IDS_TITLE_NOTRICKS              140
+#define IDI_KIERKI                      141
+#define IDS_TITLE_NOHEARTS              142
+#define IDD_VIEW                        143
+#define IDS_TITLE_NOBOYS                144
+#define IDB_NOTRUMPS                    145
+#define IDS_TITLE_NOLADIES              146
+#define IDS_TITLE_NOKINGOFHEART         147
+#define IDS_TITLE_NOSIXANDLAST          148
+#define IDS_TITLE_ROBBER                149
+#define IDS_TITLE_RECOVER               150
+#define IDS_TITLE_PUZZLE                151
+#define IDS_COLOR_CLUB                  152
+#define IDS_COLOR_SPADE                 153
+#define IDS_COLOR_HEART                 154
+#define IDS_COLOR_DIAMOND               155
+#define IDS_DEFNAME1                    156
+#define IDS_DEFNAME2                    157
+#define IDS_DEFNAME3                    158
+#define IDC_NAME                        159
+#define IDS_SAVEGAMEBEFOREOPENQUESTION  160
+#define IDS_BITMAPFILTER                161
+#define IDS_CHOOSEBMP_FILTER            162
+#define IDB_PASS                        163
+#define IDB_NEWGAME                     164
+#define IDR_PNG_NEWGAME                 165
+#define IDR_PNG_OPENGAME                166
+#define IDI_SIMPLERIBBON                167
+#define IDI_SMALL                       168
+#define IDC_SIMPLERIBBON                169
+#define IDR_PNG_SAVEGAME                170
+#define IDS_NEWGAME                     171
+#define IDS_OPENGAME                    172
+#define IDS_SAVEGAME                    173
+#define IDR_PNG_OPTIONS                 174
+#define IDS_OPTIONS                     175
+#define IDS_SAVEGAMEAS                  176
+#define IDR_PNG_SAVEGAMEAS              177
 #define IDC_VIEW_TABLECOLOR             1000
 #define IDC_VIEW_RESULTCOLOR            1001
 #define IDC_PLAYER1                     1001
@@ -105,7 +109,6 @@
 #define IDC_VIEW_DEFUALTRESULT          1005
 #define IDC_IMAGE                       1006
 #define IDC_VIEW_COVER                  1008
-#define IDC_INFO_VERSION                1009
 #define IDC_RULES_CONFIRMTRICK          1011
 #define IDM_GAME_NEW                    32780
 #define IDM_GAME_OPEN                   32781
@@ -121,10 +124,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        151
+#define _APS_NEXT_RESOURCE_VALUE        155
 #define _APS_NEXT_COMMAND_VALUE         32781
 #define _APS_NEXT_CONTROL_VALUE         1012
-#define _APS_NEXT_SYMED_VALUE           110
+#define _APS_NEXT_SYMED_VALUE           111
 #endif
 #endif
-

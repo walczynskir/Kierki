@@ -68,7 +68,7 @@ CPlayers::NextPlayer(
 void 
 CPlayers::SetNextFirstDealer()
 {
-#pragma message(HERE "first dealer w dwu miejscach - przenieœæ do RegData, a tu tylko wskazanie")
+#pragma todo ("first dealer w dwu miejscach - przenieœæ do RegData, a tu tylko wskazanie")
 	m_enFirstDealer = NextPlayer(m_enFirstDealer);
 }
 

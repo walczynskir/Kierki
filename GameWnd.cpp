@@ -3,6 +3,7 @@
 #include "GameWnd.h"
 #include "GameWndData.h"
 #include <RCards/RCards.h>
+#include <RCards/resource.h>
 #include <rcommon/RMemDC.h>
 #include <rcommon/RKeyboard.h>
 #include <rcommon/drawutl.h>
@@ -234,9 +235,7 @@ OnCreate(
 	{
 		return -1;
 	}
-#pragma warning(disable: 4244)
 	::SetWindowLongPtr(a_hWnd, c_iWindowOfs, (LONG_PTR)l_pData);
-#pragma warning(default: 4244)
 
 	if (!LoadBitmaps(a_hWnd))
 	{
@@ -1279,7 +1278,7 @@ bool LoadCover(HWND a_hWnd)
 	// wci¹¿ niepowodzenie - ostatnia próba - defaultowa koszulka
 	if (l_pData->GetBmpCover() == NULL)
 	{
-		l_pData->SetBmpCover(Cards_GetBitmap(c_iDefCover));
+		l_pData->SetBmpCover(Cards_GetBitmap(IDB_COVER_12));
 	}
 	if (l_hModule != NULL)
 	{

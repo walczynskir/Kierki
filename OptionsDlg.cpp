@@ -6,6 +6,13 @@
 #include "resource.h"
 #include <tchar.h>
 #include <commctrl.h>
+#include <rcommon/RHyperlinkWnd.h>
+
+#pragma message("automatic link to VERSION.LIB")
+#pragma comment(lib, "version.lib")
+
+
+#pragma todo("TAB key behaviour")
 
 typedef struct S_OPTDATA
 {
@@ -31,6 +38,7 @@ UINT OptionsDlg_DoModal(HWND a_hWndParent, RRegData* a_pData)
 {
 	TOptData l_optData;
 	l_optData.m_pData = a_pData;
+	RHyperlinkWnd_RegisterClass();
 	INT_PTR l_iRes = ::DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_OPTIONS), a_hWndParent, OptionsDlgProc, reinterpret_cast<LPARAM>(&l_optData));
 	return static_cast<UINT>(l_iRes);
 }
@@ -102,9 +110,15 @@ bool GetCtrlValues(HWND a_hDlg)
 static void OnInitDialog(HWND a_hDlg, LPOptData a_pData)
 {
 	ROptionsData* l_pOptData = new ROptionsData(a_pData->m_pData);	// delete in OnDestroy()
-#pragma warning(disable: 4244)
-	::SetWindowLongPtr(a_hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(l_pOptData));
-#pragma warning(default: 4244)
+
+	::SetWindowLongPtr(a_hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(l_pOptData));	
+
+	TCHAR l_sAuthorName[128];
+	::LoadString(::GetModuleHandle(NULL), IDS_INFO_AUTHORCONTACT, l_sAuthorName, ArraySize(l_sAuthorName));
+	::SetWindowText(::GetDlgItem(a_hDlg, IDC_INFO_MAILTO), l_sAuthorName);
+	TCHAR l_sAuthorEMail[128];
+	::LoadString(::GetModuleHandle(NULL), IDS_INFO_AUTHORURL, l_sAuthorEMail, ArraySize(l_sAuthorEMail));
+	RHyperlinkWnd_SetUrl(::GetDlgItem(a_hDlg, IDC_INFO_MAILTO), l_sAuthorEMail);
 
 	HWND l_hTabWnd = ::GetDlgItem(a_hDlg, IDC_TAB);
 	// sets tabs

@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "GameData.h"
+#include "OwnToolbar.h"
 #include <commctrl.h>
 
 
@@ -32,6 +33,8 @@ public:
 
 	HWND m_hWndStatusbar;
 	HWND m_hWndTab;
+
+	COwnToolbar m_toolbar;
 	std::vector<HWND> m_arrTabs;
 
 	// ribbon data

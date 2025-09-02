@@ -38,7 +38,7 @@
 #pragma todo("refactor of cover selecting")
 #pragma todo("possibility of changing pass button")
 #pragma todo("improve color picker / add to toolbar")
-#pragma todo("imporve selecting covers, at least a few from own reources, not from exes or dlls")
+#pragma todo("improve selecting covers, at least a few from own reources, not from exes or dlls")
 #pragma todo("improve loading cards - check how they bmps are loaded")
 #pragma todo("add option to load other cards decks")
 #pragma todo("do refactor of all graphics")
@@ -334,6 +334,7 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 		return NULL;
 	}
 #endif
+
 	l_pData->m_gameData.m_regData.SetPlayerName(E_DL_1, l_sName);
 	l_pData->m_gameData.m_regData.m_regPlayers.Serialize();
 

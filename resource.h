@@ -109,6 +109,8 @@
 #define IDC_VIEW_DEFUALTRESULT          1005
 #define IDC_IMAGE                       1006
 #define IDC_VIEW_COVER                  1008
+#define IDC_VIEW_LEFT	                1009
+#define IDC_VIEW_RIGHT                  1010
 #define IDC_RULES_CONFIRMTRICK          1011
 #define IDM_GAME_NEW                    32780
 #define IDM_GAME_OPEN                   32781
@@ -118,6 +120,9 @@
 #define IDM_GAME_EXIT                   32785
 #define IDM_HELP_ABOUT                  32786
 #define IDC_STATIC                      -1
+
+
+
 
 // Next default values for new objects
 // 

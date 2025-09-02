@@ -7,6 +7,8 @@
 #include <tchar.h>
 #include <commctrl.h>
 #include <rcommon/RHyperlinkWnd.h>
+#include <RCards/resource.h>
+#include <rcommon/RSystemExc.h>
 
 #pragma message("automatic link to VERSION.LIB")
 #pragma comment(lib, "version.lib")
@@ -18,6 +20,42 @@ typedef struct S_OPTDATA
 {
 	RRegData* m_pData; 
 } TOptData, *LPOptData;
+
+class ROptionsData
+{
+public:
+	ROptionsData(RRegData* a_pRegData)
+	{
+		m_ahDlg[0].m_pfnCreateDlg = static_cast<RCREATEDLGPROC>(CreateOptViewDlg);
+		m_ahDlg[0].m_pRegData = &(a_pRegData->m_regView);
+		::LoadString(::GetModuleHandle(NULL), IDS_TABTITLE_VIEW, m_ahDlg[0].m_sTitle, ArraySize(m_ahDlg[0].m_sTitle));
+
+		m_ahDlg[1].m_pfnCreateDlg = static_cast<RCREATEDLGPROC>(CreateOptTimeDlg);
+		m_ahDlg[1].m_pRegData = &(a_pRegData->m_regTime);
+		::LoadString(::GetModuleHandle(NULL), IDS_TABTITLE_TIME, m_ahDlg[1].m_sTitle, ArraySize(m_ahDlg[0].m_sTitle));
+
+		m_ahDlg[2].m_pfnCreateDlg = static_cast<RCREATEDLGPROC>(CreateOptPlayerDlg);
+		m_ahDlg[2].m_pRegData = &(a_pRegData->m_regPlayers);
+		::LoadString(::GetModuleHandle(NULL), IDS_TABTITLE_PLAYER, m_ahDlg[2].m_sTitle, ArraySize(m_ahDlg[0].m_sTitle));
+
+		m_ahDlg[3].m_pfnCreateDlg = static_cast<RCREATEDLGPROC>(CreateOptRulesDlg);
+		m_ahDlg[3].m_pRegData = &(a_pRegData->m_regRules);
+		::LoadString(::GetModuleHandle(NULL), IDS_TABTITLE_RULES, m_ahDlg[3].m_sTitle, ArraySize(m_ahDlg[0].m_sTitle));
+	}
+
+	class RTabData
+	{
+	public:
+		RTabData() : m_hWnd(NULL), m_pfnCreateDlg(NULL), m_pRegData(NULL), m_pObj(NULL), m_sTitle(_T("")) {}
+		HWND m_hWnd;
+		TCHAR m_sTitle[MAX_TABTITLE];
+		RCREATEDLGPROC m_pfnCreateDlg;
+		RRegData::RBaseRegData* m_pRegData;
+		LPVOID  m_pObj;
+	};
+	RTabData	m_ahDlg[4];
+};
+
 
 
 static INT_PTR CALLBACK OptionsDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
@@ -251,3 +289,4 @@ void GetProductVersion(LPTSTR a_sVersion, UINT a_iSize)
 
 	delete[] l_pData;
 }
+

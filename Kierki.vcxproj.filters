@@ -15,31 +15,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AboutDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="AllowedCards.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Card.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CoverRes.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Decider.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExceptionHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameWnd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GetWinVer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Kierki.cpp">
@@ -93,12 +81,6 @@
     <ClCompile Include="PuzzleRows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RBitmapChoiceDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RChooseBmpWnd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="RecoverDecider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -132,27 +114,21 @@
     <ClCompile Include="UserCards.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OwnToolbar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AboutDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AllowedCards.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Card.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CoverRes.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CrashFileNames.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Decider.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ExceptionHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameData.h">
@@ -162,9 +138,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameWndData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GetWinVer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Kierki.h">
@@ -221,12 +194,6 @@
     <ClInclude Include="PuzzleRows.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RBitmapChoiceDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RChooseBmpWnd.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RecoverDecider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -272,6 +239,9 @@
     <ClInclude Include="HeartsData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OwnToolbar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Kierki.ico">
@@ -293,18 +263,6 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\AddTableS.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\bitmap1.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Button_Image.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Copy.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Cut.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\DeleteTableL.bmp">
@@ -334,12 +292,27 @@
     <Image Include="res\PrintRelationshipsS.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\menu_new.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\new_game_48x48.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\open_game_48x48.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\options_48x48.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\save_game_48x48.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\save_game_as_48x48.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Kierki.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-    <ResourceCompile Include="..\RCards\RCards.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

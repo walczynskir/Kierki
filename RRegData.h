@@ -1,7 +1,6 @@
 #pragma once
 #include <rcommon/RString.h>
 #include "typedefs.h"
-#include "coverres.h"
 
 
 class RRegData
@@ -24,16 +23,12 @@ public:
 	{
 	public:
 		RViewRegData(void);
-		~RViewRegData(void);
 		COLORREF	m_colorTable;
 		COLORREF	m_colorResult;
+		UINT		m_idCover;
 		COLORREF GetDefaultTableColor(void) const;
 		COLORREF GetDefaultResultColor(void) const;
 		virtual  void Serialize(void);
-		LPCTSTR  GetRes(void) const;
-		void     SetRes(LPCVOID a_res);
-
-		RCOVERRES	m_resCover;
 	};
 
 	class RTimeRegData : public RBaseRegData

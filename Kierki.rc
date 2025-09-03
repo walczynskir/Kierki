@@ -277,10 +277,7 @@ END
 //
 
 IDB_NOTRUMPS            BITMAP                  "res\\notrumps.bmp"
-
 IDB_PASS                BITMAP                  "res\\pass.bmp"
-
-IDB_NEWGAME             BITMAP                  "res\\menu_new.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////

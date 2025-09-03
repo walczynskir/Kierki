@@ -277,7 +277,6 @@
   <ItemGroup>
     <ClCompile Include="AllowedCards.cpp" />
     <ClCompile Include="Card.cpp" />
-    <ClCompile Include="CoverRes.cpp" />
     <ClCompile Include="OwnToolbar.cpp" />
     <ClCompile Include="Decider.cpp" />
     <ClCompile Include="GameData.cpp" />
@@ -299,8 +298,6 @@
     <ClCompile Include="Players.cpp" />
     <ClCompile Include="PuzzleDecider.cpp" />
     <ClCompile Include="PuzzleRows.cpp" />
-    <ClCompile Include="RBitmapChoiceDlg.cpp" />
-    <ClCompile Include="RChooseBmpWnd.cpp" />
     <ClCompile Include="RecoverDecider.cpp" />
     <ClCompile Include="ResultWnd.cpp" />
     <ClCompile Include="RobberDecider.cpp" />
@@ -321,7 +318,6 @@
   <ItemGroup>
     <ClInclude Include="AllowedCards.h" />
     <ClInclude Include="Card.h" />
-    <ClInclude Include="CoverRes.h" />
     <ClInclude Include="OwnToolbar.h" />
     <ClInclude Include="CrashFileNames.h" />
     <ClInclude Include="Decider.h" />
@@ -347,8 +343,6 @@
     <ClInclude Include="Players.h" />
     <ClInclude Include="PuzzleDecider.h" />
     <ClInclude Include="PuzzleRows.h" />
-    <ClInclude Include="RBitmapChoiceDlg.h" />
-    <ClInclude Include="RChooseBmpWnd.h" />
     <ClInclude Include="RecoverDecider.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResultWnd.h" />

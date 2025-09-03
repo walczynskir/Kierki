@@ -4,7 +4,6 @@
 #include "resource.h"
 #include "OptionsDlg.h"
 #include "OptionsViewDlg.h"
-#include "RBitmapChoiceDlg.h"
 #include "layout.h"
 #include <rcommon/RColorWnd.h>
 #include <vector>
@@ -325,8 +324,10 @@ void SetCtrlValues(HWND a_hDlg)
 	RColorWnd_SetColor(::GetDlgItem(a_hDlg, IDC_VIEW_TABLECOLOR), l_pRegData->m_colorTable, TRUE);
 	RColorWnd_SetColor(::GetDlgItem(a_hDlg, IDC_VIEW_RESULTCOLOR), l_pRegData->m_colorResult, TRUE);
 
-	if (l_pData->m_mapCovers.contains(l_pRegData->m_resCover.idRes))
-		l_pData->m_idxCurrent =  l_pData->m_mapCovers.indexOf(l_pRegData->m_resCover.idRes);
+	if (l_pRegData->m_idCover == 0)
+		l_pRegData->m_idCover = IDB_COVER_START; // default
+	if (l_pData->m_mapCovers.contains(l_pRegData->m_idCover))
+		l_pData->m_idxCurrent =  l_pData->m_mapCovers.indexOf(l_pRegData->m_idCover);
 }
 
 
@@ -343,7 +344,7 @@ static void GetCtrlValues(HWND a_hDlg)
 	l_pRegData->m_colorTable = RColorWnd_GetColor(::GetDlgItem(a_hDlg, IDC_VIEW_TABLECOLOR));
 	l_pRegData->m_colorResult = RColorWnd_GetColor(::GetDlgItem(a_hDlg, IDC_VIEW_RESULTCOLOR));
 
-	l_pRegData->m_resCover.idRes = l_pData->m_mapCovers[l_pData->m_idxCurrent].first;
+	l_pRegData->m_idCover = l_pData->m_mapCovers[l_pData->m_idxCurrent].first;
 }
 
 void StartAnimation(HWND a_hDlg, EAnimDirection a_enumDirection)

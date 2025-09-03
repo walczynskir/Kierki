@@ -4,6 +4,7 @@
 #include <rcommon/RString.h>
 #include <rcommon/registry_value.h>
 #include <Psapi.h>
+#include <RCards/resource.h>
 
 typedef registry_string<tstring> RRegTString;
 typedef registry_string_def<tstring> RRegTStringDef;
@@ -19,7 +20,6 @@ typedef registry_int<bool> RRegBool;
 typedef registry_int_def<bool> RRegBoolDef;
 typedef registry_int<UINT> RRegUInt;
 typedef registry_int_def<UINT> RRegUIntDef;
-typedef registry_var_binary<BYTE> RRegCoverRes;
 
 static const TCHAR c_sDealerReg[] = _T("Software\\Medea\\Kierki\\DEALER");
 static const TCHAR c_sWaitTimeReg[] = _T("Software\\Medea\\Kierki\\WAITTIME");
@@ -36,10 +36,12 @@ static const TCHAR c_sResultColorReg[] = _T("Software\\Medea\\Kierki\\RESULTCOLO
 static const TCHAR c_sStartPointReg[] = _T("Software\\Medea\\Kierki\\STARTPOINT");
 static const TCHAR c_sSaveScoresReg[] = _T("Software\\Medea\\Kierki\\SAVESCORES");
 
-// cover
-static const TCHAR c_sCoverRes[] = _T("Software\\Medea\\Kierki\\Res\\COVERRES");
+static const TCHAR c_sCoverID[] = _T("Software\\Medea\\Kierki\\COVERID");
 
 static const TCHAR c_sConfirmTrickReg[] = _T("Software\\Medea\\Kierki\\CONFIRMTRICK");
+
+#define DARK_GREEN_COLOR RGB(0, 128, 0)
+#define LIME_GREEN_COLOR RGB(50, 205, 50)
 
 
 RRegData::RRegData(void)
@@ -63,49 +65,21 @@ void RRegData::Serialize(void)
 
 RRegData::RViewRegData::RViewRegData(void)
 {
-	RCoverRes_Init(&m_resCover);
 	m_colorTable = (COLORREF)RRegColorDef(c_sTableColorReg, HKEY_CURRENT_USER, GetDefaultTableColor());
 	m_colorResult = (COLORREF)RRegColorDef(c_sResultColorReg, HKEY_CURRENT_USER, GetDefaultResultColor());
-
-	RRegCoverRes l_regCoverRes(c_sCoverRes, HKEY_CURRENT_USER);
-	if (l_regCoverRes.exists())
-	{
-		DWORD l_dwSize = 0;
-		l_regCoverRes.get_size(&l_dwSize);
-		LPBYTE l_pBt = new BYTE[l_dwSize];
-		l_regCoverRes.get_value(l_pBt, l_dwSize);
-		RCoverRes_FromBuf(&m_resCover, l_pBt, l_dwSize);
-		delete[] l_pBt;
-	}
-	else
-	{
-#pragma todo("only works for dll's - not for static libs") 
-		// we check where the default rcards lib is
-		TCHAR l_sPath[MAX_PATH];
-		HMODULE l_hLib = ::LoadLibrary(_T("RCards.dll"));
-		::GetModuleFileNameEx(::GetCurrentProcess(), l_hLib, l_sPath, ArraySize(l_sPath));
-		::FreeLibrary(l_hLib);
-
-		RCoverRes_Set(&m_resCover, true, l_sPath, true, reinterpret_cast<LPVOID>(57));
-	}
-}
-
-
-RRegData::RViewRegData::~RViewRegData(void)
-{
-	RCoverRes_Done(&m_resCover);
+	m_idCover = (UINT)RRegUIntDef(c_sCoverID, HKEY_CURRENT_USER, IDB_COVER_1);
 }
 
 
 COLORREF RRegData::RViewRegData::GetDefaultTableColor(void) const 
 {
-	return ::GetSysColor(COLOR_DESKTOP);
+	return DARK_GREEN_COLOR;
 }
 
 
 COLORREF RRegData::RViewRegData::GetDefaultResultColor(void) const
 {
-	return ::GetSysColor(COLOR_DESKTOP);
+	return LIME_GREEN_COLOR;
 }
 
 
@@ -115,25 +89,8 @@ void RRegData::RViewRegData::Serialize(void)
 	l_regTableColor = m_colorTable;
 	RRegColor l_regResultColor(c_sResultColorReg, HKEY_CURRENT_USER); 
 	l_regResultColor = m_colorResult;
-
-	RRegCoverRes l_regCoverRes(c_sCoverRes, HKEY_CURRENT_USER);
-	DWORD l_dwSize = RCoverRes_GetSize(&m_resCover);
-	LPBYTE l_pBt = new BYTE[l_dwSize];
-	RCoverRes_ToBuf(&m_resCover, l_pBt, l_dwSize);
-	l_regCoverRes.set_value(l_pBt, l_dwSize);
-	delete[] l_pBt;
-}
-
-
-LPCTSTR RRegData::RViewRegData::GetRes(void) const
-{
-	return RCoverRes_GetIntResource(&m_resCover);
-}
-
-
-void RRegData::RViewRegData::SetRes(LPCVOID a_res)
-{
-	RCoverRes_SetResource(&m_resCover, a_res);
+	RRegUInt l_regCover(c_sCoverID, HKEY_CURRENT_USER);
+	l_regCover = m_idCover;
 }
 
 

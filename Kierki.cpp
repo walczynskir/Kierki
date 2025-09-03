@@ -98,8 +98,6 @@ inline static void OnAppConfirmTrick(HWND a_hWnd);
 
 static void Draw(HWND a_hWnd, HDC a_hDC);
 
-inline static void ConfigureMenu(HWND a_hWNd);
-
 inline static void SetTitle(HWND a_hWnd);
 inline static void GetTabRect(HWND a_hWnd, LPRECT a_pRectTab);
 inline static HWND GetCurTab(HWND a_hWnd);
@@ -447,7 +445,6 @@ LRESULT OnCreate(HWND a_hWnd)
 	}
 	
 	CHeartsData::SetData(a_hWnd, l_pData);
-	ConfigureMenu(a_hWnd);
 
 	return 0;
 }
@@ -529,27 +526,6 @@ void OnPaint(
 	::EndPaint(a_hWnd, &l_ps);
 }
 
-
-void ConfigureMenu(HWND a_hWnd)
-{
-
-	HMENU hMenu = ::GetMenu(a_hWnd);
-	HMENU hFileMenu = ::GetSubMenu(hMenu, 0); // 0 is the index of the "File" popup menu
-
-	// Load the bitmap images from the resources
-	HBITMAP hbmNewGame = ::LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_NEWGAME));
-
-	// Set the icon for the "New Game" menu item
-	if (hbmNewGame)
-	{
-		MENUITEMINFO l_mii;	
-		l_mii.cbSize = sizeof(MENUITEMINFO);
-		l_mii.fMask = MIIM_BITMAP;
-		l_mii.hbmpItem = hbmNewGame;
-
-		SetMenuItemInfo(hFileMenu, IDM_GAME_NEW, FALSE, &l_mii);
-	}
-}
 
 
 void ResizeTab(HWND a_hWnd, int a_dxWidth, int a_dyHeight)

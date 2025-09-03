@@ -1253,37 +1253,9 @@ bool LoadCover(HWND a_hWnd)
 {
 	GameWndData* l_pData = GetData(a_hWnd);
 
-	// jeœli z pliku
-	if (!l_pData->m_pGameData->m_regData.m_regView.m_resCover.bExec)
-	{
-		l_pData->SetBmpCover(RDraw::LoadPicture(
-			l_pData->m_pGameData->m_regData.m_regView.m_resCover.psPath, 
-			BACK_COLOR, NULL));
-		if (l_pData->GetBmpCover() != NULL)
-		{
-			return true;
-		}
-	}
+	l_pData->SetBmpCover(reinterpret_cast<HBITMAP>(::LoadBitmap(RCards_GetInstance(),
+		MAKEINTRESOURCE(l_pData->m_pGameData->m_regData.m_regView.m_idCover))));
 
-	// load library
-	HMODULE l_hModule = NULL;
-	l_hModule = ::LoadLibrary(l_pData->m_pGameData->m_regData.m_regView.m_resCover.psPath);
-
-	if (l_hModule != NULL)
-	{
-		l_pData->SetBmpCover(reinterpret_cast<HBITMAP>(::LoadBitmap(l_hModule, 
-			l_pData->m_pGameData->m_regData.m_regView.GetRes())));
-	}
-
-	// wci¹¿ niepowodzenie - ostatnia próba - defaultowa koszulka
-	if (l_pData->GetBmpCover() == NULL)
-	{
-		l_pData->SetBmpCover(Cards_GetBitmap(IDB_COVER_12));
-	}
-	if (l_hModule != NULL)
-	{
-		::FreeModule(l_hModule);
-	}
 	return (l_pData->GetBmpCover() != NULL);
 }
 

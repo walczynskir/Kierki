@@ -82,7 +82,6 @@
 #define IDS_BITMAPFILTER                161
 #define IDS_CHOOSEBMP_FILTER            162
 #define IDB_PASS                        163
-#define IDB_NEWGAME                     164
 #define IDR_PNG_NEWGAME                 165
 #define IDR_PNG_OPENGAME                166
 #define IDI_SIMPLERIBBON                167

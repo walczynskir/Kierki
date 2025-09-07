@@ -2,6 +2,7 @@
 #include <vector>
 #include "GameData.h"
 #include "OwnToolbar.h"
+#include <rcommon/LanguageManager.h>
 #include <commctrl.h>
 
 
@@ -41,5 +42,8 @@ public:
 
 	// game data
 	GameData m_gameData;
+	LanguageManager m_langManager;
+
+
 };
 

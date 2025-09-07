@@ -54,6 +54,8 @@ public:
 	public:
 		RRulesRegData(void);
 		bool m_bConfirmTrick;
+		LANGID m_idLanguage;	// LANGID
+		bool m_bLogonDlg;		// show the LogonDlg?
 		virtual void Serialize(void);
 	};
 	

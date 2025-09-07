@@ -19,3 +19,6 @@ void SaveGame(HWND a_hWnd);
 bool GetOpenSaveFile(HWND a_hWnd, bool a_bOpen, LPTSTR a_psFile, DWORD a_iSizeFile);
 
 
+
+
+

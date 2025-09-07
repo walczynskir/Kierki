@@ -24,6 +24,7 @@
 
 
 #pragma todo("change pass indicator image, as it is ugly")
+#pragma todo("check, why close button at the top right corner doesn't get highlighted at the first time")
 #pragma todo("check behaviour of cover, when app used for the first time")
 #pragma todo("Add Own Toolbar behaviour on LButtonDown")
 #pragma todo("Add statusbar messages on Hover on OwnToolbar items")
@@ -116,18 +117,10 @@ static void EnableSaveMenu(HWND a_hWnd, BOOL a_bEnable);
 static const TCHAR cc_cAsterisk = L'*';
 
 
-#ifdef _DEBUG
-#define NOLOGON
-#endif
 
 #ifdef _DEBUG
 #define NOSAVE
 #endif
-
-
-
-
-
 
 
 int APIENTRY _tWinMain(_In_ HINSTANCE a_hInst,
@@ -174,7 +167,6 @@ int RunAppThrow(HINSTANCE a_hInst,
                      LPTSTR    a_lpCmdLine,
                      int       a_nCmdShow)
 {
-
 
 	RegisterKierki(a_hInst);
 	INITCOMMONCONTROLSEX l_icc;
@@ -270,6 +262,28 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 	CHeartsData* l_pData = CHeartsData::GetData(l_hWndKierki);
 	ASSERT(l_pData != NULL);
 
+	// automatic language detection (languages available for use)
+	l_pData->m_langManager.DetectLanguages(IDS_LANG_NAME);
+	RRegData::RRulesRegData& l_reg = l_pData->m_gameData.m_regData.m_regRules;
+	l_pData->m_langManager.SetLanguage(l_reg.m_idLanguage);
+
+	tstring l_sName = l_pData->m_gameData.m_regData.GetPlayerName(E_DL_1);
+	if (l_reg.m_bLogonDlg)
+	{
+		if (!LogonDlg_DoModal(l_hWndKierki, &l_sName, &(l_pData->m_langManager), &(l_reg.m_bLogonDlg)))
+		{
+			::DestroyWindow(l_hWndKierki);
+			return NULL;
+		}
+
+		if (l_pData->m_langManager.GetCurrentLangID().has_value())
+			if (l_reg.m_idLanguage != l_pData->m_langManager.GetCurrentLangID().value())
+				l_reg.m_idLanguage = l_pData->m_langManager.GetCurrentLangID().value();
+
+		l_reg.Serialize();	// save settings
+	}
+
+
 	// create own toolbar setup
 	SetupOwnToolbar(l_hWndKierki);
 
@@ -310,6 +324,7 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 		throw RSystemExc(::GetLastError(), _T("HWNDRESULTS"));
 	}
 
+
 	l_pData->m_hWndStatusbar = ::CreateWindow(STATUSCLASSNAME, NULL,
 	   WS_CHILD | SBARS_SIZEGRIP | WS_VISIBLE, 
 	   0, 0, CW_USEDEFAULT, 18, 
@@ -324,14 +339,6 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 	::ShowWindow(l_hWndKierki, a_nCmdShow);
 	::UpdateWindow(l_hWndKierki);
 
-	tstring l_sName = l_pData->m_gameData.m_regData.GetPlayerName(E_DL_1);
-#ifndef NOLOGON
-	if (!LogonDlg_DoModal(l_hWndKierki, &l_sName))
-	{
-		::DestroyWindow(l_hWndKierki);
-		return NULL;
-	}
-#endif
 
 	l_pData->m_gameData.m_regData.SetPlayerName(E_DL_1, l_sName);
 	l_pData->m_gameData.m_regData.m_regPlayers.Serialize();
@@ -881,7 +888,7 @@ void OnGameOpen(HWND a_hWnd)
 void OnGameOptions(HWND a_hWnd)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	if (OptionsDlg_DoModal(a_hWnd, &(l_pData->m_gameData.m_regData)) == IDCANCEL)
+	if (OptionsDlg_DoModal(a_hWnd, &(l_pData->m_gameData.m_regData), l_pData) == IDCANCEL)
 	{
 		return;
 	}

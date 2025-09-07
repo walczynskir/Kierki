@@ -384,8 +384,10 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Kierki.rc" />
+    <ResourceCompile Include="Kierki_en_uk.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Manifest Include="Kierki.exe.en-uk.manifest" />
     <Manifest Include="Kierki.exe.manifest" />
   </ItemGroup>
   <ItemGroup>

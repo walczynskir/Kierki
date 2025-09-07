@@ -1172,7 +1172,6 @@ DrawPuzzleColor(
 	BOOL l_bTop = (l_pCardTop->CardValue() > E_CV_8);
 	BOOL l_bBottom = (l_pCardBottom->CardValue() < E_CV_8);
 
-#pragma message(HERE "nie wydajny sposób rysowania bo wszystkie karty w ca³oœci rysujê")
 	// najpierw 8
 	CCard l_card8(a_enColor, E_CV_8);
 	l_dyStart = TopCardEdgePuzzle(l_card8);

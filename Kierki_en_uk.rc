@@ -15,18 +15,18 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Polish (Poland) resources
+// English (United Kingdom) resources
 
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_PLK)
-LANGUAGE LANG_POLISH, SUBLANG_DEFAULT
-#pragma code_page(1250)
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+#pragma code_page(1252)
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // RT_MANIFEST
 //
 
-1                       RT_MANIFEST             "Kierki.exe.manifest"
+1                       RT_MANIFEST             "Kierki.exe.en-uk.manifest"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -46,33 +46,35 @@ END
 // Dialog
 //
 
+
 IDD_LOGON DIALOGEX 0, 0, 195, 84
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Witamy w programie Kierki"
+CAPTION "Welcome to the Hearts program"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    LTEXT           "Jêzyk:",IDC_STATIC,7,7,55,12
-    COMBOBOX        IDC_LOGON_LANGUAGE,66,7,121,60,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Podaj swoje imiê:",IDC_STATIC,7,26,55,12
-    EDITTEXT        IDC_NAME,66,26,121,12,ES_AUTOHSCROLL
-    CONTROL         "Nie pokazuj ponownie",IDC_LOGON_NOTSHOW,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,98,47,88,10
-    DEFPUSHBUTTON   "Graj",IDOK,145,63,42,14
-    PUSHBUTTON      "WyjdŸ",IDCANCEL,96,63,42,14
+    LTEXT           "Language:", IDC_STATIC, 7, 7, 55, 12
+    COMBOBOX        IDC_LOGON_LANGUAGE, 66, 7, 121, 60, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Enter your name:", IDC_STATIC, 7, 26, 55, 12
+    EDITTEXT        IDC_NAME, 66, 26, 121, 12, ES_AUTOHSCROLL
+    CONTROL         "Do not show again", IDC_LOGON_NOTSHOW, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 98, 47, 88, 10
+    DEFPUSHBUTTON   "Play", IDOK, 145, 63, 42, 14
+    PUSHBUTTON      "Exit", IDCANCEL, 96, 63, 42, 14
 END
+
 
 IDD_OPTIONS DIALOGEX 0, 0, 232, 183
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Opcje"
+CAPTION "Options"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "",IDC_TAB,"SysTabControl32",TCS_FOCUSONBUTTONDOWN | WS_TABSTOP,7,7,220,120
-    DEFPUSHBUTTON   "&Ok",IDOK,169,130,58,14
-    PUSHBUTTON      "&Zapisz",IDSAVE,169,146,58,14
-    PUSHBUTTON      "&Anuluj",IDCANCEL,169,162,58,14
-    LTEXT           "Wersja:",IDC_STATIC,7,130,26,14
+    DEFPUSHBUTTON   "&OK",IDOK,169,130,58,14
+    PUSHBUTTON      "&Save",IDSAVE,169,146,58,14
+    PUSHBUTTON      "&Cancel",IDCANCEL,169,162,58,14
+    LTEXT           "Version:",IDC_STATIC,7,130,26,14
     LTEXT           "",IDC_VERSION,39,130,41,14
     CONTROL         "",IDC_INFO_MAILTO,"RHYPERLINKWND",0x0,7,146,76,14
-    PUSHBUTTON      "O systemie ...",IDB_INFO_SYSTEMINFO,7,162,76,14,WS_DISABLED | WS_GROUP
+    PUSHBUTTON      "About the system ...",IDB_INFO_SYSTEMINFO,7,162,76,14,WS_DISABLED | WS_GROUP
 END
 
 IDD_OPT_VIEW DIALOGEX 0, 0, 221, 176
@@ -81,29 +83,29 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "Custom1",IDC_VIEW_TABLECOLOR,"RCOLORWND",WS_TABSTOP,62,7,56,14
     CONTROL         "Custom1",IDC_VIEW_RESULTCOLOR,"RCOLORWND",WS_TABSTOP,62,26,56,14
-    LTEXT           "Kolor sto³u:",IDC_STATIC,7,7,54,12
-    LTEXT           "Kolor wyników:",IDC_STATIC,7,27,54,12
-    LTEXT           "Koszulka:",IDC_STATIC,7,67,54,12
+    LTEXT           "Table colour:",IDC_STATIC,7,7,54,12
+    LTEXT           "Result colour:",IDC_STATIC,7,27,54,12
+    LTEXT           "Card back:",IDC_STATIC,7,67,54,12
     CONTROL         "",IDC_VIEW_COVER,"Static",SS_OWNERDRAW,72,45,35,45
     PUSHBUTTON      "<",IDC_VIEW_LEFT,62,52,10,31
     PUSHBUTTON      ">",IDC_VIEW_RIGHT,108,52,10,31
-    PUSHBUTTON      "Domyœlny",IDC_VIEW_DEFUALTTABLE,121,7,40,14
-    PUSHBUTTON      "Domyœlny",IDC_VIEW_DEFUALTRESULT,121,26,40,14
+    PUSHBUTTON      "Default",IDC_VIEW_DEFUALTTABLE,121,7,40,14
+    PUSHBUTTON      "Default",IDC_VIEW_DEFUALTRESULT,121,26,40,14
 END
 
 IDD_OPT_TIME DIALOGEX 0, 0, 186, 90
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_AFTERCARD,94,7,38,14,ES_NUMBER
-    CONTROL         "Spin2",IDS_AFTERCARD,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,133,7,11,14,WS_EX_TRANSPARENT | WS_EX_CLIENTEDGE
-    EDITTEXT        IDC_AFTERTRICK,94,25,38,14,ES_NUMBER
-    CONTROL         "Spin2",IDS_AFTERTRICK,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,133,26,11,14,WS_EX_TRANSPARENT | WS_EX_CLIENTEDGE
-    EDITTEXT        IDC_AFTERPASS,94,43,38,14,ES_NUMBER
-    CONTROL         "Spin2",IDS_AFTERPASS,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,133,44,11,14,WS_EX_TRANSPARENT | WS_EX_CLIENTEDGE
-    LTEXT           "Po rzuceniu &karty:",IDC_STATIC,14,8,80,14
-    LTEXT           "Po wziêciu &lewy:",IDC_STATIC,14,27,80,14
-    LTEXT           "Po &pas:",IDC_STATIC,14,46,80,14
+    EDITTEXT        IDC_AFTERCARD, 94, 7, 38, 14, ES_NUMBER
+    CONTROL         "Spin2", IDS_AFTERCARD, "msctls_updown32", UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS, 133, 7, 11, 14, WS_EX_TRANSPARENT | WS_EX_CLIENTEDGE
+    EDITTEXT        IDC_AFTERTRICK, 94, 25, 38, 14, ES_NUMBER
+    CONTROL         "Spin2", IDS_AFTERTRICK, "msctls_updown32", UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS, 133, 26, 11, 14, WS_EX_TRANSPARENT | WS_EX_CLIENTEDGE
+    EDITTEXT        IDC_AFTERPASS, 94, 43, 38, 14, ES_NUMBER
+    CONTROL         "Spin2", IDS_AFTERPASS, "msctls_updown32", UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS, 133, 44, 11, 14, WS_EX_TRANSPARENT | WS_EX_CLIENTEDGE
+    LTEXT           "After playing a &card:", IDC_STATIC, 14, 8, 80, 14
+    LTEXT           "After taking a &trick:", IDC_STATIC, 14, 27, 80, 14
+    LTEXT           "After a &pass:", IDC_STATIC, 14, 46, 80, 14
 END
 
 IDD_OPT_PLAYERS DIALOGEX 0, 0, 219, 142
@@ -114,10 +116,10 @@ BEGIN
     EDITTEXT        IDC_PLAYER2,65,28,147,14
     EDITTEXT        IDC_PLAYER3,65,49,147,14
     EDITTEXT        IDC_PLAYER4,65,70,147,14
-    LTEXT           "Imiê gracza 1:",IDC_STATIC,7,7,49,14
-    LTEXT           "Imiê gracza 2:",IDC_STATIC,7,28,49,14
-    LTEXT           "Imiê gracza 3:",IDC_STATIC,7,49,49,14
-    LTEXT           "Imiê gracza 4:",IDC_STATIC,7,70,49,14
+    LTEXT           "Player 1 name:",IDC_STATIC,7,7,49,14
+    LTEXT           "Player 2 name:",IDC_STATIC,7,28,49,14
+    LTEXT           "Player 3 name:",IDC_STATIC,7,49,49,14
+    LTEXT           "Player 4 name:",IDC_STATIC,7,70,49,14
 END
 
 IDD_DLLBITMAP DIALOGEX 0, 0, 164, 138
@@ -132,12 +134,12 @@ IDD_OPT_RULES DIALOGEX 0, 0, 210, 90
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    CONTROL         "Potwierdzaj lewê klikniêciem",IDC_RULES_CONFIRMTRICK,
+    CONTROL         "Confirm trick with a click",IDC_RULES_CONFIRMTRICK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,106,10
-    CONTROL         "Pokazuj okno startowe", IDC_RULES_SHOWDLG,
+    CONTROL         "Show start dialog", IDC_RULES_SHOWDLG,
                     "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 7, 24, 106, 10
-    COMBOBOX        IDC_RULES_LANGUAGE,121,41,72,60,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Jêzyk (wymaga restartu):",IDC_STATIC,7,41,107,8
+    COMBOBOX        IDC_RULES_LANGUAGE, 121, 41, 72, 60, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Language (requires restart):", IDC_STATIC, 7, 41, 107, 8
 END
 
 
@@ -189,7 +191,7 @@ GUIDELINES DESIGNINFO
 BEGIN
     IDD_LOGON, DIALOG
     BEGIN
-        BOTTOMMARGIN, 83
+        BOTTOMMARGIN, 45
     END
 
     IDD_OPTIONS, DIALOG
@@ -230,7 +232,7 @@ BEGIN
     IDD_OPT_RULES, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 204
+        RIGHTMARGIN, 179
         TOPMARGIN, 7
         BOTTOMMARGIN, 83
     END
@@ -258,20 +260,20 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "041504b0"
+        BLOCK "080904b0"
         BEGIN
             VALUE "FileDescription", "Hearts Application"
-            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "FileVersion", "1, 0, 1, 0"
             VALUE "InternalName", "Kierki"
             VALUE "LegalCopyright", "Copyright (C) 2006"
             VALUE "OriginalFilename", "Kierki.exe"
             VALUE "ProductName", " Kierki Application"
-            VALUE "ProductVersion", "1, 0, 0, 1"
+            VALUE "ProductVersion", "1, 0, 1, 0"
         END
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x415, 1200
+        VALUE "Translation", 0x809, 1200
     END
 END
 
@@ -309,80 +311,79 @@ IDR_PNG_OPTIONS         PNG                     "res\\options_48x48.png"
 
 STRINGTABLE
 BEGIN
-    IDS_APP_TITLE           "Kierki"
-    IDS_MSGBOXTITLE         "Uwaga"
-    IDS_TABTITLE_GAME       "Bie¿¹ca gra"
-    IDS_ERR_MAINWIN         "Nie mo¿na utworzyæ g³ównego okna"
-    IDS_QUESTION_NEWGAME    "Czy rozpocz¹æ now¹ grê?"
-    IDS_DECISION            "Decyzja"
-    IDC_KIERKI              "KIERKI"
-    IDS_TABTITLE_RESULT     "Seria %d"
+    IDS_APP_TITLE           "Hearts"
+    IDS_MSGBOXTITLE         "Attention"
+    IDS_TABTITLE_GAME       "Current game"
+    IDS_ERR_MAINWIN         "Cannot create main window"
+    IDS_QUESTION_NEWGAME    "Start a new game?"
+    IDS_DECISION            "Decision"
+    IDC_KIERKI              "HEARTS"
+    IDS_TABTITLE_RESULT     "Round %d"
 END
 
 STRINGTABLE
 BEGIN
-    IDS_CHOOSETRUMPS        "Wybierz atu"
-    IDS_NO_BITMAPS          "Brakuje biblioteki bitmap dla rysowania kart (%s)."
+    IDS_CHOOSETRUMPS        "Choose trump"
+    IDS_NO_BITMAPS          "Missing bitmap library for drawing cards (%s)."
     IDS_FILE_RESULTS        "results.out"
-    IDS_READY               "Gotowy"
-    IDS_TABTITLE_VIEW       "Wygl¹d"
-    IDS_TABTITLE_TIME       "Czasy"
-    IDS_TABTITLE_PLAYER     "Imiona"
-    IDS_CHOOSEBMP_SELBTN    "Wybierz"
-    IDS_KIERKIFILTERNAME    "Pliki gry"
+    IDS_READY               "Ready"
+    IDS_TABTITLE_VIEW       "Appearance"
+    IDS_TABTITLE_TIME       "Timing"
+    IDS_TABTITLE_PLAYER     "Names"
+    IDS_CHOOSEBMP_SELBTN    "Choose"
+    IDS_KIERKIFILTERNAME    "Game files"
 END
 
 STRINGTABLE
 BEGIN
     IDS_KIERKIFILTEREXT     ".hsv"
-    IDS_INFO_AUTHORCONTACT  "Kontakt z autorem"
+    IDS_INFO_AUTHORCONTACT  "Contact the author"
     IDS_INFO_AUTHORURL      "mailto:walczynskir@wp.pl"
-    IDS_SAVEGAMEQUESTION    "Zapisaæ grê?"
-    IDS_CONFIRMTRICK        "Kliknij, aby kontynuowaæ"
-    IDS_TABTITLE_RULES      "Zasady"
-    IDS_CHOOSEBMP_TITLE     "Wybierz koszulkê"
-    IDS_PLAYCARD            "Zagraj kartê"
-    IDS_PROMPT_NEWGAME      "Seria zakoñczona. Czy rozpocz¹æ now¹ grê?"
-    IDS_COLOR_NOTRUMP       "bez atu"
-    IDS_TITLE_NOTRICKS      "Nie braæ lew"
-    IDS_TITLE_NOHEARTS      "Nie braæ kierów"
+    IDS_SAVEGAMEQUESTION    "Save the game?"
+    IDS_CONFIRMTRICK        "Click to continue"
+    IDS_TABTITLE_RULES      "Rules"
+    IDS_CHOOSEBMP_TITLE     "Choose card back"
+    IDS_PLAYCARD            "Play card"
+    IDS_PROMPT_NEWGAME      "Round finished. Start a new game?"
+    IDS_COLOR_NOTRUMP       "no trump"
+    IDS_TITLE_NOTRICKS      "Take no tricks"
+    IDS_TITLE_NOHEARTS      "Take no hearts"
 END
 
 STRINGTABLE
 BEGIN
-    IDS_TITLE_NOBOYS        "Nie braæ ch³opaków"
-    IDS_TITLE_NOLADIES      "Nie braæ dam"
-    IDS_TITLE_NOKINGOFHEART "Nie braæ króla kier"
-    IDS_TITLE_NOSIXANDLAST  "Nie braæ szóstej i ostatniej"
-    IDS_TITLE_ROBBER        "Rozbójnik"
-    IDS_TITLE_RECOVER       "Odgrywka, atu"
-    IDS_TITLE_PUZZLE        "Uk³adanka"
-    IDS_COLOR_CLUB          "trefle"
-    IDS_COLOR_SPADE         "piki"
-    IDS_COLOR_DIAMOND       "kara"
-    IDS_DEFNAME1            "Marek"
-    IDS_DEFNAME2            "Micha³"
-    IDS_DEFNAME3            "Jan"
+    IDS_TITLE_NOBOYS        "Take no jacks & kings"
+    IDS_TITLE_NOLADIES      "Take no queens"
+    IDS_TITLE_NOKINGOFHEART "Take no king of hearts"
+    IDS_TITLE_NOSIXANDLAST  "Take no sixth and last"
+    IDS_TITLE_ROBBER        "Robber"
+    IDS_TITLE_RECOVER       "Recover, trump"
+    IDS_TITLE_PUZZLE        "Puzzle"
+    IDS_COLOR_CLUB          "clubs"
+    IDS_COLOR_SPADE         "spades"
+    IDS_COLOR_DIAMOND       "diamonds"
+    IDS_DEFNAME1            "Mark"
+    IDS_DEFNAME2            "Michael"
+    IDS_DEFNAME3            "John"
 END
 
 STRINGTABLE
 BEGIN
-    IDS_SAVEGAMEBEFOREOPENQUESTION 
-                            "Bie¿¹ca gra jest niezapisana. Zapisaæ grê?"
-    IDS_CHOOSEBMP_FILTER    "Wszystkie pliki obrazów"
-    IDS_NEWGAME             "Nowa gra"
-    IDS_OPENGAME            "Otwórz grê"
-    IDS_SAVEGAME            "Zapisz grê"
-    IDS_OPTIONS             "Opcje"
+    IDS_SAVEGAMEBEFOREOPENQUESTION "Current game is unsaved. Save it?"
+    IDS_CHOOSEBMP_FILTER    "All image files"
+    IDS_NEWGAME             "New game"
+    IDS_OPENGAME            "Open game"
+    IDS_SAVEGAME            "Save game"
+    IDS_OPTIONS             "Options"
 END
 
 STRINGTABLE
 BEGIN
-    IDS_SAVEGAMEAS          "Zapisz grê jako"
-    IDS_LANG_NAME           "Polski"
+    IDS_SAVEGAMEAS          "Save game as"
+    IDS_LANG_NAME           "English (UK)"
 END
 
-#endif    // Polish (Poland) resources
+#endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

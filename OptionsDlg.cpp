@@ -9,6 +9,7 @@
 #include <rcommon/RHyperlinkWnd.h>
 #include <RCards/resource.h>
 #include <rcommon/RSystemExc.h>
+#include "HeartsData.h"
 
 #pragma message("automatic link to VERSION.LIB")
 #pragma comment(lib, "version.lib")
@@ -19,12 +20,13 @@
 typedef struct S_OPTDATA
 {
 	RRegData* m_pData; 
+	CHeartsData* m_pHeartsData;
 } TOptData, *LPOptData;
 
 class ROptionsData
 {
 public:
-	ROptionsData(RRegData* a_pRegData)
+	ROptionsData(RRegData* a_pRegData, CHeartsData* a_pHeartsData)
 	{
 		m_ahDlg[0].m_pfnCreateDlg = static_cast<RCREATEDLGPROC>(CreateOptViewDlg);
 		m_ahDlg[0].m_pRegData = &(a_pRegData->m_regView);
@@ -40,6 +42,7 @@ public:
 
 		m_ahDlg[3].m_pfnCreateDlg = static_cast<RCREATEDLGPROC>(CreateOptRulesDlg);
 		m_ahDlg[3].m_pRegData = &(a_pRegData->m_regRules);
+		m_ahDlg[3].m_pObj = static_cast<LPVOID>(&(a_pHeartsData->m_langManager));
 		::LoadString(::GetModuleHandle(NULL), IDS_TABTITLE_RULES, m_ahDlg[3].m_sTitle, ArraySize(m_ahDlg[0].m_sTitle));
 	}
 
@@ -72,10 +75,11 @@ inline static void SetActiveTab(HWND a_hDlg, int a_iTab);
 static ROptionsData* GetRData(HWND a_hDlg);
 
 
-UINT OptionsDlg_DoModal(HWND a_hWndParent, RRegData* a_pData)
+UINT OptionsDlg_DoModal(HWND a_hWndParent, RRegData* a_pData, CHeartsData* a_pHeartsData)
 {
 	TOptData l_optData;
 	l_optData.m_pData = a_pData;
+	l_optData.m_pHeartsData = a_pHeartsData;
 	RHyperlinkWnd_RegisterClass();
 	INT_PTR l_iRes = ::DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_OPTIONS), a_hWndParent, OptionsDlgProc, reinterpret_cast<LPARAM>(&l_optData));
 	return static_cast<UINT>(l_iRes);
@@ -147,7 +151,7 @@ bool GetCtrlValues(HWND a_hDlg)
 
 static void OnInitDialog(HWND a_hDlg, LPOptData a_pData)
 {
-	ROptionsData* l_pOptData = new ROptionsData(a_pData->m_pData);	// delete in OnDestroy()
+	ROptionsData* l_pOptData = new ROptionsData(a_pData->m_pData, a_pData->m_pHeartsData);	// delete in OnDestroy()
 
 	::SetWindowLongPtr(a_hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(l_pOptData));	
 

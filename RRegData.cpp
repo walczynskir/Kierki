@@ -20,6 +20,8 @@ typedef registry_int<bool> RRegBool;
 typedef registry_int_def<bool> RRegBoolDef;
 typedef registry_int<UINT> RRegUInt;
 typedef registry_int_def<UINT> RRegUIntDef;
+typedef registry_int<LANGID> RRegLangid;
+typedef registry_int_def<LANGID> RRegLangidDef;
 
 static const TCHAR c_sDealerReg[] = _T("Software\\Medea\\Kierki\\DEALER");
 static const TCHAR c_sWaitTimeReg[] = _T("Software\\Medea\\Kierki\\WAITTIME");
@@ -39,6 +41,8 @@ static const TCHAR c_sSaveScoresReg[] = _T("Software\\Medea\\Kierki\\SAVESCORES"
 static const TCHAR c_sCoverID[] = _T("Software\\Medea\\Kierki\\COVERID");
 
 static const TCHAR c_sConfirmTrickReg[] = _T("Software\\Medea\\Kierki\\CONFIRMTRICK");
+static const TCHAR c_sLanguageReg[] = _T("Software\\Medea\\Kierki\\LANGUAGE");
+static const TCHAR c_sLogonDlgReg[] = _T("Software\\Medea\\Kierki\\LOGONDLG");
 
 #define DARK_GREEN_COLOR RGB(0, 128, 0)
 #define LIME_GREEN_COLOR RGB(50, 205, 50)
@@ -172,6 +176,8 @@ void RRegData::SetPlayerName(T_PLAYER a_enPlayer, const tstring& a_sName)
 RRegData::RRulesRegData::RRulesRegData(void)
 {
 	m_bConfirmTrick = (bool)RRegBoolDef(c_sConfirmTrickReg, HKEY_CURRENT_USER, true);
+	m_idLanguage = (LANGID)RRegLangidDef(c_sLanguageReg, HKEY_CURRENT_USER, ::GetThreadUILanguage());
+	m_bLogonDlg = (bool)RRegBoolDef(c_sLogonDlgReg, HKEY_CURRENT_USER, true);
 }
 
 
@@ -179,4 +185,9 @@ void RRegData::RRulesRegData::Serialize(void)
 {
 	RRegBool l_regConfirmTrick(c_sConfirmTrickReg, HKEY_CURRENT_USER); 
 	l_regConfirmTrick = m_bConfirmTrick;
+	RRegLangid l_regLanguage(c_sLanguageReg, HKEY_CURRENT_USER);
+	l_regLanguage = m_idLanguage;
+	RRegBool l_regLogonDlg(c_sLogonDlgReg, HKEY_CURRENT_USER);
+	l_regLogonDlg = m_bLogonDlg;
 }
+

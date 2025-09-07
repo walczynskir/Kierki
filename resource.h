@@ -95,6 +95,7 @@
 #define IDS_OPTIONS                     175
 #define IDS_SAVEGAMEAS                  176
 #define IDR_PNG_SAVEGAMEAS              177
+#define IDS_LANG_NAME                   178
 #define IDC_VIEW_TABLECOLOR             1000
 #define IDC_VIEW_RESULTCOLOR            1001
 #define IDC_PLAYER1                     1001
@@ -108,9 +109,13 @@
 #define IDC_VIEW_DEFUALTRESULT          1005
 #define IDC_IMAGE                       1006
 #define IDC_VIEW_COVER                  1008
-#define IDC_VIEW_LEFT	                1009
+#define IDC_VIEW_LEFT                   1009
 #define IDC_VIEW_RIGHT                  1010
 #define IDC_RULES_CONFIRMTRICK          1011
+#define IDC_RULES_LANGUAGE              1012
+#define IDC_LOGON_LANGUAGE              1013
+#define IDC_LOGON_NOTSHOW				1014
+#define	IDC_RULES_SHOWDLG				1015
 #define IDM_GAME_NEW                    32780
 #define IDM_GAME_OPEN                   32781
 #define IDM_GAME_SAVE                   32782
@@ -120,9 +125,6 @@
 #define IDM_HELP_ABOUT                  32786
 #define IDC_STATIC                      -1
 
-
-
-
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
@@ -130,7 +132,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        155
 #define _APS_NEXT_COMMAND_VALUE         32781
-#define _APS_NEXT_CONTROL_VALUE         1012
+#define _APS_NEXT_CONTROL_VALUE         1015
 #define _APS_NEXT_SYMED_VALUE           111
 #endif
 #endif

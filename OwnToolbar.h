@@ -41,7 +41,7 @@ public:
 	void DeleteBitmaps(); // deletes all bitmaps in items vector
 
 
-	UINT GetExtent() const { return m_iToolbarExtent; };
+	LONG GetExtent() const { return m_iToolbarExtent; };
 	void SetExtent(UINT a_iToolbarExtent) { m_iToolbarExtent = a_iToolbarExtent; };
 
 	UINT GetSpacing() const { return m_iSpacing; };
@@ -72,7 +72,7 @@ private:
 	COLORREF m_colorSelected; // color of selected item 
 	COLORREF m_colorFrame; // color of frame of border
 
-	UINT m_iToolbarExtent;	// height (horizontal) or width (vertical) of toolbar
+	LONG m_iToolbarExtent;	// height (horizontal) or width (vertical) of toolbar
 	UINT m_iSpacing; // spacing between items and border
 	UINT m_iRounding; // rounding of corners
 	

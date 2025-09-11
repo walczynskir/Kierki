@@ -2,7 +2,7 @@
 
 typedef enum {
 	E_DL_NULL = -1,
-	E_DL_1 = 0,
+	E_DL_1 = 0,		// has to start with zero, as used as array index
 	E_DL_2,
 	E_DL_3,
 	E_DL_4

@@ -101,7 +101,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>$(CPP_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>psapi.lib;rcommond.lib;rcardsd.lib;comctl32.lib;msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -148,7 +148,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>$(CPP_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>psapi.lib;rcommonsd.lib;rcardssd.lib;comctl32.lib;msimg32.lib;rcommonsd.res;rcardssd.res;%(AdditionalDependencies)</AdditionalDependencies>
@@ -194,7 +194,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>$(CPP_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>psapi.lib;rcommons.lib;rcardss.lib;comctl32.lib;msimg32.lib;rcommons.res;rcardss.res;%(AdditionalDependencies)</AdditionalDependencies>
@@ -241,7 +241,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>$(CPP_INCLUDE_PATH);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ProgramDataBaseFileName>$(IntDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>psapi.lib;rcommon.lib;rcards.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -372,10 +372,8 @@
     <Image Include="res\notrumps.bmp" />
     <Image Include="res\open_game_48x48.png" />
     <Image Include="res\options_48x48.png" />
-    <Image Include="res\pass.bmp" />
-    <Image Include="res\pass.org.bmp" />
-    <Image Include="res\pass_old.bmp" />
-    <Image Include="res\Paste.bmp" />
+    <Image Include="res\pass_icon_80x80.png" />
+    <Image Include="res\pass_icon_80x80_new.png" />
     <Image Include="res\PrintRelationshipsL.bmp" />
     <Image Include="res\PrintRelationshipsS.bmp" />
     <Image Include="res\save_game_48x48.png" />

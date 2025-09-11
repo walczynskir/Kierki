@@ -25,15 +25,13 @@ public:
 	{
 		m_hWndNoTrump = NULL;
 		m_hBmpPass = NULL;
-		m_hRgnTableCards = NULL;
 		m_hBmpCover = NULL;
 		m_hBrush = NULL;
 		m_nLastHighlighted = -1;
-		m_bPassTime = false;
+		m_enPassPlayer = E_DL_NULL;
 		m_bConfirmTrick = false;
 		m_iTileHorz = 0;
 		m_iTileVert = 0;
-		m_ptPassPos = { 0,0 };
 	}
 
 	~GameWndData(void)
@@ -83,15 +81,17 @@ public:
 	HWND	  m_hWndApp;
 
 	HWND      m_hWndNoTrump;
-	RECT	  m_rectRes[4];
-	HRGN	  m_hRgnTableCards;
+
+	POINT	  m_ptsLaidCards[4] = {};	// left corners points of laid cards
+	RECT	  m_rectLaidCards = {};		// rect of laid cards (for invalidation)
+	RECT	  m_rectsNames[4] = {};		// rect of names
+	POINT	  m_ptsPass[4] = {};		   // points (left top) of passes
 
 	CHorzPos m_arrHorzPos[13] {};
 	CVertPos m_arrVertPos[13] {};
 
-	SIZE     m_sizeBmpPass;
-	bool     m_bPassTime;
-	POINT    m_ptPassPos;
+	SIZE		m_sizeBmpPass;
+	T_PLAYER    m_enPassPlayer;
 
 	bool     m_bConfirmTrick;
 

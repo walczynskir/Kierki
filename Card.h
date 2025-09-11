@@ -33,7 +33,7 @@ public:
 	BOOL operator>(const CCard &a_Card)	const;
 	BOOL operator<(const CCard& a_Card)	const;
 	BOOL operator==(const CCard& a_Card) const;
-	const CCard& operator=(CCard &a_Card) ;
+	CCard& operator=(const CCard& a_Card);
 
 	void SetCardNr(short a_nCardNr) ;
 	void SetCard(short a_nCardNr, T_PLAYER a_enOwner, BOOL a_bUsed = FALSE) ;

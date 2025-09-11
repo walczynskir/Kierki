@@ -154,10 +154,13 @@ CCard::operator==(
 	return EqualColor(a_Card.m_nCardNr) ;
 }
 
-const CCard& CCard::operator=(CCard &a_Card) 
+CCard& CCard::operator=(const CCard &a_Card) 
 {
-	this->m_enOwner = a_Card.m_enOwner ;
-	this->m_nCardNr = a_Card.m_nCardNr ;
+	if (this != &a_Card)
+	{
+		this->m_enOwner = a_Card.m_enOwner;
+		this->m_nCardNr = a_Card.m_nCardNr;
+	}
 	return *this ;
 }
 

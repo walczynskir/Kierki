@@ -21,4 +21,11 @@
             />
 		</dependentAssembly>
 	</dependency>
+	
+	<!-- DPI Awareness Declaration 
+	<asmv3:application xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">
+		<asmv3:windowsSettings>
+			<dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">PerMonitorV2</dpiAwareness>
+		</asmv3:windowsSettings>
+	</asmv3:application> -->
 </assembly>

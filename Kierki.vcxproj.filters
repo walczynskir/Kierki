@@ -253,9 +253,6 @@
     <Image Include="res\notrumps.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\pass.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="small.ico">
       <Filter>Resource Files</Filter>
     </Image>
@@ -275,15 +272,6 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\Kopia notrumps.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\pass.org.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\pass_old.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Paste.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\PrintRelationshipsL.bmp">
@@ -308,6 +296,12 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\new_game_48x48.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\pass_icon_80x80.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\pass_icon_80x80_new.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

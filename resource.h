@@ -96,6 +96,7 @@
 #define IDS_SAVEGAMEAS                  176
 #define IDR_PNG_SAVEGAMEAS              177
 #define IDS_LANG_NAME                   178
+#define IDR_PNG_PASS                    179
 #define IDC_VIEW_TABLECOLOR             1000
 #define IDC_VIEW_RESULTCOLOR            1001
 #define IDC_PLAYER1                     1001

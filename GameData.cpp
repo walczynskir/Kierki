@@ -63,6 +63,7 @@ GameData::NextGame(
 {
 	m_tricks.Clear();
 	m_pPlayers->RemoveDeciders();
+	m_PuzzleRows.Clear();
 
 	if (a_bNext)
 	{
@@ -70,7 +71,6 @@ GameData::NextGame(
 		{
 			ASSERT(m_enSerie != E_SR_4);
 			m_enGame = E_GM_NOTRICKS;
-			m_PuzzleRows.Clear();
 			m_enSerie = T_SERIE(m_enSerie + 1);
 		}
 		else
@@ -194,7 +194,7 @@ GameData::CreateTitle() const
 		l_idStr = IDS_TITLE_RECOVER;
 		if (!IsTrumpsChoice())
 		{
-			l_sAdd = L" " + DecodeTrumps();
+			l_sAdd = _T(" ") + DecodeTrumps();
 		}
 		break ;
 	case E_GM_PUZZLE:

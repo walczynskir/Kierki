@@ -445,9 +445,10 @@ CRecoverDecider::NextCardInColor2(
 	// nasza druga karta jest wy¿sza od najwy¿szej
 	// i w poprzedniej lewie nie sz³o atu
 	// drug¹ najwiêksz¹ w tym kolorze
+	CCard l_cardKing(l_enColor, E_CV_K);
 	if  (
 		(m_pCards->HasCards(l_enColor, TRUE, 1, E_CV_K)) &&
-		(m_pTricks->AreBiggerInColor(&CCard(l_enColor, E_CV_K), m_pCards)) &&
+		(m_pTricks->AreBiggerInColor(&l_cardKing, m_pCards)) &&
 		(m_pTricks->FullTricksInColor(l_enColor)) &&
 		(m_pCards->ColorCnt(l_enColor) >= 2) &&
 		((*(m_pCards->BiggestInColorCardRank(l_enColor, 2))) > *l_pBiggest)
@@ -461,9 +462,10 @@ CRecoverDecider::NextCardInColor2(
 	// a A lub/i K jeszcze nie poszed³ to gramy 
 	// drug¹ najwiêksz¹ w tym kolorze
 	// i w poprzedniej lewie nie sz³o atu
+	CCard l_cardQueen(l_enColor, E_CV_D);
 	if  (
 		(m_pCards->HasCards(l_enColor, TRUE, 1, E_CV_D)) &&
-		(m_pTricks->AreBiggerInColor(&CCard(l_enColor, E_CV_D), m_pCards)) &&
+		(m_pTricks->AreBiggerInColor(&l_cardQueen, m_pCards)) &&
 		(m_pTricks->FullTricksInColor(l_enColor)) &&
 		(m_pCards->ColorCnt(l_enColor) >= 2)
 		)

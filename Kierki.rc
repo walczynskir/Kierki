@@ -301,6 +301,7 @@ IDR_PNG_SAVEGAMEAS      PNG                     "res\\save_game_as_48x48.png"
 
 IDR_PNG_OPTIONS         PNG                     "res\\options_48x48.png"
 
+IDR_PNG_PASS            PNG                     "res\\pass_icon_80x80.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //

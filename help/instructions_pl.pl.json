@@ -1,0 +1,10 @@
+﻿{
+	"Blackjack": {
+		"title": "♠ Blackjack Instructions ♠",
+		"text": "Try to reach 21 without going over.\nFace cards are worth 10, Aces are 1 or 11.\nClick 'Hit' to draw, 'Stand' to hold."
+	},
+	"Solitaire": {
+		"title": "♦ Solitaire Instructions ♦",
+		"text": "Build sequences in descending order.\nAlternate colors.\nUse empty slots wisely."
+	}
+}

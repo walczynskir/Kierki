@@ -1,26 +1,32 @@
 {
-  "how_to_play": {
-    "title": "How to Play",
-    "description": "Learn the basic rules and flow of the game.",
-    "instructions": [
-      "Shuffle the deck thoroughly.",
-      "Each player draws five cards.",
-      "Players take turns playing one card per round.",
-      "Special cards trigger unique effects—refer to the card guide.",
-      "The game ends when one player runs out of cards.",
-      "The player with the highest score wins."
-    ]
-  },
-  "how_to_use_app": {
-    "title": "How to Use the App",
-    "description": "Learn how to navigate and use the application interface.",
-    "instructions": [
-      "Launch the app from the Start menu or desktop shortcut.",
-      "Select your preferred instruction language from the settings menu.",
-      "Click 'New Game' to begin playing.",
-      "Use the buttons at the bottom of the screen to play cards.",
-      "Click the help icon to view instructions at any time.",
-      "Exit the game by clicking 'Quit' or closing the window."
-    ]
-  }
+    "how_to_play": {
+        "title": "How to Play",
+        "description": "Learn the basic rules and flow of the game.",
+        "instructions": [
+            "Kierki is a card game played with a full deck of 52 cards. Card ranking goes from Ace to Two. Point values vary across rounds. The game consists of 4 series, each containing 12 games. Each series has three phases:\n- collecting negative points (7 games),\n- collecting positive points — the active phase (4 games),\n- lottery round (1 game).",
+            "",
+            "Players deal cards in turn. Each receives 13 cards. The player to the left of the dealer starts. Players must follow suit but are not required to play higher cards. The player who wins a trick leads the next one.",
+            "Negative point games include:\n- avoid taking tricks (2 negative points per trick),\n- avoid hearts (2 negative points per heart card; cannot lead with hearts if holding other suits),\n- avoid kings and jacks (3 negative points per king or jack),\n- avoid queens (5 negative points per queen),\n- avoid the king of hearts (16 negative points; must discard it at first opportunity and cannot lead with hearts if holding other suits),\n- avoid the 6th and last trick (9 negative points each; 18 if both are taken by the same player),\n- \"robber\" round: all negative cards from previous games count again; hearts cannot be led if other suits are held.",
+            "",
+            "After the robber round, total points are calculated and the active phase begins — collecting positive points.",
+            "The active phase consists of 4 identical games where each player chooses a trump suit (or \"no trump\"). After cards are dealt, the lead player declares a trump based on 7 drawn cards. Players must follow suit and use trumps if unable to follow. When playing a trump, they must play a higher card if possible. In \"no trump\" games, this rule applies to every trick unless the player lacks the lead suit. Each trick earns 5 positive points. The phase ends after all players have led once.",
+            "",
+            "The final game is the lottery. The lead player must play an eight. If they don’t have one, they skip their turn. Once an eight is played, players add cards in sequence (7 or 9 of same suit, then 6 or 10, etc.). A player with another eight may start a new sequence. If a player cannot play, they skip. The winner is the first to play all cards. Points:\n- 1st place: +10\n- 2nd place: +5\n- 3rd place: –5\n- 4th place: –10",
+            "After the lottery, points are summed and the next series begins. The dealer rotates clockwise. The game ends after 4 full series.",
+            "",
+            "The player with the highest score wins."
+        ]
+    },
+    "how_to_use_app": {
+        "title": "How to Use the App",
+        "description": "Learn how to navigate the app interface.",
+        "instructions": [
+            "Launch the app from the Start menu or desktop shortcut.",
+            "Choose your instruction language from the settings menu.",
+            "Click “New Game” to begin.",
+            "Use the buttons at the bottom of the screen to play cards.",
+            "Click the help icon to view instructions anytime.",
+            "End the game by clicking “Exit” or closing the window."
+        ]
+    }
 }

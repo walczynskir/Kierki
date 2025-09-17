@@ -3,14 +3,17 @@
     "title": "Jak grać",
     "description": "Poznaj podstawowe zasady i przebieg gry.",
     "instructions": [
-      "Dokładnie potasuj talię.",
-      "Każdy gracz dobiera pięć kart.",
-      "Gracze na zmianę zagrywają po jednej karcie w rundzie.",
-      "Karty specjalne wywołują unikalne efekty – sprawdź przewodnik po kartach.",
-      "Gra kończy się, gdy jeden z graczy nie ma już kart.",
-      "Gracz z najwyższym wynikiem wygrywa."
+        "Gra Kierki jest grą karcianą toczoną przy użyciu pełnej talii, tj. 52 kart. Starszeństwo kart od asa do dwójki. Wartość punktowa kart różna w różnych rozgrywkach. Cała gra składa się z 4 serii, a w każdej serii jest 12 gier. Każda seria składa się z trzech faz:",
+        "- zbieranie punktów ujemnych (7 gier),",
+        "- zbieranie punktów dodatnich - odgrywka (4 gry),",
+        "- loteryjka (1 gra).",
+        "Gracze rozdają karty kolejno. Każdy z nich otrzymuje po 13 kart. Pierwszy rozpoczyna grę gracz po lewej stronie od rozdającego. Istnieje obowiązek dorzucania kart do wyłożonego koloru. Nie ma obowiązku przebijania starszą kartą w kolorze wyjścia. Gracz który zabrał pierwszą lewę, wychodzi od następnej lewy i tak dalej.",
+        "Zbieranie punktów ujemnych składa się z następujących gier:",
+        "- nie brać lew. Za każdą zabraną lewę przysługują 2 punkty ujemne,",
+        "- nie brać kier. Za każdą kartę kier: 2 punkty ujemne (w tym rozdaniu nie wolno, gdy ma się inne karty na ręku, wychodzić w kiery),",
+        "Gracz z najwyższym wynikiem wygrywa."
     ]
-  },
+  }, 
   "how_to_use_app": {
     "title": "Jak używać aplikacji",
     "description": "Dowiedz się, jak korzystać z interfejsu aplikacji.",

@@ -1,7 +1,7 @@
 {
     "how_to_play": {
         "title": "How to Play",
-        "description": "Learn the basic rules and flow of the game.",
+        "description": "Learn the basic rules and flow of the game",
         "instructions": [
             "Kierki is a card game played with a full deck of 52 cards. Card ranking goes from Ace to Two. Point values vary across rounds. The game consists of 4 series, each containing 12 games. Each series has three phases:\n- collecting negative points (7 games),\n- collecting positive points — the active phase (4 games),\n- lottery round (1 game).",
             "",
@@ -19,7 +19,7 @@
     },
     "how_to_use_app": {
         "title": "How to Use the App",
-        "description": "Learn how to navigate the app interface.",
+        "description": "Learn how to navigate the app interface",
         "instructions": [
             "Launch the app from the Start menu or desktop shortcut.",
             "Choose your instruction language from the settings menu.",

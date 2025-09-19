@@ -1,43 +1,46 @@
 {
-  "how_to_play": {
-    "title": "Jak grać",
-    "description": "Poznaj podstawowe zasady i przebieg gry.",
-    "instructions": [
-        "Gra Kierki jest grą karcianą toczoną przy użyciu pełnej talii, tj. 52 kart. Starszeństwo kart od asa do dwójki. Wartość punktowa kart różna w różnych rozgrywkach. Cała gra składa się z 4 serii, a w każdej serii jest 12 gier. Każda seria składa się z trzech faz:",
-        "- zbieranie punktów ujemnych (7 gier),",
-        "- zbieranie punktów dodatnich - odgrywka (4 gry),",
-        "- loteryjka (1 gra).",
-        "", 
-        "Gracze rozdają karty kolejno. Każdy z nich otrzymuje po 13 kart. Pierwszy rozpoczyna grę gracz po lewej stronie od rozdającego. Istnieje obowiązek dorzucania kart do wyłożonego koloru. Nie ma obowiązku przebijania starszą kartą w kolorze wyjścia. Gracz który zabrał pierwszą lewę, wychodzi od następnej lewy i tak dalej.",
-        "Zbieranie punktów ujemnych składa się z następujących gier:",
-        "- nie brać lew. Za każdą zabraną lewę przysługują 2 punkty ujemne,",
-        "- nie brać kier. Za każdą kartę kier: 2 punkty ujemne (w tym rozdaniu nie wolno, gdy ma się inne karty na ręku, wychodzić w kiery),",
-        "- nie brać króli ani waletów. Za każdego zebranego chłopca (król lub walet): 3 punkty ujemne,",
-        "- nie brać dam. Za każdą zabraną damę: 5 punktów ujemnych,",
-        "- nie brać króla kier, za jego zbiórkę gracz otrzymuje 16 punktów ujemnych. W tym rozdaniu nie wolno, w przypadku posiadania innych kart, wychodzić w kiery. Posiadacz króla kierowego ma obowiązek zrzucić go przy pierwszej okazji,",
-        "- nie brać szóstej i ostaniej lewy, za zebranie każdej z tych lew gracz otrzymuje 9 punktów ujemnych. W przypadku zebrania dwóch ostatnich lew przez tego samego gracza, otrzymuje 18 punktów ukemnych",
-        "- rozbójnik: wszystkie karty minusowe z poprzednich rozgrywek są punktowane w tym rozdaniu. Nie wolno także wychodzić w kiery (w przypadku posiadania innych kart).",
-        "Po rozbójniku sumowane są wszystkie punkty zdobyte przez graczy i przystępuję się do odgrywki - zbierania punktów dodatnich.",
-        "",
-        "Zbieranie punktów dodatnich składa się z 4 identycznych gier, w których kolejni gracze wybierają kolor atutowy (lub \"bez atu\")",
-        "Po rozdaniu kart gracz wychodzący, przed pierwszym wyjściem na podstawie 7 wylosowanych kart deklaruje swój kolor atutowy (bądź \"bez atu\"), który będzie obowiązywał w danej rozgrywce. Istnieje obowiązek dorzucania do koloru, oraz przebijania atutem w przypadku nie posiadania wyłożonego jako pierwszego koloru. W przypadku przebijania atutem gracz ma obowiązek, o ile posiada, położyć kartę wyżsżą od najwyższej w lewie. W przypadku wybrania grania \"bez atu\" taki obowiązek występuje przy każdej lewie (chyba, że gracz nie ma karty w kolorze wyłożonego jako pierwszy koloru). Za każda zebraną lewę gracz otrzymuje 5 punktów dodatnich. Po zakończeniu tej rozgrywki identyczna jest rozpoczynana przez kolejnego gracza. Odgrywka kończy się, gdy każdy z grających przeprowadził jedną rozgrywkę atutową (czyli po 4 grach).",
-        "",
-        "Ostatnią grą jest tak zwana loteryjka. Rozpoczynający grę ma obowiązek wyłożyć na stół jakąś ósemkę. Jeśli takiej nie posiada obowiązek rozpoczęcia gry, traci swój ruch, a obowiązek przechodzi na następnego gracza, itd. Po wyłożeniu ósemki gracze wykładają kolejno, zgodnie z ruchem zegara, każdy po jednej karcie, w taki sposób aby na ósemkę gracze dokładali kolejne karty do koloru - to jest 7 lub 9 tego samego koloru, a do nich następnie 6 lub 10 tego samego koloru co ósemka. W każdej chwili po rozpoczęciu gry - w trakcie swojej kolejki gracz posiadający inną ósemkę może ją wyłożyć na stół - by potem wykładać do niej kolejne karty. Gracz nie mogący położyć żadnej karty - traci kolejkę. Wygrywa ten kto wyzbędzie się wszystkich kart. Wygrywający loteryjkę otrzymuje 10 punktów dodatnich, drugi 5 punktów dodatnich, trzeci 5 punktów ujemnych, czwarty - 10 punktów ujemnych.",
-        "Po loteryjce sumowane są punkty dodatnie i ujemne i zaczyna się następną serię, przy czym rozdającym karty jest następny gracz, zgodnie ze wskazówkami zegara, do tego, któy rozpoczynał poprzednią serię. Całą gra kończy się po rozegraniu 4 serii.",
-        "",
-        "Wygrywa gracz z najwyższym wynikiem."
-    ]
-  }, 
-  "how_to_use_app": {
-    "title": "Jak używać aplikacji",
-    "description": "Dowiedz się, jak korzystać z interfejsu aplikacji.",
-    "instructions": [
-      "Uruchom aplikację z menu Start lub skrótu na pulpicie.",
-      "Wybierz język instrukcji z menu ustawień.",
-      "Kliknij przycisk 'Nowa gra', aby rozpocząć rozgrywkę.",
-      "Użyj przycisków na dole ekranu, aby zagrywać karty.",
-      "Kliknij ikonę pomocy, aby wyświetlić instrukcje w dowolnym momencie.",
-      "Zakończ grę klikając 'Wyjdź' lub zamykając okno."
-    ]
-  }
+    "how_to_use_app": {
+        "title": "Jak używać aplikacji",
+        "description": "Dowiedz się, jak korzystać z interfejsu aplikacji.",
+        "instructions": [
+            "Aplikacja służy do grania w polskie kierki (inaczej chapankę) dla jednej osoby (aplikacja gra w imieniu 3 pozstałych osób).",
+            "Przy pierwszym uruchomieniu aplikacja wyświetla okno, pozwalające na wybór języka i imienia gracza. Po kliknięciu na odpowiednią opcję w wyświetlonym oknie dialogowym podczs następnych uruchomień okno się nie wyświetla, ale jest możliwość przywrócenia tego w ustawieniach aplikacji. ",
+            "Aplikacja oferuje w pasku głównym po lewej stronie 4 opcje:",
+            "- Nowa gra - uruchomienie zupełnie nowej gry;",
+            "- Otwórz grę - uruchomienie wcześniej zapisanej gry;",
+            "- Zapisz grę - umożliwienie zapisu gry pod poprzednio nadaną nazwą;",
+            "- Zapisz grę jako - umożliwienie zapisu gry pod nową nazwą.",
+            "Aplikacja umożliwia także konfigurację wyglądu i ustawieńw w Opcji ustawień, po prawej stronie w pasku głównym.",
+            "Opis jak grać w grę jest dostępny w sekcji: Jak grać"
+        ]
+    },
+    "how_to_play": {
+        "title": "Jak grać",
+        "description": "Poznaj podstawowe zasady i przebieg gry.",
+        "instructions": [
+            "Gra Kierki jest grą karcianą toczoną przy użyciu pełnej talii, tj. 52 kart. Starszeństwo kart od asa do dwójki. Wartość punktowa kart różna w różnych rozgrywkach. Cała gra składa się z 4 serii, a w każdej serii jest 12 gier. Każda seria składa się z trzech faz:",
+            "- zbieranie punktów ujemnych (7 gier),",
+            "- zbieranie punktów dodatnich - odgrywka (4 gry),",
+            "- loteryjka (1 gra).",
+            "",
+            "Gracze rozdają karty kolejno. Każdy z nich otrzymuje po 13 kart. Pierwszy rozpoczyna grę gracz po lewej stronie od rozdającego. Istnieje obowiązek dorzucania kart do wyłożonego koloru. Nie ma obowiązku przebijania starszą kartą w kolorze wyjścia. Gracz który zabrał pierwszą lewę, wychodzi od następnej lewy i tak dalej.",
+            "Zbieranie punktów ujemnych składa się z następujących gier:",
+            "- nie brać lew. Za każdą zabraną lewę przysługują 2 punkty ujemne,",
+            "- nie brać kier. Za każdą kartę kier: 2 punkty ujemne (w tym rozdaniu nie wolno, gdy ma się inne karty na ręku, wychodzić w kiery),",
+            "- nie brać króli ani waletów. Za każdego zebranego chłopca (król lub walet): 3 punkty ujemne,",
+            "- nie brać dam. Za każdą zabraną damę: 5 punktów ujemnych,",
+            "- nie brać króla kier, za jego zbiórkę gracz otrzymuje 16 punktów ujemnych. W tym rozdaniu nie wolno, w przypadku posiadania innych kart, wychodzić w kiery. Posiadacz króla kierowego ma obowiązek zrzucić go przy pierwszej okazji,",
+            "- nie brać szóstej i ostaniej lewy, za zebranie każdej z tych lew gracz otrzymuje 9 punktów ujemnych. W przypadku zebrania dwóch ostatnich lew przez tego samego gracza, otrzymuje 18 punktów ukemnych",
+            "- rozbójnik: wszystkie karty minusowe z poprzednich rozgrywek są punktowane w tym rozdaniu. Nie wolno także wychodzić w kiery (w przypadku posiadania innych kart).",
+            "Po rozbójniku sumowane są wszystkie punkty zdobyte przez graczy i przystępuję się do odgrywki - zbierania punktów dodatnich.",
+            "",
+            "Zbieranie punktów dodatnich składa się z 4 identycznych gier, w których kolejni gracze wybierają kolor atutowy (lub \"bez atu\")",
+            "Po rozdaniu kart gracz wychodzący, przed pierwszym wyjściem na podstawie 7 wylosowanych kart deklaruje swój kolor atutowy (bądź \"bez atu\"), który będzie obowiązywał w danej rozgrywce. Istnieje obowiązek dorzucania do koloru, oraz przebijania atutem w przypadku nie posiadania wyłożonego jako pierwszego koloru. W przypadku przebijania atutem gracz ma obowiązek, o ile posiada, położyć kartę wyżsżą od najwyższej w lewie. W przypadku wybrania grania \"bez atu\" taki obowiązek występuje przy każdej lewie (chyba, że gracz nie ma karty w kolorze wyłożonego jako pierwszy koloru). Za każda zebraną lewę gracz otrzymuje 5 punktów dodatnich. Po zakończeniu tej rozgrywki identyczna jest rozpoczynana przez kolejnego gracza. Odgrywka kończy się, gdy każdy z grających przeprowadził jedną rozgrywkę atutową (czyli po 4 grach).",
+            "",
+            "Ostatnią grą jest tak zwana loteryjka. Rozpoczynający grę ma obowiązek wyłożyć na stół jakąś ósemkę. Jeśli takiej nie posiada obowiązek rozpoczęcia gry, traci swój ruch, a obowiązek przechodzi na następnego gracza, itd. Po wyłożeniu ósemki gracze wykładają kolejno, zgodnie z ruchem zegara, każdy po jednej karcie, w taki sposób aby na ósemkę gracze dokładali kolejne karty do koloru - to jest 7 lub 9 tego samego koloru, a do nich następnie 6 lub 10 tego samego koloru co ósemka. W każdej chwili po rozpoczęciu gry - w trakcie swojej kolejki gracz posiadający inną ósemkę może ją wyłożyć na stół - by potem wykładać do niej kolejne karty. Gracz nie mogący położyć żadnej karty - traci kolejkę. Wygrywa ten kto wyzbędzie się wszystkich kart. Wygrywający loteryjkę otrzymuje 10 punktów dodatnich, drugi 5 punktów dodatnich, trzeci 5 punktów ujemnych, czwarty - 10 punktów ujemnych.",
+            "Po loteryjce sumowane są punkty dodatnie i ujemne i zaczyna się następną serię, przy czym rozdającym karty jest następny gracz, zgodnie ze wskazówkami zegara, do tego, któy rozpoczynał poprzednią serię. Całą gra kończy się po rozegraniu 4 serii.",
+            "",
+            "Wygrywa gracz z najwyższym wynikiem."
+        ]
+    }
 }

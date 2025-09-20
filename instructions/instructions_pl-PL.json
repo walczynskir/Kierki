@@ -3,7 +3,7 @@
         "title": "Jak używać aplikacji",
         "description": "Dowiedz się, jak korzystać z interfejsu aplikacji.",
         "instructions": [
-            "Aplikacja służy do grania w polskie kierki (inaczej chapankę) dla jednej osoby (aplikacja gra w imieniu 3 pozstałych osób).",
+            "Aplikacja służy do grania w polskie kierki (inaczej chapankę) dla jednej osoby (aplikacja gra w imieniu 3 pozostałych osób).",
             "Przy pierwszym uruchomieniu aplikacja wyświetla okno, pozwalające na wybór języka i imienia gracza. Po kliknięciu na odpowiednią opcję w wyświetlonym oknie dialogowym podczs następnych uruchomień okno się nie wyświetla, ale jest możliwość przywrócenia tego w ustawieniach aplikacji. ",
             "Aplikacja oferuje w pasku głównym po lewej stronie 4 opcje:",
             "- Nowa gra - uruchomienie zupełnie nowej gry;",

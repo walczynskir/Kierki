@@ -18,15 +18,18 @@
         ]
     },
     "how_to_use_app": {
-        "title": "How to Use the App",
-        "description": "Learn how to navigate the app interface",
+        "title": "How to Use the Application",
+        "description": "Learn how to navigate the application's interface.",
         "instructions": [
-            "Launch the app from the Start menu or desktop shortcut.",
-            "Choose your instruction language from the settings menu.",
-            "Click “New Game” to begin.",
-            "Use the buttons at the bottom of the screen to play cards.",
-            "Click the help icon to view instructions anytime.",
-            "End the game by clicking “Exit” or closing the window."
+            "The application is designed for playing the Polish card game Kierki (also known as Chapanka) solo, with the app controlling the other three players.",
+            "On first launch, the application displays a window allowing you to choose your language and player name. After selecting an option in the dialogue box, this window won’t appear on subsequent launches, but you can restore it via the application settings.",
+            "The main toolbar on the left offers four options:",
+            "- New Game – starts a completely new game;",
+            "- Open Game – loads a previously saved game;",
+            "- Save Game – saves the current game under its existing name;",
+            "- Save Game As – saves the current game under a new name.",
+            "The application also allows you to customise appearance and settings via the Settings option on the right side of the main toolbar.",
+            "Instructions on how to play the game are available in the 'How to Play' section."
         ]
     }
 }

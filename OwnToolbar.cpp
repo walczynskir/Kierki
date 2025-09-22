@@ -1,80 +1,208 @@
 #include "stdafx.h"
 #include "OwnToolbar.h"
 #include <rcommon/drawutl.h>
-#include <rcommon/RTheme.h>
+#include <rcommon/RMemDC.h>
 
 
-// TODO - first version of toolbar, without the options setting size, position etc
-#define OWNTOOLBAR_DEFAULT_EXTENT 60
-#define OWNTOOLBAR_DEFAULT_COLOR RGB(0, 0, 0)
-#define OWNTOOLBAR_DEFAULT_SPACING 6
-#define OWNTOOLBAR_ROUNDING 12
-#define OWNTOOLBAR_ITEM_COLORPICKER_SIZE 80
 
 
 // ---------------------------------------------------------
 // constructor
-COwnToolbar::COwnToolbar() : m_iToolbarExtent(OWNTOOLBAR_DEFAULT_EXTENT), m_iHover(-1), m_iPressed(-1), m_iSpacing(OWNTOOLBAR_DEFAULT_SPACING), m_iRounding(OWNTOOLBAR_ROUNDING)
+COwnToolbar::COwnToolbar() 
 {
-	RTheme l_theme;
-	l_theme.OpenData(NULL, L"TOOLBAR");
+	m_theme.OpenData(NULL, L"TOOLBAR");
 
 	COLORREF l_color;
-	l_theme.GetThemeColor(TP_BUTTON, 0, TMT_FILLCOLOR, &l_color);
-	m_colorBackground = l_color;
+	if (m_theme.IsValid())
+	{
+		m_theme.GetThemeColor(TP_BUTTON, 0, TMT_FILLCOLOR, &l_color);
+		m_colorBackground = l_color;
 
-	l_theme.GetThemeColor(TP_BUTTON, TS_HOT, TMT_FILLCOLORHINT, &l_color);
-	m_colorSelected = l_color;
+		m_theme.GetThemeColor(TP_BUTTON, TS_HOT, TMT_FILLCOLORHINT, &l_color);
+		m_colorHot = l_color;
 
-	l_theme.GetThemeColor(TP_BUTTON, TS_HOT, TMT_BORDERCOLOR, &l_color);
-	m_colorFrame = l_color;
+		m_theme.GetThemeColor(TP_BUTTON, TS_PRESSED, TMT_FILLCOLORHINT, &l_color);
+		m_colorPressed = l_color;
+
+		m_colorFrame = ::GetSysColor(COLOR_3DSHADOW);
+	}
+	else
+	{
+		m_colorBackground = ::GetSysColor(COLOR_BTNFACE);
+		m_colorHot = ::GetSysColor(COLOR_BTNFACE);
+		m_colorPressed = ::GetSysColor(COLOR_BTNFACE);
+		m_colorFrame = ::GetSysColor(COLOR_3DSHADOW);
+	}
 
 }
 
-void COwnToolbar::Draw(HDC a_hDC, const RECT& a_rectWin)
+
+void COwnToolbar::OnMouseMove(HWND a_hWnd, int a_x, int a_y)
+{
+	if (!m_bTracking)
+	{
+		TRACKMOUSEEVENT l_tme = { sizeof(l_tme) };
+		l_tme.dwFlags = TME_LEAVE;
+		l_tme.hwndTrack = a_hWnd;
+		TrackMouseEvent(&l_tme);
+		m_bTracking = true;
+
+	}
+
+	POINT l_pt = { a_x, a_y };
+	UINT l_iPrevHover = m_iHotItem;
+	UINT l_iNewHover = HitTest(l_pt);
+
+	// hover on the same item as before?
+	if (l_iPrevHover == l_iNewHover)
+	{
+		return;
+	}
+
+	m_iHotItem = l_iNewHover;
+
+	// invalidate toolbar
+	InvalidateRect(a_hWnd, l_iPrevHover);
+	InvalidateRect(a_hWnd, l_iNewHover);
+	::SendMessage(a_hWnd, WM_TOOLBARHOVER, static_cast<WPARAM>(m_iHotItem), reinterpret_cast<LPARAM>(GetHoverName().c_str()));
+}
+
+
+void COwnToolbar::OnMouseLeave(HWND a_hWnd)
+{
+	m_bTracking = false;
+	if (m_iHotItem != -1)
+	{
+		InvalidateRect(a_hWnd, m_iHotItem);
+		m_iHotItem = -1;
+		::SendMessage(a_hWnd, WM_TOOLBARLEAVE, static_cast<WPARAM>(m_iHotItem), 0);
+	}
+}
+
+
+void COwnToolbar::OnLButtonDown(HWND a_hWnd, int a_x, int a_y)
+{
+	POINT l_pt = { a_x, a_y };
+	// check if mouse is over toolbar item
+	m_iHotItem = HitTest(l_pt);
+
+	// invalidate toolbar
+	if (IsHover())
+	{
+		m_iPressed = m_iHotItem;
+	}
+	InvalidateRect(a_hWnd, m_iHotItem);
+}
+
+
+void COwnToolbar::OnLButtonUp(HWND a_hWnd, int a_x, int a_y)
+{
+	POINT l_pt = { a_x, a_y };
+
+	// check if mouse is over toolbar
+
+	UINT l_iHover = HitTest(l_pt);
+
+	m_iPressed = -1;
+	InvalidateRect(a_hWnd, m_iHotItem);
+	if (l_iHover != -1)
+	{
+		::SendMessage(a_hWnd, WM_COMMAND, MAKEWPARAM(GetHoverIdCmd(), 0), 0);
+	}
+
+}
+
+void COwnToolbar::OnPaint(HWND a_hWnd)
+{
+
+	PAINTSTRUCT l_ps;
+	HDC l_hdc = ::BeginPaint(a_hWnd, &l_ps);
+
+	RECT l_rectWin;
+	::GetClientRect(a_hWnd, &l_rectWin);
+	{
+		// prepare correct DC
+#ifdef _DEBUG 
+		HDC l_hPaintDC = l_hdc;
+#else
+		RMemDC l_memDC(l_hdc, &l_rectWin);
+		HDC l_hPaintDC = l_memDC;
+#endif
+		RECT l_rectWin;
+		::GetClientRect(a_hWnd, &l_rectWin);
+
+		// TODO here to change if own toolbar can change position (horizontal / vertical)
+		l_rectWin.bottom = m_iToolbarExtent;
+		Draw(l_hPaintDC, l_rectWin);
+
+	}
+	::EndPaint(a_hWnd, &l_ps);
+
+
+}
+
+void COwnToolbar::Draw(HDC a_hDC, const RECT& a_rect)
 {
 	// background
-	RDraw::FillSolidRect(a_hDC, a_rectWin, m_colorBackground);
-	DrawItems(a_hDC, &m_itemsLR, m_iHover);
-	DrawItems(a_hDC, &m_itemsRL, m_iHover - m_itemsLR.size()) ;
-
+	RDraw::FillSolidRect(a_hDC, a_rect, m_colorBackground);
+	DrawItems(a_hDC, &m_itemsLR, m_iHotItem, m_iPressed);
+	DrawItems(a_hDC, &m_itemsRL, m_iHotItem - m_itemsLR.size(), m_iPressed - m_itemsLR.size());
 }
+
 
 // 
 // Draws both sides
 //
 // TODO vertical drawing
-void COwnToolbar::DrawItems(HDC a_hDC, T_TOOLBARITEMS* a_pItems, int a_iHover)
+void COwnToolbar::DrawItems(HDC a_hDC, T_TOOLBARITEMS* a_pItems, int a_iHover, int a_iPressed)
 {
-
-	// Ustaw kolor ramki
-	// TODO - take colors from theme or different place
-	HBRUSH hBrush = ::CreateSolidBrush(m_colorSelected); 
-	HPEN hPen = ::CreatePen(PS_SOLID, 1, (m_iPressed == -1) ? m_colorFrame : m_colorBackground); 
-
 	for (size_t l_iAt = 0; l_iAt < a_pItems->size(); l_iAt++)
 	{
 		if ((*a_pItems)[l_iAt].m_iType != OWNTOOLBAR_TYPE_BMP)
 			continue; // only bitmaps for now
 
-		if (l_iAt == a_iHover)
+		if (m_theme.IsValid())
 		{
-			HGDIOBJ hOldPen = SelectObject(a_hDC, hPen);
-			HGDIOBJ oldBrush = SelectObject(a_hDC, hBrush);
-			// Narysuj prostok¹t wokó³ obrazka
-			RoundRect(a_hDC, (*a_pItems)[l_iAt].m_rect.left - m_iSpacing, (*a_pItems)[l_iAt].m_rect.top - m_iSpacing,
-				(*a_pItems)[l_iAt].m_rect.right + m_iSpacing, (*a_pItems)[l_iAt].m_rect.bottom + m_iSpacing, m_iRounding, m_iRounding);
-			// restore objects
-			SelectObject(a_hDC, oldBrush);
-			SelectObject(a_hDC, hOldPen);
+			int l_iState = 0;
+
+			if (static_cast<int>(l_iAt) == a_iHover)
+				if (static_cast<int>(l_iAt) == a_iPressed)
+					l_iState = TS_PRESSED;
+				else 				
+					l_iState = TS_HOT;
+			m_theme.DrawBackground(a_hDC, TP_BUTTON, l_iState, &(*a_pItems)[l_iAt].m_rect, NULL);
+		}
+		else
+		{
+			if (l_iAt == a_iHover || l_iAt == a_iPressed)
+			{
+				HBRUSH l_hBrush = NULL;
+				if (a_iHover != -1)
+					if (m_iPressed != -1)
+						l_hBrush = ::CreateSolidBrush(m_colorPressed);
+					else
+						l_hBrush = ::CreateSolidBrush(m_colorHot);
+				else
+					l_hBrush = ::CreateSolidBrush(m_colorBackground);
+
+				HPEN l_hPen = ::CreatePen(PS_SOLID, 1, (m_iPressed == -1) ? m_colorFrame : m_colorBackground);
+				HGDIOBJ l_hOldPen = SelectObject(a_hDC, l_hPen);
+				HGDIOBJ l_hOldBrush = SelectObject(a_hDC, l_hBrush);
+				// Narysuj prostok¹t wokó³ obrazka
+				RoundRect(a_hDC, (*a_pItems)[l_iAt].m_rect.left - m_iSpacing, (*a_pItems)[l_iAt].m_rect.top - m_iSpacing,
+					(*a_pItems)[l_iAt].m_rect.right + m_iSpacing, (*a_pItems)[l_iAt].m_rect.bottom + m_iSpacing, m_iRounding, m_iRounding);
+				// restore objects
+				::SelectObject(a_hDC, l_hOldBrush);
+				::SelectObject(a_hDC, l_hOldPen);
+				::DeleteObject(l_hPen);
+				::DeleteObject(l_hBrush);
+			}
 		}
 		// Narysuj obrazek	
 		POINT l_pt = { (*a_pItems)[l_iAt].m_rect.left, (*a_pItems)[l_iAt].m_rect.top };
 		RDraw::DrawBitmapTransparent(a_hDC, l_pt, (*a_pItems)[l_iAt].m_hBmp, RGB(255, 255, 255));
 	}
 
-	DeleteObject(hPen);
-	DeleteObject(hBrush);
 }
 
 
@@ -109,22 +237,46 @@ void COwnToolbar::InvalidateRect(HWND a_hWnd, int a_iItem)
 
 
 
-void COwnToolbar::AddItem(const tstring& a_sName, UINT a_idCommand, HBITMAP a_hBmp, UINT a_iType, bool a_bLR)
+void COwnToolbar::AddItem(HWND a_hWnd, const tstring& a_sName, UINT a_idCommand, HBITMAP a_hBmp, UINT a_iType, bool a_bLR)
 {
 	CToolbarItem l_item;
 	l_item.m_iType = a_iType;
 	l_item.m_idCommand = a_idCommand; 
 	l_item.m_sName = a_sName;
 	l_item.m_hBmp = a_hBmp;
+
+	if (m_hTooltip == nullptr)
+	{
+		// create tooltip
+		m_hTooltip = CreateWindowEx(0, TOOLTIPS_CLASS, nullptr,
+			WS_POPUP | TTS_ALWAYSTIP,
+			CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+			a_hWnd, nullptr, ::GetModuleHandle(nullptr), nullptr);
+		if (m_hTooltip == nullptr)
+			return;
+	}
+
+	l_item.m_ti = { sizeof(TOOLINFO) };
+	l_item.m_ti.uFlags = TTF_SUBCLASS;
+	l_item.m_ti.hwnd = a_hWnd;
+	l_item.m_ti.hinst = ::GetModuleHandle(nullptr);
+	l_item.m_ti.uId = a_idCommand; // Unique ID per button
+	tstring l_sTooltip = a_sName; // Make a copy
+	l_item.m_ti.lpszText = l_sTooltip.data();
+	l_item.m_ti.rect = RECT(10, 10, 50, 50); // RECT in client coordinates (later updated)
 	a_bLR ? m_itemsLR.push_back(l_item) : m_itemsRL.push_back(l_item);
+
+	SendMessage(m_hTooltip, TTM_ADDTOOL, 0, reinterpret_cast<LPARAM>(&l_item.m_ti));
 }
 
 
 // 
 // has to be used after window size changed. Recalculates rects for items
 //
-void COwnToolbar::Resize(UINT a_iWinExtent)
+void COwnToolbar::Resize(int a_dxWidth, int a_dyHeight)
 {
+	m_size = { a_dxWidth, a_dyHeight };
+
 	// calculates rect for items positioned from left to right (or top to bottom)
 	// calculates rect for items positioned from right to left (or bottom to top)
 	for (size_t l_iAt = 0; l_iAt < m_itemsLR.size(); l_iAt++)
@@ -149,6 +301,8 @@ void COwnToolbar::Resize(UINT a_iWinExtent)
 		m_itemsLR[l_iAt].m_rect.top = m_iSpacing;
 		m_itemsLR[l_iAt].m_rect.right = m_itemsLR[l_iAt].m_rect.left + l_iItemExtent;
 		m_itemsLR[l_iAt].m_rect.bottom = m_itemsLR[l_iAt].m_rect.top + l_iItemExtent;
+		m_itemsLR[l_iAt].m_ti.rect = m_itemsLR[l_iAt].m_rect; // update tooltip rect
+		SendMessage(m_hTooltip, TTM_NEWTOOLRECT, 0, reinterpret_cast<LPARAM>(& m_itemsLR[l_iAt].m_ti));
 	}
 
 	// calculates rect for items positioned from right to left (or bottom to top)
@@ -169,13 +323,14 @@ void COwnToolbar::Resize(UINT a_iWinExtent)
 			ASSERT(FALSE); // unknown type
 		}
 	
-		UINT l_iStartExtent = (l_iAt == 0) ? a_iWinExtent : m_itemsRL[l_iAt - 1].m_rect.left - m_iSpacing;
+		UINT l_iStartExtent = (l_iAt == 0) ? m_size.cx : m_itemsRL[l_iAt - 1].m_rect.left - m_iSpacing;
 		m_itemsRL[l_iAt].m_rect.left = l_iStartExtent - l_iItemExtent - m_iSpacing;
 		m_itemsRL[l_iAt].m_rect.top = m_iSpacing;
 		m_itemsRL[l_iAt].m_rect.right = m_itemsRL[l_iAt].m_rect.left + l_iItemExtent;
 		m_itemsRL[l_iAt].m_rect.bottom = m_itemsRL[l_iAt].m_rect.top + l_iItemExtent;
+		m_itemsRL[l_iAt].m_ti.rect = m_itemsRL[l_iAt].m_rect; // update tooltip rect
+		::SendMessage(m_hTooltip, TTM_NEWTOOLRECT, 0, reinterpret_cast<LPARAM>(&m_itemsRL[l_iAt].m_ti));
 
-//		TRACE4("%d - %d - %d - %d\n", m_itemsRL[l_iAt].m_rect.left, m_itemsRL[l_iAt].m_rect.top, m_itemsRL[l_iAt].m_rect.right, m_itemsRL[l_iAt].m_rect.bottom);	
 	}
 
 
@@ -224,11 +379,31 @@ int COwnToolbar::HitTest(const POINT& a_pt)
 
 UINT COwnToolbar::GetHoverIdCmd() const
 {
-	if (m_iHover == -1)
+	if (m_iHotItem == -1)
 		return 0;
 
-	if (static_cast<UINT>(m_iHover) < m_itemsLR.size())
-		return m_itemsLR[m_iHover].m_idCommand;
+	if (static_cast<UINT>(m_iHotItem) < m_itemsLR.size())
+		return m_itemsLR[m_iHotItem].m_idCommand;
 	else
-		return m_itemsRL[m_iHover - m_itemsLR.size()].m_idCommand;
+		return m_itemsRL[m_iHotItem - m_itemsLR.size()].m_idCommand;
+}
+
+
+tstring COwnToolbar::GetHoverName() const
+{
+	if (m_iHotItem == -1)
+		return _T("");
+
+	if (static_cast<UINT>(m_iHotItem) < m_itemsLR.size())
+		return m_itemsLR[m_iHotItem].m_sName;
+	else
+		return m_itemsRL[m_iHotItem - m_itemsLR.size()].m_sName;
+}
+
+
+bool COwnToolbar::IsOverToolbar(int a_x, int a_y)
+{
+	if (a_x < 0 || a_y < 0 || a_x > m_size.cx || a_y > m_size.cy)
+		return false; // out of toolbar rect
+	return true;
 }

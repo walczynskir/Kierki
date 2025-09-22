@@ -1,4 +1,4 @@
-// Kierki.cpp : Defines the entry point for the application.
+Ôªø// Kierki.cpp : Defines the entry point for the application.
 //
 
 #include "stdafx.h"
@@ -13,6 +13,8 @@
 #include <rcommon/rstring.h>
 #include "GameWnd.h"
 #include "ResultWnd.h"
+#include "HelpWnd.h"
+#include "HelpJson.h"
 #include "LogonDlg.h"
 #include "OptionsDlg.h"
 #include "GameData.h"
@@ -21,35 +23,41 @@
 #include "HeartsData.h"
 #include <rcommon/DrawUtl.h>
 #include <rcommon/RMemDC.h>
+#include <rcommon/RMessageBox.h>
 
 
 
-#pragma todo("change pass indicator image, as it is ugly")
-#pragma todo("bug: can't start saved game while playing puzzle")
-#pragma todo("check, why close button at the top right corner doesn't get highlighted at the first time")
+#pragma todo("remove setting table color, add options to change a blanket")
+#pragma todo("implement different background for instructions/help")
+#pragma todo ("implement help for every game")
+#pragma todo("change background for results")
+#pragma todo("check saving and loading the game - it behaves strangely, starts from incorrect directory")
+#pragma todo("some card edges not painted correctly - it seems something wrong after drawing at least one card form player's cards")
+#pragma todo("sometimes trump color is not displayed in the window title")
+#pragma todo("replace SetCapture with TrackMouseEvent in GameWnd")
+#pragma todo("improve / refactor exception handling")
+#pragma todo("allow selecting different table blanket")
+#pragma todo("add more languages")
+#pragma todo("Move main window functionalities such as own toolbar and status bar to separate class")
+#pragma todo("OwnToolbar - add AdjustRect function")
+#pragma todo("Rethink OwnToolbar architecture, add to library of components")
 #pragma todo("check behaviour of cover, when app used for the first time")
 #pragma todo("implement DPI awareness, replace AdjustWindowRectEx with AdjustWindowRectExForDpi")
-#pragma todo("Add Own Toolbar behaviour on LButtonDown")
 #pragma todo("instead of a few structures in GameWndData regarding positions, prepare one structure for all positions regarding players")
-#pragma todo("Add instructions of use")
-#pragma todo("Add statusbar messages on Hover on OwnToolbar items")
-#pragma todo("some card edges not painted correctly - it seems something wrong after drawing at least one card form player's cards")	
 #pragma todo("ask about saving after pushing exit button")
-#pragma todo("Rethink OwnToolbar architecture, add to library of components")
-#pragma todo("MessageBox (DecisionBox) centered over main wnd")
 #pragma todo("disabling items in own toolbar, as previously with menu items: check and remove function OnEnterMenuLoop")
 #pragma todo("About system button doesn't work")
 #pragma todo("remove unused resources")
 #pragma todo("check all resources for unicode")
 #pragma todo("remove unused code")	
 #pragma todo("bad rendering of covers (background)")
+#pragma todo("during recover if I selected card very quickly it has a problem with inverting card - maybe replacing SetCapture is correct approach")
 #pragma todo("refactor of cover selecting")
-#pragma todo("possibility of changing pass button")
 #pragma todo("improve color picker / add to toolbar")
-#pragma todo("improve selecting covers, at least a few from own reources, not from exes or dlls")
-#pragma todo("improve loading cards - check how they bmps are loaded")
-#pragma todo("add option to load other cards decks")
-#pragma todo("do refactor of all graphics")
+#pragma todo("add option to load other cards decks and/or graphics")
+#pragma todo("refactor of all graphics")
+#pragma todo("TRACE family of macros doesn't work correctly with wstring")
+
 
 
 #define IDC_MAINTAB 1000
@@ -63,9 +71,9 @@ inline static int RunAppThrow(HINSTANCE a_hInst, HINSTANCE a_hPrevInstance, LPTS
 inline static HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow);
 static LRESULT CALLBACK	Kierki_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
 
-static inline void SetupOwnToolbar(HWND a_hWnd);
+static inline void ConfigureOwnToolbar(HWND a_hWnd);
 inline static void ConfigureStatusbar(HWND a_hWndStatusbar);
-static void AddTab(HWND a_hWnd, LPTSTR a_sTabName);
+static void AddTab(HWND a_hWnd, HWND a_hTabItemWnd, LPTSTR a_sTabName);
 
 inline static LRESULT OnCreate(HWND a_hWnd);
 inline static void OnPaint(HWND a_hWnd);
@@ -78,6 +86,7 @@ inline static void OnDpiChanged(HWND a_hWnd, LPRECT a_pNewRect);
 inline static void OnCommand(HWND a_hWnd, WPARAM a_wParam, LPARAM a_lParam);
 
 inline static void OnMouseMove(HWND a_hWnd, LONG a_x, LONG a_y);
+inline static void OnMouseLeave(HWND a_hWnd);
 inline static void OnLButtonDown(HWND a_hWnd, int a_x, int a_y);
 inline static void OnLButtonUp(HWND a_hWnd, int a_x, int a_y);
 
@@ -94,6 +103,10 @@ inline static void OnGameSaveAs(HWND a_hWnd);
 inline static void OnGameOpen(HWND a_hWnd);
 inline static void OnEnterMenuLoop(HWND a_hWnd);
 
+inline static void OnToolbarHover(HWND a_hWnd, int a_idItem, LPCTSTR a_sName);
+inline static void OnToolbarLeave(HWND a_hWnd);
+
+
 inline static void OnAppNextSerie(HWND a_hWnd);
 inline static void OnAppGameOver(HWND a_hWnd);
 inline static void OnAppTrumpsChosen(HWND a_hWnd);
@@ -103,18 +116,19 @@ inline static void OnAppReady(HWND a_hWnd);
 inline static void OnAppChooseTrumps(HWND a_hWnd);
 inline static void OnAppConfirmTrick(HWND a_hWnd);
 
-static void Draw(HWND a_hWnd, HDC a_hDC);
-
 inline static void SetTitle(HWND a_hWnd);
-inline static void GetTabRect(HWND a_hWnd, LPRECT a_pRectTab);
 inline static HWND GetCurTab(HWND a_hWnd);
-static void SetActiveTab(HWND a_hDlg, int a_iTab);
-static void ResizeTab(HWND a_hWnd, int a_dxWidth, int a_dyHeight);
+static void SetActiveTab(HWND a_hDlg, HWND a_hWndInnerTab, T_SERIE a_enSerie = E_SR_NULL);
+
+static void ResizeTab(HWND a_hWnd);
 
 inline static void AddResultTab(HWND a_hWnd, T_SERIE a_enSerie);
 
-inline static void SetResultsTab(HWND a_hWnd);
-inline static void SetPlayTab(HWND a_hWnd);
+inline static void SetInnerTab(HWND a_hWnd, HWND a_hWndInnerTab, T_SERIE a_enSerie = E_SR_NULL);
+inline static void SetResultsTab(HWND a_hWnd, T_SERIE a_enSerie);
+inline static void SetGameTab(HWND a_hWnd);
+inline static void SetHelpTab(HWND a_hWnd);
+
 static void SetStatusBarText(HWND a_hWnd, UINT a_idStr);
 
 inline static void CalculateWinSize(HWND a_hWnd, LPSIZE a_pSize);
@@ -173,7 +187,9 @@ int RunAppThrow(HINSTANCE a_hInst,
                      LPTSTR    a_lpCmdLine,
                      int       a_nCmdShow)
 {
+#pragma todo ("DPI awareness")
 
+	// SetProcessDPIAware(); // For classic DPI awareness
 	RegisterKierki(a_hInst);
 	INITCOMMONCONTROLSEX l_icc;
 
@@ -241,7 +257,7 @@ ATOM RegisterKierki(HINSTANCE a_hInst)
 	l_wcex.style			= CS_HREDRAW | CS_VREDRAW;
 	l_wcex.lpfnWndProc		= Kierki_WndProc;
 	l_wcex.cbClsExtra		= 0;
-	l_wcex.cbWndExtra		= sizeof(CHeartsData*);
+	l_wcex.cbWndExtra		= 0;
 	l_wcex.hInstance		= a_hInst;
 	l_wcex.hIcon			= ::LoadIcon(a_hInst, MAKEINTRESOURCE(IDI_KIERKI));
 	l_wcex.hCursor			= ::LoadCursor(NULL, IDC_ARROW);
@@ -261,12 +277,11 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 	HWND l_hWndKierki = ::CreateWindow(c_sWindowClass, l_sTitle, WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
 		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, NULL, NULL, a_hInst, NULL);
 	if (l_hWndKierki == NULL)
-	{
-		throw RSystemExc(::GetLastError(), _T("HWNDKIERKI"));
-	}
+		throw RSystemExc(_T("HWNDKIERKI"));
 
 	CHeartsData* l_pData = CHeartsData::GetData(l_hWndKierki);
-	ASSERT(l_pData != NULL);
+	if (!l_pData)
+		throw ROwnExc(_T("Window data not created"));
 
 	// automatic language detection (languages available for use)
 	l_pData->m_langManager.DetectLanguages(IDS_LANG_NAME);
@@ -291,59 +306,77 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 
 
 	// create own toolbar setup
-	SetupOwnToolbar(l_hWndKierki);
+	ConfigureOwnToolbar(l_hWndKierki);
 
-	l_pData->m_hWndTab = ::CreateWindow(WC_TABCONTROL, NULL, 
-	   WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 
+	l_pData->m_hWndTab = ::CreateWindow(WC_TABCONTROL, NULL,
+	   WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN,
 	   0, 0, CW_USEDEFAULT, 18, 
 	   l_hWndKierki, reinterpret_cast<HMENU>(IDC_MAINTAB), a_hInst, NULL);
 
 	if (l_pData->m_hWndTab == NULL)
+		throw RSystemExc(_T("HWNDTAB"));
+	TCHAR l_sTabTitle[128]{};
+
+	if (!HelpWnd_Register(a_hInst))
+		throw RSystemExc(_T("REGISTER_HWNDHELP"));
+
+	l_pData->SetHelpWnd(HelpWnd_Create(0, WS_CHILD, l_pData->m_hWndTab, l_pData->m_langManager, &(l_pData->m_gameData.m_regData)));
+
+	if (l_pData->GetHelpWnd() == NULL)
+		throw RSystemExc(_T("HWNDHELP"));
+
+	HelpWnd_SetFont(l_pData->GetHelpWnd(), l_reg.m_sHelpFont);
+	HelpWnd_LoadInstructions(l_pData->GetHelpWnd(), c_sJsonSect_HowToUseApp);
+
+	if (l_pData->m_gameData.m_regData.m_regRules.m_bHelpVisible)
 	{
-		throw RSystemExc(::GetLastError(), _T("HWNDTAB"));
+		::LoadString(::GetModuleHandle(NULL), IDS_HELPTITLE_GAME, l_sTabTitle, ArraySize(l_sTabTitle));
+		AddTab(l_hWndKierki, l_pData->GetHelpWnd(), l_sTabTitle);
 	}
 
 	HFONT l_hFont = GetStockFont(DEFAULT_GUI_FONT);
 	::SendMessage(l_pData->m_hWndTab, WM_SETFONT, reinterpret_cast<WPARAM>(l_hFont), 1);
 
-	VERIFY(GameWnd_Register(a_hInst) != NULL);
-	l_pData->SetGameWnd(GameWnd_Create(0, WS_CHILD | WS_VISIBLE, 
+	if (GameWnd_Register(a_hInst) == NULL)
+		throw RSystemExc(_T("REGISTER_HWNDGAME"));
+
+	l_pData->SetGameWnd(GameWnd_Create(0, WS_CHILD, 
 	   0, 0, CW_USEDEFAULT, CW_USEDEFAULT, 
-	   l_hWndKierki, a_hInst, l_hWndKierki, &(l_pData->m_gameData)));
+		l_pData->m_hWndTab, a_hInst, l_hWndKierki, &(l_pData->m_gameData)));
 
 	if (l_pData->GetGameWnd() == NULL)
-	{
-		throw RSystemExc(::GetLastError(), _T("HWNDGAME"));
-	}
+		throw RSystemExc(_T("CREATE_HWNDGAME"));
 
-	TCHAR l_sTabTitle[128];
 	::LoadString(::GetModuleHandle(NULL), IDS_TABTITLE_GAME, l_sTabTitle, ArraySize(l_sTabTitle));
-	AddTab(l_hWndKierki, l_sTabTitle);
+	AddTab(l_hWndKierki, l_pData->GetGameWnd(), l_sTabTitle);
 
-	VERIFY(ResultWnd_Register(a_hInst) != NULL);
-	l_pData->SetResultWnd(ResultWnd_Create(0, WS_CHILD, 
+	if (ResultWnd_Register(a_hInst) == NULL)
+		throw RSystemExc(_T("REGISTER_HWNDRESULTS"));
+
+	l_pData->SetResultsWnd(ResultWnd_Create(0, WS_CHILD, 
 	   0, 0, CW_USEDEFAULT, CW_USEDEFAULT, 
-	   l_hWndKierki, a_hInst, E_SR_1, &(l_pData->m_gameData)));
+		l_pData->m_hWndTab, a_hInst, E_SR_1, &(l_pData->m_gameData)));
 
-	if (l_pData->GetResultWnd() == NULL)
-	{
-		throw RSystemExc(::GetLastError(), _T("HWNDRESULTS"));
-	}
+	if (l_pData->GetResultsWnd() == NULL)
+		throw RSystemExc(_T("CREATE_HWNDRESULTS"));
 
 	l_pData->m_hWndStatusbar = ::CreateWindow(STATUSCLASSNAME, NULL,
 	   WS_CHILD | SBARS_SIZEGRIP | WS_VISIBLE, 
 	   0, 0, CW_USEDEFAULT, 18, 
 	   l_hWndKierki, NULL, a_hInst, NULL);
 	if (l_pData->m_hWndStatusbar == NULL)
-	{
-		throw RSystemExc(::GetLastError());
-	}
+		throw RSystemExc(_T("CREATE_STATUSBAR"));
+
+	if (l_pData->m_gameData.m_regData.m_regRules.m_bHelpVisible)
+		SetActiveTab(l_hWndKierki, l_pData->GetHelpWnd());
+	else
+		SetActiveTab(l_hWndKierki, l_pData->GetGameWnd());
+
 	ConfigureStatusbar(l_pData->m_hWndStatusbar);
 
-	::SetWindowPos(l_hWndKierki, NULL, 0, 0, 1, 1, SWP_NOZORDER | SWP_NOMOVE);
+	::SetWindowPos(l_hWndKierki, NULL, 0, 0, 0, 0, SWP_NOZORDER | SWP_NOMOVE);
 	::ShowWindow(l_hWndKierki, a_nCmdShow);
 	::UpdateWindow(l_hWndKierki);
-
 
 	l_pData->m_gameData.m_regData.SetPlayerName(E_DL_1, l_sName);
 	l_pData->m_gameData.m_regData.m_regPlayers.Serialize();
@@ -396,6 +429,10 @@ LRESULT CALLBACK Kierki_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARA
 		OnMouseMove(a_hWnd, LOWORD(a_lParam), HIWORD(a_lParam));
 		break;
 
+	case WM_MOUSELEAVE:
+		OnMouseLeave(a_hWnd);
+		break;
+
 	case WM_LBUTTONDOWN:
 		OnLButtonDown(a_hWnd, GET_X_LPARAM(a_lParam), GET_Y_LPARAM(a_lParam));
 		break;
@@ -412,6 +449,16 @@ LRESULT CALLBACK Kierki_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARA
 		OnDpiChanged(a_hWnd, reinterpret_cast<LPRECT>(a_lParam));
 		break;
 
+	case WM_TOOLBARHOVER:
+		OnToolbarHover(a_hWnd, static_cast<int>(a_wParam), reinterpret_cast<LPCTSTR>(a_lParam));
+		break;
+
+
+	case WM_TOOLBARLEAVE:
+		OnToolbarLeave(a_hWnd);
+		break;
+
+	
 	case WM_APP_NEXTSERIE:
 		OnAppNextSerie(a_hWnd);
 		break;
@@ -469,7 +516,6 @@ LRESULT OnCreate(HWND a_hWnd)
 void OnClose(HWND a_hWnd)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-#ifdef LOGIN_DIALOG
 	if (l_pData->m_gameData.GetGame() != E_GM_NOTHING)
 	{
 		if (DecisionBox(a_hWnd, IDS_SAVEGAMEQUESTION))
@@ -477,7 +523,6 @@ void OnClose(HWND a_hWnd)
 			SaveGame(a_hWnd);
 		}
 	}
-#endif
 }
 
 
@@ -506,8 +551,6 @@ void OnGetMinMaxInfo(HWND a_hWnd, LPMINMAXINFO a_lpMinMaxInfo)
 		CalculateWinSize(a_hWnd, &l_size);
 		a_lpMinMaxInfo->ptMinTrackSize.x = l_size.cx;
 		a_lpMinMaxInfo->ptMinTrackSize.y = l_size.cy;
-		a_lpMinMaxInfo->ptMaxTrackSize.x = l_size.cx;
-		a_lpMinMaxInfo->ptMaxTrackSize.y = l_size.cy;
 	}
 }
 
@@ -515,8 +558,10 @@ void OnGetMinMaxInfo(HWND a_hWnd, LPMINMAXINFO a_lpMinMaxInfo)
 void OnSize(HWND a_hWnd, WPARAM a_wParam, int a_dxWidth, int a_dyHeight)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	l_pData->m_toolbar.Resize(a_dxWidth);
-	ResizeTab(a_hWnd, a_dxWidth, a_dyHeight);
+	l_pData->m_toolbar.Resize(a_dxWidth, a_dyHeight);
+	ResizeTab(a_hWnd);
+	// ::SetWindowPos(l_pData->m_hWndStatusbar, a_hWnd, )
+#pragma todo("check, why I send WM_SZIE instead of SetWindowPos")
 	::SendMessage(l_pData->m_hWndStatusbar, WM_SIZE, a_wParam, MAKELPARAM(a_dxWidth, a_dyHeight));
 }
 
@@ -526,22 +571,8 @@ void OnPaint(
 	HWND a_hWnd		//IN game wnd
 )
 {
-	PAINTSTRUCT l_ps;
-	HDC l_hdc = ::BeginPaint(a_hWnd, &l_ps);
-
-	RECT l_rectWin;
-	::GetClientRect(a_hWnd, &l_rectWin);
-	{
-		// prepare correct DC
-#ifdef _DEBUG 
-		HDC l_hPaintDC = l_hdc;
-#else
-		RMemDC l_memDC(l_hdc, &l_rectWin);
-		HDC l_hPaintDC = l_memDC;
-#endif
-		Draw(a_hWnd, l_hPaintDC);
-	}
-	::EndPaint(a_hWnd, &l_ps);
+	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
+	l_pData->m_toolbar.OnPaint(a_hWnd);
 }
 
 void OnDpiChanged(HWND a_hWnd, LPRECT a_pNewRect)
@@ -552,12 +583,13 @@ void OnDpiChanged(HWND a_hWnd, LPRECT a_pNewRect)
 		RectWidth(*a_pNewRect), RectHeight(*a_pNewRect), SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
-void ResizeTab(HWND a_hWnd, int a_dxWidth, int a_dyHeight)
+void ResizeTab(HWND a_hWnd)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
 	RECT l_rectKierki;
 	::GetClientRect(a_hWnd, &l_rectKierki);
-	RECT l_rectStatusbar = { 0 };
+
+	RECT l_rectStatusbar {};
 
 	// TODO here to change if own toolbar can change position
 	int l_dyRibbon = l_pData->m_toolbar.GetExtent();
@@ -565,30 +597,25 @@ void ResizeTab(HWND a_hWnd, int a_dxWidth, int a_dyHeight)
 	::GetWindowRect(l_pData->m_hWndStatusbar, &l_rectStatusbar);
 
 	int l_dxTab = RectWidth(l_rectKierki);
-	int l_dyTab = RectHeight(l_rectKierki) - RectHeight(l_rectStatusbar) - l_dyRibbon ;
+	int l_dyTab = RectHeight(l_rectKierki) - RectHeight(l_rectStatusbar) - l_dyRibbon;
+	if (l_dyTab <= 0)
+		return;
 
-	RECT l_rectTab;
-	::SetRect(&l_rectTab, 0, 0, l_dxTab, l_dyTab); 
-	TabCtrl_AdjustRect(l_pData->m_hWndTab, FALSE, &l_rectTab); 
+	// resize tab control
+	::SetWindowPos(l_pData->m_hWndTab, a_hWnd, 
+		0, l_dyRibbon, l_dxTab, l_dyTab, SWP_NOZORDER);
+	RECT l_rectTab = { 0, 0, l_dxTab, l_dyTab };
 
-	// Size the tab control to fit the client area.
-	HDWP l_hdwp = ::BeginDeferWindowPos(static_cast<int>(l_pData->m_arrTabs.size()) + 1); 
-	l_hdwp = ::DeferWindowPos(l_hdwp, l_pData->m_hWndTab, NULL, 0, l_dyRibbon, 
-		l_dxTab, l_dyTab, 
-		SWP_NOZORDER);
+	TabCtrl_AdjustRect(l_pData->m_hWndTab, FALSE, &l_rectTab);
 
-	for (UINT l_iTab = 0; l_iTab < l_pData->m_arrTabs.size(); l_iTab++)
-	{
-		l_hdwp = ::DeferWindowPos(l_hdwp, 
-			l_pData->m_arrTabs[l_iTab], HWND_TOP, 
-			l_rectTab.left, l_rectTab.top + l_dyRibbon,
-			RectWidth(l_rectTab), RectHeight(l_rectTab), 0);
-	}
-	::EndDeferWindowPos(l_hdwp); 
+	for (const auto& [l_iKey, l_hWnd] : l_pData->m_mapTabs)
+		::SetWindowPos(l_pData->m_mapTabs[l_iKey], l_pData->m_hWndTab,
+			l_rectTab.left, l_rectTab.top, RectWidth(l_rectTab), RectHeight(l_rectTab), SWP_NOZORDER);
 }
 
 
-static void SetupOwnToolbar(HWND a_hWnd)
+
+static void ConfigureOwnToolbar(HWND a_hWnd)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
 
@@ -599,31 +626,31 @@ static void SetupOwnToolbar(HWND a_hWnd)
 	TCHAR l_sNewGame[128];
 	::LoadString(::GetModuleHandle(NULL), IDS_NEWGAME, l_sNewGame, ArraySize(l_sNewGame));
 	HBITMAP l_hBmpNewGame = RDraw::LoadImageFromResource(::GetModuleHandle(NULL), IDR_PNG_NEWGAME, _T("PNG"));
-	l_pData->m_toolbar.AddItem(l_sNewGame, IDM_GAME_NEW, l_hBmpNewGame, OWNTOOLBAR_TYPE_BMP, true);
+	l_pData->m_toolbar.AddItem(a_hWnd, l_sNewGame, IDM_GAME_NEW, l_hBmpNewGame, OWNTOOLBAR_TYPE_BMP, true);
 
 	// open game icon
 	TCHAR l_sOpenGame[128];
 	::LoadString(::GetModuleHandle(NULL), IDS_OPENGAME, l_sOpenGame, ArraySize(l_sOpenGame));
 	HBITMAP l_hBmpOpenGame = RDraw::LoadImageFromResource(::GetModuleHandle(NULL), IDR_PNG_OPENGAME, _T("PNG"));
-	l_pData->m_toolbar.AddItem(l_sOpenGame, IDM_GAME_OPEN, l_hBmpOpenGame, OWNTOOLBAR_TYPE_BMP, true);
+	l_pData->m_toolbar.AddItem(a_hWnd, l_sOpenGame, IDM_GAME_OPEN, l_hBmpOpenGame, OWNTOOLBAR_TYPE_BMP, true);
 
 	// save game icon
 	TCHAR l_sSaveGame[128];
 	::LoadString(::GetModuleHandle(NULL), IDS_SAVEGAME, l_sSaveGame, ArraySize(l_sSaveGame));
 	HBITMAP l_hBmpSaveGame = RDraw::LoadImageFromResource(::GetModuleHandle(NULL), IDR_PNG_SAVEGAME, _T("PNG"));
-	l_pData->m_toolbar.AddItem(l_sSaveGame, IDM_GAME_SAVE, l_hBmpSaveGame, OWNTOOLBAR_TYPE_BMP, true);
+	l_pData->m_toolbar.AddItem(a_hWnd, l_sSaveGame, IDM_GAME_SAVE, l_hBmpSaveGame, OWNTOOLBAR_TYPE_BMP, true);
 
 	// save game as icon
 	TCHAR l_sSaveGameAs[128];
 	::LoadString(::GetModuleHandle(NULL), IDS_SAVEGAMEAS, l_sSaveGameAs, ArraySize(l_sSaveGameAs));
 	HBITMAP l_hBmpSaveGameAs = RDraw::LoadImageFromResource(::GetModuleHandle(NULL), IDR_PNG_SAVEGAMEAS, _T("PNG"));
-	l_pData->m_toolbar.AddItem(l_sSaveGameAs, IDM_GAME_SAVEAS, l_hBmpSaveGameAs, OWNTOOLBAR_TYPE_BMP, true);
+	l_pData->m_toolbar.AddItem(a_hWnd, l_sSaveGameAs, IDM_GAME_SAVEAS, l_hBmpSaveGameAs, OWNTOOLBAR_TYPE_BMP, true);
 
 	// options
 	TCHAR l_sOptions[128];
 	::LoadString(::GetModuleHandle(NULL), IDS_OPTIONS, l_sOptions, ArraySize(l_sOptions));
 	HBITMAP l_hBmpOptions = RDraw::LoadImageFromResource(::GetModuleHandle(NULL), IDR_PNG_OPTIONS, _T("PNG"));
-	l_pData->m_toolbar.AddItem(l_sOptions, IDM_GAME_OPTIONS, l_hBmpOptions, OWNTOOLBAR_TYPE_BMP, false);
+	l_pData->m_toolbar.AddItem(a_hWnd, l_sOptions, IDM_GAME_OPTIONS, l_hBmpOptions, OWNTOOLBAR_TYPE_BMP, false);
 
 }
 
@@ -634,34 +661,14 @@ void ConfigureStatusbar(HWND a_hWndStatusbar)
 }
 
 
-void AddTab(HWND a_hWnd, LPTSTR a_sTabName)
+void AddTab(HWND a_hWnd, HWND a_hTabItemWnd, LPTSTR a_sTabName)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	TCITEM l_tabItem;
-	l_tabItem.mask = TCIF_TEXT;
-
+	TCITEM l_tabItem{};
+	l_tabItem.mask = TCIF_TEXT | TCIF_PARAM;
 	l_tabItem.pszText = a_sTabName;
-	::SendMessage(l_pData->m_hWndTab, TCM_INSERTITEM, 0, reinterpret_cast<LPARAM>(&l_tabItem));
-}
-
-
-// ---------------------------------------------------------
-// Draws own toolbar
-void
-Draw(
-	HWND a_hWnd,	//IN game wnd
-	HDC a_hDC		//IN device context
-)
-{
-	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	RECT l_rectWin;
-	::GetClientRect(a_hWnd, &l_rectWin);
-
-	// TODO here to change if own toolbar can change position (horizontal / vertical)
-	l_rectWin.bottom = l_pData->m_toolbar.GetExtent();
-
-	l_pData->m_toolbar.Draw(a_hDC, l_rectWin);
-
+	l_tabItem.lParam = reinterpret_cast<LPARAM>(a_hTabItemWnd);
+	TabCtrl_InsertItem(l_pData->m_hWndTab, TabCtrl_GetItemCount(l_pData->m_hWndTab), reinterpret_cast<LPARAM>(&l_tabItem));
 }
 
 
@@ -723,70 +730,41 @@ void OnCommand(HWND a_hWnd, WPARAM a_wParam, LPARAM a_lParam)
 void OnMouseMove(HWND a_hWnd, LONG a_x, LONG a_y)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	POINT l_pt = { a_x, a_y };
-
-	// check if mouse is over toolbar
-
-	UINT l_iPrevHover = l_pData->m_toolbar.GetHover();
-	UINT l_iNewHover = l_pData->m_toolbar.HitTest(l_pt);
-
-	// hover on the same item as before?
-	if (l_iPrevHover == l_iNewHover)
-	{
-		return;
-	}
-
-
-	l_pData->m_toolbar.SetHover(l_iNewHover);
-	if (l_pData->m_toolbar.IsHover())
-		::SetCapture(a_hWnd);
-	else
-		if (!(GetAsyncKeyState(VK_LBUTTON) != 0))
-			::ReleaseCapture();
-	
-	// invalidate toolbar
-	l_pData->m_toolbar.InvalidateRect(a_hWnd, l_iPrevHover);
-	l_pData->m_toolbar.InvalidateRect(a_hWnd, l_iNewHover);
-
+	l_pData->m_toolbar.OnMouseMove(a_hWnd, a_x, a_y);
 }
 
+
+void OnMouseLeave(HWND a_hWnd)
+{
+	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
+	l_pData->m_toolbar.OnMouseLeave(a_hWnd);
+}
 
 void OnLButtonDown(HWND a_hWnd, int a_x, int a_y)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	POINT l_pt = { a_x, a_y };
-
-	// check if mouse is over toolbar
-
-	l_pData->m_toolbar.SetHover(l_pData->m_toolbar.HitTest(l_pt));
-
-
-	// invalidate toolbar
-	if (l_pData->m_toolbar.IsHover())
-	{
-		l_pData->m_toolbar.SetPressed(l_pData->m_toolbar.GetHover());
-		::SetCapture(a_hWnd);
-	}
-	l_pData->m_toolbar.InvalidateRect(a_hWnd, l_pData->m_toolbar.GetHover());
+	l_pData->m_toolbar.OnLButtonDown(a_hWnd, a_x, a_y);
 }
 
 
 void OnLButtonUp(HWND a_hWnd, int a_x, int a_y)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	POINT l_pt = { a_x, a_y };
+	l_pData->m_toolbar.OnLButtonUp(a_hWnd, a_x, a_y);
+}
 
-	// check if mouse is over toolbar
 
-	UINT l_iHover = l_pData->m_toolbar.HitTest(l_pt);
+void OnToolbarHover(HWND a_hWnd, int a_idItem, LPCTSTR a_sName)
+{
+	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
+	::SendMessage(l_pData->m_hWndStatusbar, SB_SETTEXT, 0, reinterpret_cast<LPARAM>(a_sName));
+}
 
-	::ReleaseCapture();
-	l_pData->m_toolbar.SetPressed(-1);
-	l_pData->m_toolbar.InvalidateRect(a_hWnd, l_pData->m_toolbar.GetHover());
-	if (l_iHover != -1)
-	{
-		::SendMessage(a_hWnd, WM_COMMAND, MAKEWPARAM(l_pData->m_toolbar.GetHoverIdCmd(), 0), 0);
-	}
+
+void OnToolbarLeave(HWND a_hWnd)
+{
+	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
+	::SendMessage(l_pData->m_hWndStatusbar, SB_SETTEXT, 0, reinterpret_cast<LPARAM>(_T("")));
 
 }
 
@@ -801,15 +779,49 @@ void OnEnterMenuLoop(HWND a_hWnd)
 void OnTabSelChange(HWND a_hWnd)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	SetActiveTab(a_hWnd, TabCtrl_GetCurSel(l_pData->m_hWndTab));
+
+	TCITEM l_tabItem{};
+	l_tabItem.mask = TCIF_PARAM;
+	TabCtrl_GetItem(l_pData->m_hWndTab, TabCtrl_GetCurSel(l_pData->m_hWndTab), &l_tabItem);
+
+	if (l_tabItem.lParam == 0)
+		throw ROwnExc(_T("OnTabSelChange - incorrect Tab Handle"));
+
+	HWND l_hWndInnerTab = reinterpret_cast<HWND>(l_tabItem.lParam);
+	T_SERIE l_enSerie = E_SR_NULL;
+
+	// in case of results tab, we need to deduce which serie it is
+	if (l_hWndInnerTab == l_pData->GetResultsWnd())
+	{
+		// deduce serie, by counting how many previous tabs are result tabs
+		short l_nTabCount = 0;
+		for (short l_nTab = TabCtrl_GetCurSel(l_pData->m_hWndTab) - 1; l_nTab >= 0; l_nTab--)
+		{
+			l_tabItem.mask = TCIF_PARAM;
+			l_tabItem.lParam = 0;
+			TabCtrl_GetItem(l_pData->m_hWndTab, l_nTab, &l_tabItem);
+			if (l_tabItem.lParam == reinterpret_cast<LPARAM>(l_pData->GetResultsWnd()))
+			{
+				l_nTabCount++;
+			}
+		}
+		l_enSerie = static_cast<T_SERIE>(l_nTabCount);
+
+
+	}
+	SetActiveTab(a_hWnd, l_hWndInnerTab, l_enSerie);
 }
 
 
 HWND GetCurTab(HWND a_hWnd)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	HWND l_hWnd = l_pData->GetTabWnd(TabCtrl_GetCurSel(l_pData->m_hWndTab));
-	return l_hWnd;
+
+	TCITEM l_tabItem{};
+	l_tabItem.mask = TCIF_PARAM;
+	TabCtrl_GetItem(l_pData->m_hWndTab, TabCtrl_GetCurSel(l_pData->m_hWndTab), &l_tabItem);
+	ASSERT(l_tabItem.lParam != 0);
+	return reinterpret_cast<HWND>(l_tabItem.lParam);
 }
 
 
@@ -819,7 +831,9 @@ bool DecisionBox(HWND a_hWnd, UINT a_idPrompt)
 	TCHAR l_sPrompt[128];
 	::LoadString(::GetModuleHandle(NULL), IDS_DECISION, l_sTitle, ArraySize(l_sTitle));
 	::LoadString(::GetModuleHandle(NULL), a_idPrompt, l_sPrompt, ArraySize(l_sPrompt));
-	return (::MessageBox(a_hWnd, l_sPrompt, l_sTitle, MB_YESNO | MB_ICONQUESTION) == IDYES);
+	return RCenteredMessageBox::DecisionBox2(a_hWnd, l_sPrompt);
+
+//	return (RCenteredMessageBox::Show(a_hWnd, l_sPrompt, l_sTitle, MB_YESNO | MB_ICONQUESTION) == IDYES);
 }
 
 
@@ -831,18 +845,24 @@ void NextSerie(HWND a_hWnd)
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
 
 	short l_nTabCount = TabCtrl_GetItemCount(l_pData->m_hWndTab);
-	for (short l_nTab = l_nTabCount; l_nTab > (l_pData->m_gameData.GetSerie() + 2); l_nTab--)
+	for (short l_nTab = l_nTabCount - 1; l_nTab >= 0; l_nTab--)
 	{
-		TabCtrl_DeleteItem(l_pData->m_hWndTab, l_nTab - 1);
+		// remove all result tabs
+		TCITEM l_tabItem{};
+		l_tabItem.mask = TCIF_PARAM;
+		TabCtrl_GetItem(l_pData->m_hWndTab, l_nTab, &l_tabItem);
+		if (l_tabItem.lParam == reinterpret_cast<LPARAM>(l_pData->GetResultsWnd()))
+		{
+			TabCtrl_DeleteItem(l_pData->m_hWndTab, l_nTab);
+		}
 	}
-	l_nTabCount = TabCtrl_GetItemCount(l_pData->m_hWndTab);
 
-	for (short l_nTab = l_nTabCount + 1; l_nTab <= (l_pData->m_gameData.GetSerie() + 2); l_nTab++)
+	for (short l_nSerie = E_SR_1; l_nSerie <= (l_pData->m_gameData.GetSerie()); l_nSerie++)
 	{
-		AddResultTab(a_hWnd, static_cast<T_SERIE>(l_nTab - 2));
+		AddResultTab(a_hWnd, static_cast<T_SERIE>(l_nSerie));
 	}
 	
-	// add new result tabs as needed
+	// correct window title
 	SetTitle(a_hWnd);
 }
 
@@ -890,8 +910,7 @@ void OnGameOpen(HWND a_hWnd)
 			SaveGame(a_hWnd);
 		}
 	}
-	TCHAR l_sFile[1024];
-	ZeroMemory(l_sFile, sizeof(l_sFile));
+	TCHAR l_sFile[1024] = { 0 };
 	if (!GetOpenSaveFile(a_hWnd, true, l_sFile, ArraySize(l_sFile)))
 	{
 		return;
@@ -910,7 +929,7 @@ void OnGameOptions(HWND a_hWnd)
 	}
 	l_pData->m_gameData.m_regData.Serialize();
 	GameWnd_Refresh(l_pData->GetGameWnd());
-	ResultWnd_Refresh(l_pData->GetResultWnd());
+	ResultWnd_Refresh(l_pData->GetResultsWnd());
 
 	::RedrawWindow(GetCurTab(a_hWnd), NULL, NULL, 
 		RDW_INVALIDATE | RDW_ERASE | RDW_ERASENOW | RDW_UPDATENOW);
@@ -925,8 +944,8 @@ void OnAppNextSerie(HWND a_hWnd)
 
 void OnAppGameOver(HWND a_hWnd)
 {
-	// wyúwietlenie wynikÛw i ewentualne rozdanie nowej serii
-	SetResultsTab(a_hWnd);
+	// wy≈õwietlenie wynik√≥w i ewentualne rozdanie nowej serii
+	SetResultsTab(a_hWnd, E_SR_4);
 	if (DecisionBox(a_hWnd, IDS_PROMPT_NEWGAME))
 	{
 		CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
@@ -982,17 +1001,19 @@ void SetTitle(HWND a_hWnd)
 void AddResultTab(HWND a_hWnd, T_SERIE a_enSerie)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	TCHAR l_sTitle[128];
+	TCHAR l_sTitle[128] { };
 
-	TCITEM l_tabItem;
-	l_tabItem.mask = TCIF_TEXT;
+	TCITEM l_tabItem {};
+	l_tabItem.mask = TCIF_TEXT | TCIF_PARAM;
 
 	::LoadString(::GetModuleHandle(NULL), IDS_TABTITLE_RESULT, l_sTitle, ArraySize(l_sTitle));
 	_sntprintf_s(l_sTitle, ArraySize(l_sTitle), _TRUNCATE, tstring(l_sTitle).c_str(), static_cast<int>(a_enSerie) + 1);
 	l_tabItem.pszText = l_sTitle;
 	l_tabItem.cchTextMax = static_cast<int>(_tcslen(l_sTitle));
+	l_tabItem.lParam = reinterpret_cast<LPARAM>(l_pData->GetResultsWnd());
 
-	TabCtrl_InsertItem(l_pData->m_hWndTab, TabCtrl_GetItemCount(l_pData->m_hWndTab) + 1, &l_tabItem);
+	// insert at the end
+	TabCtrl_InsertItem(l_pData->m_hWndTab, TabCtrl_GetItemCount(l_pData->m_hWndTab), &l_tabItem);
 }
 
 
@@ -1001,26 +1022,47 @@ void SetStatusBarText(
 	UINT a_idStr	//IN string id to display
 	)
 {
-	TCHAR l_sText[512];
+	TCHAR l_sText[512]{};
 	::LoadString(::GetModuleHandle(NULL), a_idStr, l_sText, ArraySize(l_sText));
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
 	::SendMessage(l_pData->m_hWndStatusbar, SB_SETTEXT, 0, reinterpret_cast<LPARAM>(l_sText));
 }
 
 
-void SetResultsTab(HWND a_hWnd)
+void SetResultsTab(HWND a_hWnd, T_SERIE a_enSerie)
 {
-	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	TabCtrl_SetCurSel(l_pData->m_hWndTab, TabCtrl_GetItemCount(l_pData->m_hWndTab) - 1);
-	SetActiveTab(a_hWnd, TabCtrl_GetItemCount(l_pData->m_hWndTab) - 1);
+	SetInnerTab(a_hWnd, CHeartsData::GetData(a_hWnd)->GetResultsWnd(), a_enSerie);
 }
 
 
-void SetPlayTab(HWND a_hWnd)
+void SetGameTab(HWND a_hWnd)
+{
+	SetInnerTab(a_hWnd, CHeartsData::GetData(a_hWnd)->GetGameWnd(), E_SR_NULL);
+}
+
+void SetHelpTab(HWND a_hWnd)
+{
+	SetInnerTab(a_hWnd, CHeartsData::GetData(a_hWnd)->GetHelpWnd(), E_SR_NULL);
+}
+
+
+void SetInnerTab(HWND a_hWnd, HWND a_hWndInnerTab, T_SERIE a_enSerie)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	TabCtrl_SetCurSel(l_pData->m_hWndTab, 0);
-	SetActiveTab(a_hWnd, 0);
+	short l_iTabCount = TabCtrl_GetItemCount(l_pData->m_hWndTab);
+	// find Game tab 
+	for (short l_iTab = 0; l_iTab < l_iTabCount; l_iTab++)
+	{
+		TCITEM l_tabItem{};
+		l_tabItem.mask = TCIF_PARAM;
+		TabCtrl_GetItem(l_pData->m_hWndTab, l_iTab, &l_tabItem);
+		if (l_tabItem.lParam == reinterpret_cast<LPARAM>(a_hWndInnerTab))
+		{
+			TabCtrl_SetCurSel(l_pData->m_hWndTab, l_iTab);
+			SetActiveTab(a_hWnd, a_hWndInnerTab, a_enSerie);
+			return;
+		}
+	}
 }
 
 
@@ -1030,8 +1072,6 @@ void SetPlayTab(HWND a_hWnd)
 void CalculateWinSize(HWND a_hWnd, LPSIZE a_pSize)
 {
 	const CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-
-
 
 	RECT l_rectTab;
 	::SetRect(&l_rectTab, 0, 0, C_VIEW_WIDTH, C_VIEW_HEIGHT);
@@ -1047,47 +1087,49 @@ void CalculateWinSize(HWND a_hWnd, LPSIZE a_pSize)
 }
 
 
-void SetActiveTab(HWND a_hWnd, int a_iTab)
+void SetActiveTab(HWND a_hWnd, HWND a_hWndInnerTab, T_SERIE a_enSerie)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
 
-	HWND l_hWndGame = l_pData->GetGameWnd();
-	HWND l_hWndResult = l_pData->GetResultWnd();
-	if (a_iTab == 0)
+	for (const auto& l_pair : l_pData->m_mapTabs) 
 	{
-		::ShowWindow(l_hWndResult, SW_HIDE);
-		::ShowWindow(l_hWndGame, SW_SHOW);
-		::SetFocus(l_hWndGame);
+		HWND l_hWnd = l_pair.second;
+
+		if (l_hWnd == a_hWndInnerTab)
+		{
+			::ShowWindow(l_hWnd, SW_SHOW);
+			::SetFocus(l_hWnd);
+		}
+		else
+		{
+			::ShowWindow(l_hWnd, SW_HIDE);
+		}
+
 	}
-	else
-	{
-		::ShowWindow(l_hWndGame, SW_HIDE);
-		ResultWnd_SetSerie(l_hWndResult, static_cast<T_SERIE>(a_iTab - 1));
-		::ShowWindow(l_hWndResult, SW_SHOW);
-		::SetFocus(l_hWndResult);
-	}
+
+	HWND l_hWndResult = l_pData->GetResultsWnd();
+	if ((a_hWndInnerTab == l_hWndResult) && (a_enSerie != E_SR_NULL))
+		ResultWnd_SetSerie(l_hWndResult, static_cast<T_SERIE>(a_enSerie));
+
 	RECT l_rect;
 	::GetWindowRect(a_hWnd, &l_rect);
-	ResizeTab(a_hWnd, RectWidth(l_rect), RectHeight(l_rect));
+	ResizeTab(a_hWnd);
 }
 
 
 bool GetOpenSaveFile(HWND a_hWnd, bool a_bOpen, LPTSTR a_psFile, DWORD a_iSizeFile)
 {
-	OPENFILENAME l_ofn;
-	ZeroMemory(&l_ofn, sizeof(l_ofn));
+	OPENFILENAME l_ofn = { 0 };
 	l_ofn.lStructSize = sizeof(l_ofn);
 	l_ofn.hwndOwner = a_hWnd;
 
-	TCHAR l_sFilterBuf[512];
-	TCHAR l_sFilterExtBuf[256];
+	TCHAR l_sFilterBuf[512] = {};
+	TCHAR l_sFilterExtBuf[256] = {};
 
-	ZeroMemory(l_sFilterBuf, sizeof(l_sFilterBuf));
 	::LoadString(::GetModuleHandle(NULL), IDS_KIERKIFILTERNAME, l_sFilterBuf, ArraySize(l_sFilterBuf));
-	ZeroMemory(l_sFilterExtBuf, sizeof(l_sFilterExtBuf));
 	::LoadString(::GetModuleHandle(NULL), IDS_KIERKIFILTEREXT, l_sFilterExtBuf, ArraySize(l_sFilterExtBuf));
 
-	// prepare filter string - itís a double-null-terminated list of null-terminated string. Just easier using tstring
+	// prepare filter string - it‚Äôs a double-null-terminated list of null-terminated string. Just easier using tstring
 	tstring l_sFilter = l_sFilterBuf;
 	l_sFilter = l_sFilter + _T(" (") + cc_cAsterisk + l_sFilterExtBuf + _T(')');
 	
@@ -1145,8 +1187,7 @@ void EnableSaveMenu(HWND a_hWnd, BOOL a_bEnable)
 	HMENU l_hMenuMain = ::GetMenu(a_hWnd);
 	HMENU l_hMenuGame = ::GetSubMenu(l_hMenuMain, 0);
 
-	MENUITEMINFO l_mii;
-	ZeroMemory(&l_mii, sizeof(l_mii));
+	MENUITEMINFO l_mii = {};
 	l_mii.cbSize = sizeof(l_mii);
 	l_mii.fMask = MIIM_STATE;
 	if (a_bEnable)
@@ -1189,7 +1230,7 @@ void SaveGame(HWND a_hWnd)
 void StartGame(HWND a_hWnd, bool a_bOpen)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	SetPlayTab(a_hWnd);
+	SetGameTab(a_hWnd);
 	if (a_bOpen)
 	{
 		l_pData->m_gameData.NextGame(FALSE);

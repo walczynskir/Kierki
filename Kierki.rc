@@ -49,7 +49,7 @@ END
 IDD_LOGON DIALOGEX 0, 0, 195, 84
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Witamy w programie Kierki"
-FONT 8, "MS Sans Serif", 0, 0, 0x0
+FONT 9, "Segoe UI", 0, 0, 0x0
 BEGIN
     LTEXT           "Jêzyk:",IDC_STATIC,7,7,55,12
     COMBOBOX        IDC_LOGON_LANGUAGE,66,7,121,60,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
@@ -61,9 +61,9 @@ BEGIN
 END
 
 IDD_OPTIONS DIALOGEX 0, 0, 232, 183
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Opcje"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
+FONT 9, "Segoe UI", 400, 0, 0x1
 BEGIN
     CONTROL         "",IDC_TAB,"SysTabControl32",TCS_FOCUSONBUTTONDOWN | WS_TABSTOP,7,7,220,120
     DEFPUSHBUTTON   "&Ok",IDOK,169,130,58,14
@@ -75,25 +75,25 @@ BEGIN
     PUSHBUTTON      "O systemie ...",IDB_INFO_SYSTEMINFO,7,162,76,14,WS_DISABLED | WS_GROUP
 END
 
-IDD_OPT_VIEW DIALOGEX 0, 0, 221, 176
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
+IDD_OPT_VIEW DIALOGEX 0, 0, 220, 175
+STYLE DS_SETFONT | WS_CHILD | WS_SYSMENU
+FONT 9, "Segoe UI", 400, 0, 0x1
 BEGIN
     CONTROL         "Custom1",IDC_VIEW_TABLECOLOR,"RCOLORWND",WS_TABSTOP,62,7,56,14
     CONTROL         "Custom1",IDC_VIEW_RESULTCOLOR,"RCOLORWND",WS_TABSTOP,62,26,56,14
     LTEXT           "Kolor sto³u:",IDC_STATIC,7,7,54,12
     LTEXT           "Kolor wyników:",IDC_STATIC,7,27,54,12
     LTEXT           "Koszulka:",IDC_STATIC,7,67,54,12
-    CONTROL         "",IDC_VIEW_COVER,"Static",SS_OWNERDRAW,72,45,35,45
     PUSHBUTTON      "<",IDC_VIEW_LEFT,62,52,10,31
-    PUSHBUTTON      ">",IDC_VIEW_RIGHT,108,52,10,31
+    CONTROL         "",IDC_VIEW_COVER,"Static",SS_OWNERDRAW,73,45,35,45
+    PUSHBUTTON      ">",IDC_VIEW_RIGHT,109,52,10,31
     PUSHBUTTON      "Domyœlny",IDC_VIEW_DEFUALTTABLE,121,7,40,14
     PUSHBUTTON      "Domyœlny",IDC_VIEW_DEFUALTRESULT,121,26,40,14
 END
 
 IDD_OPT_TIME DIALOGEX 0, 0, 186, 90
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
+STYLE DS_SETFONT | WS_CHILD | WS_SYSMENU
+FONT 9, "Segoe UI", 400, 0, 0x1
 BEGIN
     EDITTEXT        IDC_AFTERCARD,94,7,38,14,ES_NUMBER
     CONTROL         "Spin2",IDS_AFTERCARD,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,133,7,11,14,WS_EX_TRANSPARENT | WS_EX_CLIENTEDGE
@@ -107,8 +107,8 @@ BEGIN
 END
 
 IDD_OPT_PLAYERS DIALOGEX 0, 0, 219, 142
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
+STYLE DS_SETFONT | WS_CHILD | WS_SYSMENU
+FONT 9, "Segoe UI", 400, 0, 0x1
 BEGIN
     EDITTEXT        IDC_PLAYER1,65,7,147,14
     EDITTEXT        IDC_PLAYER2,65,28,147,14
@@ -122,22 +122,33 @@ END
 
 IDD_DLLBITMAP DIALOGEX 0, 0, 164, 138
 STYLE DS_SETFONT | DS_3DLOOK | DS_CONTROL | WS_CHILD | WS_CLIPSIBLINGS
-FONT 8, "MS Sans Serif", 0, 0, 0x0
+FONT 9, "Segoe UI", 0, 0, 0x0
 BEGIN
     LTEXT           "",1119,7,7,82,81
     CONTROL         "Custom1",IDC_IMAGE,"RCHOOSEBMPWND",WS_TABSTOP,101,27,56,69
 END
 
 IDD_OPT_RULES DIALOGEX 0, 0, 210, 90
-STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD | WS_SYSMENU
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
+STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE
+FONT 9, "Segoe UI", 400, 0, 0x1
 BEGIN
     CONTROL         "Potwierdzaj lewê klikniêciem",IDC_RULES_CONFIRMTRICK,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,106,10
-    CONTROL         "Pokazuj okno startowe", IDC_RULES_SHOWDLG,
-                    "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 7, 24, 106, 10
-    COMBOBOX        IDC_RULES_LANGUAGE,121,41,72,60,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Jêzyk (wymaga restartu):",IDC_STATIC,7,41,107,8
+    CONTROL         "Pokazuj okno startowe",IDC_RULES_SHOWDLG,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,24,106,10
+    CONTROL         "Pokazuj instrukcje",IDC_RULES_HELPVISIBLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,41,106,10
+    LTEXT           "Jêzyk (wymaga restartu):",IDC_STATIC,7,58,107,8
+    COMBOBOX        IDC_RULES_LANGUAGE,121,58,72,60,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_HELP DIALOGEX 0, 0, 400, 19
+STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE
+FONT 9, "Segoe UI", 400, 0, 0x1
+BEGIN
+    LTEXT           "Sekcja:", IDC_STATIC, 1, 4, 24, 12
+    PUSHBUTTON      "<<",IDC_HELP_LEFT,49,2,20,12
+    COMBOBOX        IDC_HELP_SECTION,70,2,100,100,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      ">>",IDC_HELP_RIGHT,171,2,20,12
+    CONTROL         "Nie pokazuj wiêcej instrukcji",IDC_HELP_SHOWHELP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,260,2,97,10
 END
 
 
@@ -234,6 +245,10 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 83
     END
+
+    IDD_HELP, DIALOG
+    BEGIN
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -283,7 +298,13 @@ END
 
 IDB_NOTRUMPS            BITMAP                  "res\\notrumps.bmp"
 
-IDB_PASS                BITMAP                  "res\\pass.bmp"
+IDB_BLANKET             BITMAP                  "res\\table_blanket.bmp"
+
+IDB_PAPER               BITMAP                  "res\\paper_canvas.bmp"
+
+IDB_BLANKET_DARK        BITMAP                  "res\\table_blanket_dark.bmp"
+
+IDB_BLANKET_LIGHT       BITMAP                  "res\\table_blanket_light.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -301,7 +322,16 @@ IDR_PNG_SAVEGAMEAS      PNG                     "res\\save_game_as_48x48.png"
 
 IDR_PNG_OPTIONS         PNG                     "res\\options_48x48.png"
 
-IDR_PNG_PASS            PNG                     "res\\pass_icon_80x80.png"
+IDR_PNG_PASS            PNG                     "res\\pas_icon_80x80.png"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// JSON
+//
+
+IDR_JSON_INSTRUCTIONS   JSON                    "instructions\\instructions_pl-PL.json"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -340,7 +370,7 @@ BEGIN
     IDS_INFO_AUTHORURL      "mailto:walczynskir@wp.pl"
     IDS_SAVEGAMEQUESTION    "Zapisaæ grê?"
     IDS_CONFIRMTRICK        "Kliknij, aby kontynuowaæ"
-    IDS_TABTITLE_RULES      "Zasady"
+    IDS_TABTITLE_RULES      "Ró¿ne"
     IDS_CHOOSEBMP_TITLE     "Wybierz koszulkê"
     IDS_PLAYCARD            "Zagraj kartê"
     IDS_PROMPT_NEWGAME      "Seria zakoñczona. Czy rozpocz¹æ now¹ grê?"
@@ -381,6 +411,7 @@ STRINGTABLE
 BEGIN
     IDS_SAVEGAMEAS          "Zapisz grê jako"
     IDS_LANG_NAME           "Polski"
+    IDS_HELPTITLE_GAME      "Instrukcje"
 END
 
 #endif    // Polish (Poland) resources

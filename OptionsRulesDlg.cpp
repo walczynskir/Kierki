@@ -1,4 +1,4 @@
-// OptionsTimeDlg.cpp : Time option dialog handlers
+// OptionsRulesDlg.cpp : Miscellanuous dialog handlers
 //
 #include "stdafx.h"
 #include "resource.h"
@@ -99,10 +99,13 @@ void SetCtrlValues(HWND a_hDlg)
 	}
 	HWND l_hWndShowDlg = ::GetDlgItem(a_hDlg, IDC_RULES_SHOWDLG);
 
-	// set logondlg checkbox
+	// set Logondlg checkbox
 	::SendMessage(::GetDlgItem(a_hDlg, IDC_RULES_SHOWDLG), BM_SETCHECK,
 		l_pData->m_pData->m_bLogonDlg ? BST_CHECKED : BST_UNCHECKED, 0L);
 
+	// set Logondlg checkbox
+	::SendMessage(::GetDlgItem(a_hDlg, IDC_RULES_HELPVISIBLE), BM_SETCHECK,
+		l_pData->m_pData->m_bHelpVisible ? BST_CHECKED : BST_UNCHECKED, 0L);
 }
 
 
@@ -135,4 +138,7 @@ static void GetCtrlValues(HWND a_hDlg)
 
 	// get logondlg checkbox
 	l_pData->m_pData->m_bLogonDlg = (::SendMessage(::GetDlgItem(a_hDlg, IDC_RULES_SHOWDLG), BM_GETCHECK, 0, 0L) == BST_CHECKED);
+
+	// get ShowHelp checkbox
+	l_pData->m_pData->m_bHelpVisible = (::SendMessage(::GetDlgItem(a_hDlg, IDC_RULES_HELPVISIBLE), BM_GETCHECK, 0, 0L) == BST_CHECKED);
 }

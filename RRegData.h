@@ -56,6 +56,8 @@ public:
 		bool m_bConfirmTrick;
 		LANGID m_idLanguage;	// LANGID
 		bool m_bLogonDlg;		// show the LogonDlg?
+		bool m_bHelpVisible;	// show help at startup?
+		tstring m_sHelpFont;	// help font name
 		virtual void Serialize(void);
 	};
 	

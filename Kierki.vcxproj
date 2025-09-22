@@ -27,22 +27,22 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseLib|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDll|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDll|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugLib|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -277,6 +277,10 @@
   <ItemGroup>
     <ClCompile Include="AllowedCards.cpp" />
     <ClCompile Include="Card.cpp" />
+    <ClCompile Include="HelpJson.cpp" />
+    <ClCompile Include="BaseJson.cpp" />
+    <ClCompile Include="HelpWnd.cpp" />
+    <ClCompile Include="JsonParser.cpp" />
     <ClCompile Include="OwnToolbar.cpp" />
     <ClCompile Include="Decider.cpp" />
     <ClCompile Include="GameData.cpp" />
@@ -318,6 +322,10 @@
   <ItemGroup>
     <ClInclude Include="AllowedCards.h" />
     <ClInclude Include="Card.h" />
+    <ClInclude Include="HelpJson.h" />
+    <ClInclude Include="BaseJson.h" />
+    <ClInclude Include="HelpWnd.h" />
+    <ClInclude Include="JsonParser.h" />
     <ClInclude Include="OwnToolbar.h" />
     <ClInclude Include="CrashFileNames.h" />
     <ClInclude Include="Decider.h" />
@@ -360,25 +368,19 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Kierki.ico" />
-    <Image Include="res\AddTableL.bmp" />
-    <Image Include="res\AddTableS.bmp" />
-    <Image Include="res\DeleteTableL.bmp" />
-    <Image Include="res\DeleteTableS.bmp" />
-    <Image Include="res\ExitL.bmp" />
     <Image Include="res\kierki.ico" />
-    <Image Include="res\Kopia notrumps.bmp" />
-    <Image Include="res\menu_new.bmp" />
     <Image Include="res\new_game_48x48.png" />
     <Image Include="res\notrumps.bmp" />
     <Image Include="res\open_game_48x48.png" />
     <Image Include="res\options_48x48.png" />
+    <Image Include="res\paper_canvas.bmp" />
     <Image Include="res\pass_icon_80x80.png" />
-    <Image Include="res\pass_icon_80x80_new.png" />
-    <Image Include="res\PrintRelationshipsL.bmp" />
-    <Image Include="res\PrintRelationshipsS.bmp" />
+    <Image Include="res\pas_icon_80x80.png" />
     <Image Include="res\save_game_48x48.png" />
     <Image Include="res\save_game_as_48x48.png" />
-    <Image Include="small.ico" />
+    <Image Include="res\table_blanket.bmp" />
+    <Image Include="res\table_blanket_dark.bmp" />
+    <Image Include="res\table_blanket_light.bmp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Kierki.rc" />
@@ -390,6 +392,10 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="instructions\instructions_en-UK.json" />
+    <None Include="instructions\instructions_pl-PL.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

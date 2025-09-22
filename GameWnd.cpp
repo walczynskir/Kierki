@@ -56,6 +56,8 @@ static bool LoadCover(HWND a_hWnd);
 
 // drawing
 static void Draw(HWND a_hWnd, HDC a_hDC);
+static void DrawBlanket(HWND a_hWnd, HDC a_hDC);
+
 static void DrawNames(HWND a_hWnd, HDC a_hDC, bool a_bPass, bool a_bDrawTakenTricks);
 static void DrawCardsHorz(HWND a_hWnd, HDC a_hDC, const CUserCards& a_pCards, LONG a_y, bool a_bReverse, short a_nStart, bool a_bHighlight);
 static void DrawCardsVert(HWND a_hWnd, HDC a_hDC, const CUserCards& a_pCards, LONG a_x, bool a_bReverse, short a_nStart);
@@ -248,9 +250,13 @@ OnCreate(
 	}
 
 	l_pData->SetBrush(::CreateSolidBrush(l_pData->m_pGameData->m_regData.m_regView.m_colorTable));
-#pragma warning(disable:4244)
 	::SetClassLongPtr(a_hWnd, GCLP_HBRBACKGROUND, reinterpret_cast<LONG_PTR>(l_pData->GetBrush()));
-#pragma warning(default:4244)
+
+	l_pData->SetBmpBlanket((HBITMAP)::LoadImage(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_BLANKET),
+		IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION));
+
+	if (l_pData->GetBmpBlanket() == NULL)
+		return -1;
 
 	return 0;
 }
@@ -378,6 +384,9 @@ Draw(
 {
 	GameWndData* l_pData = GetData(a_hWnd);
 	GameData* l_pGameData = l_pData->m_pGameData;
+
+	DrawBlanket(a_hWnd, a_hDC);
+
 	if ((!l_pGameData->IsDealed()) && (!l_pGameData->IsTrumpsChoice()))
 	{
 		return ;
@@ -417,6 +426,29 @@ Draw(
 	DrawNames(a_hWnd, a_hDC, l_pGameData->IsPass(), l_bDrawTakenTricks);
 }
 
+
+static void DrawBlanket(HWND a_hWnd, HDC a_hDC)
+{
+	GameWndData* l_pData = GetData(a_hWnd);
+
+	// Create compatible DC and select bitmap
+	HDC l_hdcMem = CreateCompatibleDC(a_hDC);
+	HBITMAP l_hBmpOld = (HBITMAP)SelectObject(l_hdcMem, l_pData->GetBmpBlanket());
+
+	// Get bitmap size
+	BITMAP l_bmp;
+	GetObject(l_pData->GetBmpBlanket(), sizeof(BITMAP), &l_bmp);
+
+	RECT l_rect;
+	::GetClientRect(a_hWnd, &l_rect);
+	// Stretch or tile the bitmap
+	StretchBlt(a_hDC, 0, 0, RectWidth(l_rect), RectHeight(l_rect),
+		l_hdcMem, 0, 0, l_bmp.bmWidth, l_bmp.bmHeight, SRCCOPY);
+
+	// Cleanup
+	SelectObject(l_hdcMem, l_hBmpOld);
+	DeleteDC(l_hdcMem);
+}
 
 // ---------------------------------------------------------
 // Inwalidacja (bez wymuszenia rysowania) wszystkich kart 

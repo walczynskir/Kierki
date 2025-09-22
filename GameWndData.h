@@ -39,6 +39,7 @@ public:
 		SetBmpCover(NULL);
 		SetBrush(NULL);
 		SetBmpPass(NULL);
+		SetBmpBlanket(NULL);
 	}
 
 	void SetBmpCover(HBITMAP a_hBmp) 
@@ -77,6 +78,19 @@ public:
 
 	HBITMAP GetBmpPass() const { return m_hBmpPass; };
 	
+	void SetBmpBlanket(HBITMAP a_hBmp)
+	{
+		if (m_hBmpBlanket != NULL)
+		{
+			::DeleteObject(m_hBmpBlanket);
+			m_hBmpBlanket = NULL;
+		}
+		m_hBmpBlanket = a_hBmp;
+	}
+
+	HBITMAP GetBmpBlanket() const { return m_hBmpBlanket; };
+
+
 	GameData* m_pGameData;
 	HWND	  m_hWndApp;
 
@@ -99,7 +113,9 @@ public:
 	short m_iTileHorz;
 
 	short m_nLastHighlighted;
+
 private:
+	HBITMAP  m_hBmpBlanket{};
 	HBITMAP  m_hBmpCover;
 	HBRUSH   m_hBrush;
 	HBITMAP  m_hBmpPass;

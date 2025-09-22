@@ -117,6 +117,18 @@
     <ClCompile Include="OwnToolbar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="HelpWnd.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="JsonParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseJson.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HelpJson.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AllowedCards.h">
@@ -242,6 +254,18 @@
     <ClInclude Include="OwnToolbar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="HelpWnd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JsonParser.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseJson.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HelpJson.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Kierki.ico">
@@ -251,36 +275,6 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\notrumps.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="small.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\AddTableL.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\AddTableS.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\DeleteTableL.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\DeleteTableS.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\ExitL.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Kopia notrumps.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\PrintRelationshipsL.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\PrintRelationshipsS.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\menu_new.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\save_game_as_48x48.png">
@@ -301,7 +295,19 @@
     <Image Include="res\pass_icon_80x80.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\pass_icon_80x80_new.png">
+    <Image Include="res\pas_icon_80x80.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\table_blanket.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\paper_canvas.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\table_blanket_dark.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\table_blanket_light.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
@@ -319,5 +325,13 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="instructions\instructions_en-UK.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="instructions\instructions_pl-PL.json">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

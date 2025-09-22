@@ -43,6 +43,9 @@ static const TCHAR c_sCoverID[] = _T("Software\\Medea\\Kierki\\COVERID");
 static const TCHAR c_sConfirmTrickReg[] = _T("Software\\Medea\\Kierki\\CONFIRMTRICK");
 static const TCHAR c_sLanguageReg[] = _T("Software\\Medea\\Kierki\\LANGUAGE");
 static const TCHAR c_sLogonDlgReg[] = _T("Software\\Medea\\Kierki\\LOGONDLG");
+static const TCHAR c_sHelpVisibleReg[] = _T("Software\\Medea\\Kierki\\HELPVISIBLE");
+static const TCHAR c_sHelpFontReg[] = _T("Software\\Medea\\Kierki\\HELPFONT");
+
 
 #define DARK_GREEN_COLOR RGB(0, 128, 0)
 #define LIME_GREEN_COLOR RGB(50, 205, 50)
@@ -178,6 +181,8 @@ RRegData::RRulesRegData::RRulesRegData(void)
 	m_bConfirmTrick = (bool)RRegBoolDef(c_sConfirmTrickReg, HKEY_CURRENT_USER, true);
 	m_idLanguage = (LANGID)RRegLangidDef(c_sLanguageReg, HKEY_CURRENT_USER, ::GetThreadUILanguage());
 	m_bLogonDlg = (bool)RRegBoolDef(c_sLogonDlgReg, HKEY_CURRENT_USER, true);
+	m_bHelpVisible = (bool)RRegBoolDef(c_sHelpVisibleReg, HKEY_CURRENT_USER, true);	
+	m_sHelpFont = (tstring)RRegTStringDef(c_sHelpFontReg, HKEY_CURRENT_USER, _T("Segoe Print"));
 }
 
 
@@ -189,5 +194,9 @@ void RRegData::RRulesRegData::Serialize(void)
 	l_regLanguage = m_idLanguage;
 	RRegBool l_regLogonDlg(c_sLogonDlgReg, HKEY_CURRENT_USER);
 	l_regLogonDlg = m_bLogonDlg;
+	RRegBool l_regHelpVisible(c_sHelpVisibleReg, HKEY_CURRENT_USER);
+	l_regHelpVisible = m_bHelpVisible;
+	RRegTString l_regHelpFont(c_sHelpFontReg, HKEY_CURRENT_USER);
+	l_regHelpFont = m_sHelpFont;
 }
 

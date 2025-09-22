@@ -74,6 +74,7 @@
 #define IDS_COLOR_SPADE                 153
 #define IDS_COLOR_HEART                 154
 #define IDS_COLOR_DIAMOND               155
+#define IDD_DIALOG1                     155
 #define IDS_DEFNAME1                    156
 #define IDS_DEFNAME2                    157
 #define IDS_DEFNAME3                    158
@@ -81,7 +82,6 @@
 #define IDS_SAVEGAMEBEFOREOPENQUESTION  160
 #define IDS_BITMAPFILTER                161
 #define IDS_CHOOSEBMP_FILTER            162
-#define IDB_PASS                        163
 #define IDR_PNG_NEWGAME                 165
 #define IDR_PNG_OPENGAME                166
 #define IDI_SIMPLERIBBON                167
@@ -97,6 +97,17 @@
 #define IDR_PNG_SAVEGAMEAS              177
 #define IDS_LANG_NAME                   178
 #define IDR_PNG_PASS                    179
+#define IDS_HELPTITLE_GAME              180
+#define IDR_JSON_INSTRUCTIONS           181
+#define IDB_BLANKET                     182
+#define IDB_PAPER                       183
+#define IDB_BLANKET_DARK                184
+#define IDB_BLANKET_LIGHT               185
+#define IDD_HELP						186
+#define IDC_HELP_SECTION                187
+#define IDC_HELP_SHOWHELP               188
+#define IDC_HELP_LEFT					189
+#define IDC_HELP_RIGHT					190
 #define IDC_VIEW_TABLECOLOR             1000
 #define IDC_VIEW_RESULTCOLOR            1001
 #define IDC_PLAYER1                     1001
@@ -115,8 +126,14 @@
 #define IDC_RULES_CONFIRMTRICK          1011
 #define IDC_RULES_LANGUAGE              1012
 #define IDC_LOGON_LANGUAGE              1013
-#define IDC_LOGON_NOTSHOW				1014
-#define	IDC_RULES_SHOWDLG				1015
+#define IDC_LOGON_NOTSHOW               1014
+#define IDC_RULES_SHOWDLG               1015
+#define IDC_COMBO1                      1015
+#define IDC_RULES_HELPVISIBLE           1016
+#define IDC_COMBO2                      1016
+#define IDC_EDIT1                       1017
+#define IDC_LIST1                       1018
+#define IDC_EDIT2                       1019
 #define IDM_GAME_NEW                    32780
 #define IDM_GAME_OPEN                   32781
 #define IDM_GAME_SAVE                   32782
@@ -131,9 +148,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        155
+#define _APS_NEXT_RESOURCE_VALUE        156
 #define _APS_NEXT_COMMAND_VALUE         32781
-#define _APS_NEXT_CONTROL_VALUE         1015
+#define _APS_NEXT_CONTROL_VALUE         1020
 #define _APS_NEXT_SYMED_VALUE           111
 #endif
 #endif

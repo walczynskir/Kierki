@@ -27,6 +27,8 @@ static const int c_iLaidCardsOverlap = 4;	// overlap of laid cards
 static const int c_iLaidCardsShift = 4;		// shift of laid cards
 static const int c_dxPass = 80;
 static const int c_dyPass = 80;
+static const int c_dxHelp = 120;			// width of help / instructions panel
+
 
 
 #define CP_XL	(c_dxMargin)							// po³o¿enie kart X lewych

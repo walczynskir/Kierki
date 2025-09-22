@@ -120,13 +120,13 @@
     <ClCompile Include="HelpWnd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JsonParser.cpp">
+    <ClCompile Include="HelpJson.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="BaseJson.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HelpJson.cpp">
+    <ClCompile Include="JsonParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -257,13 +257,13 @@
     <ClInclude Include="HelpWnd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JsonParser.h">
+    <ClInclude Include="HelpJson.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BaseJson.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HelpJson.h">
+    <ClInclude Include="JsonParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -32,6 +32,7 @@
 #pragma todo ("implement help for every game")
 #pragma todo("change background for results")
 #pragma todo("check saving and loading the game - it behaves strangely, starts from incorrect directory")
+#pragma todo("handle nlohmann json library in a proper way - downloading from repository")
 #pragma todo("some card edges not painted correctly - it seems something wrong after drawing at least one card form player's cards")
 #pragma todo("sometimes trump color is not displayed in the window title")
 #pragma todo("replace SetCapture with TrackMouseEvent in GameWnd")

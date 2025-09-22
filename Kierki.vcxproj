@@ -114,12 +114,10 @@
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy %CPP_PATH_DEV%\src\external\json\single_include\json.hpp %CPP_PATH_DEV%\include\external\</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>
-      </Message>
+      <Message>Adding json.hpp</Message>
     </PreBuildEvent>
     <CustomBuild>
       <Command>uicc.exe .\HeartsRibbon.xml .\HeartsRibbon.bin /header:HeartsRibbon.h /res:HeartsRibbon.rc /name:HEARTS</Command>
@@ -161,12 +159,10 @@
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy %CPP_PATH_DEV%\src\external\json\single_include\json.hpp %CPP_PATH_DEV%\include\external\</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>
-      </Message>
+      <Message>Adding json.hpp</Message>
     </PreBuildEvent>
     <CustomBuild>
       <Command>uicc.exe .\HeartsRibbon.xml .\HeartsRibbon.bin /header:HeartsRibbon.h /res:HeartsRibbon.rc /name:HEARTS</Command>
@@ -207,12 +203,10 @@
       <AdditionalLibraryDirectories>$(CPP_LIB_PATH);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy %CPP_PATH_DEV%\src\external\json\single_include\json.hpp %CPP_PATH_DEV%\include\external\</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>
-      </Message>
+      <Message>Adding json.hpp</Message>
     </PreBuildEvent>
     <CustomBuild>
       <Command>uicc.exe .\HeartsRibbon.xml .\HeartsRibbon.bin /header:HeartsRibbon.h /res:HeartsRibbon.rc /name:HEARTS</Command>
@@ -254,12 +248,10 @@
       <AdditionalLibraryDirectories>$(CPP_LIB_PATH);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>copy %CPP_PATH_DEV%\src\external\json\single_include\json.hpp %CPP_PATH_DEV%\include\external\</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>
-      </Message>
+      <Message>Adding json.hpp</Message>
     </PreBuildEvent>
     <CustomBuild>
       <Command>uicc.exe .\HeartsRibbon.xml .\HeartsRibbon.bin /header:HeartsRibbon.h /res:HeartsRibbon.rc /name:HEARTS</Command>
@@ -276,9 +268,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AllowedCards.cpp" />
+    <ClCompile Include="BaseJson.cpp" />
     <ClCompile Include="Card.cpp" />
     <ClCompile Include="HelpJson.cpp" />
-    <ClCompile Include="BaseJson.cpp" />
     <ClCompile Include="HelpWnd.cpp" />
     <ClCompile Include="JsonParser.cpp" />
     <ClCompile Include="OwnToolbar.cpp" />
@@ -321,9 +313,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AllowedCards.h" />
+    <ClInclude Include="BaseJson.h" />
     <ClInclude Include="Card.h" />
     <ClInclude Include="HelpJson.h" />
-    <ClInclude Include="BaseJson.h" />
     <ClInclude Include="HelpWnd.h" />
     <ClInclude Include="JsonParser.h" />
     <ClInclude Include="OwnToolbar.h" />

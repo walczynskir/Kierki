@@ -298,7 +298,6 @@
     <ClCompile Include="ResultWnd.cpp" />
     <ClCompile Include="RobberDecider.cpp" />
     <ClCompile Include="RRegData.cpp" />
-    <ClCompile Include="RSelectBitmap.cpp" />
     <ClCompile Include="Score.cpp" />
     <ClCompile Include="Scores.cpp" />
     <ClCompile Include="SortCards.cpp" />
@@ -350,7 +349,6 @@
     <ClInclude Include="RFile.h" />
     <ClInclude Include="RobberDecider.h" />
     <ClInclude Include="RRegData.h" />
-    <ClInclude Include="RSelectBitmap.h" />
     <ClInclude Include="Score.h" />
     <ClInclude Include="Scores.h" />
     <ClInclude Include="SortCards.h" />

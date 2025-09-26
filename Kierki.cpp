@@ -27,7 +27,6 @@
 
 
 
-#pragma todo("remove setting table color, add options to change a blanket")
 #pragma todo("implement different background for instructions/help")
 #pragma todo ("implement help for every game")
 #pragma todo("change background for results")
@@ -54,7 +53,6 @@
 #pragma todo("bad rendering of covers (background)")
 #pragma todo("during recover if I selected card very quickly it has a problem with inverting card - maybe replacing SetCapture is correct approach")
 #pragma todo("refactor of cover selecting")
-#pragma todo("improve color picker / add to toolbar")
 #pragma todo("add option to load other cards decks and/or graphics")
 #pragma todo("refactor of all graphics")
 #pragma todo("TRACE family of macros doesn't work correctly with wstring")

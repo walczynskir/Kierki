@@ -129,9 +129,6 @@
     <ClCompile Include="JsonParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RSelectBitmap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AllowedCards.h">
@@ -267,9 +264,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JsonParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RSelectBitmap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

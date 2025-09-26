@@ -4,7 +4,7 @@
 #include "resource.h"
 #include "OptionsDlg.h"
 #include "OptionsViewDlg.h"
-#include "RSelectBitmap.h"
+#include <rcommon/RSelectBitmap.h>
 #include "layout.h"
 #include <RCards/RCards.h>
 #include <RCards/resource.h>

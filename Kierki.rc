@@ -1,6 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
+#include "RSelectBitmap.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -60,35 +61,33 @@ BEGIN
     PUSHBUTTON      "WyjdŸ",IDCANCEL,96,63,42,14
 END
 
-IDD_OPTIONS DIALOGEX 0, 0, 232, 183
+IDD_OPTIONS DIALOGEX 0, 0, 231, 223
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Opcje"
 FONT 9, "Segoe UI", 400, 0, 0x1
 BEGIN
-    CONTROL         "",IDC_TAB,"SysTabControl32",TCS_FOCUSONBUTTONDOWN | WS_TABSTOP,7,7,220,120
-    DEFPUSHBUTTON   "&Ok",IDOK,169,130,58,14
-    PUSHBUTTON      "&Zapisz",IDSAVE,169,146,58,14
-    PUSHBUTTON      "&Anuluj",IDCANCEL,169,162,58,14
-    LTEXT           "Wersja:",IDC_STATIC,7,130,26,14
-    LTEXT           "",IDC_VERSION,39,130,41,14
-    CONTROL         "",IDC_INFO_MAILTO,"RHYPERLINKWND",0x0,7,146,76,14
-    PUSHBUTTON      "O systemie ...",IDB_INFO_SYSTEMINFO,7,162,76,14,WS_DISABLED | WS_GROUP
+    CONTROL         "",IDC_TAB,"SysTabControl32",TCS_FOCUSONBUTTONDOWN | WS_TABSTOP,7,7,220,158
+    DEFPUSHBUTTON   "&Ok",IDOK,169,169,58,14
+    PUSHBUTTON      "&Zapisz",IDSAVE,169,185,58,14
+    PUSHBUTTON      "&Anuluj",IDCANCEL,169,202,58,14
+    LTEXT           "Wersja:",IDC_STATIC,7,169,26,14
+    LTEXT           "", IDC_VERSION, 39, 169, 41, 14
+    CONTROL         "",IDC_INFO_MAILTO,"RHYPERLINKWND",0x0,7,185,76,14
+    PUSHBUTTON      "O systemie ...",IDB_INFO_SYSTEMINFO,7,202,76,14,WS_DISABLED | WS_GROUP
 END
 
 IDD_OPT_VIEW DIALOGEX 0, 0, 220, 175
 STYLE DS_SETFONT | WS_CHILD | WS_SYSMENU
 FONT 9, "Segoe UI", 400, 0, 0x1
 BEGIN
-    CONTROL         "Custom1",IDC_VIEW_TABLECOLOR,"RCOLORWND",WS_TABSTOP,62,7,56,14
-    CONTROL         "Custom1",IDC_VIEW_RESULTCOLOR,"RCOLORWND",WS_TABSTOP,62,26,56,14
-    LTEXT           "Kolor sto³u:",IDC_STATIC,7,7,54,12
-    LTEXT           "Kolor wyników:",IDC_STATIC,7,27,54,12
-    LTEXT           "Koszulka:",IDC_STATIC,7,67,54,12
-    PUSHBUTTON      "<",IDC_VIEW_LEFT,62,52,10,31
-    CONTROL         "",IDC_VIEW_COVER,"Static",SS_OWNERDRAW,73,45,35,45
-    PUSHBUTTON      ">",IDC_VIEW_RIGHT,109,52,10,31
-    PUSHBUTTON      "Domyœlny",IDC_VIEW_DEFUALTTABLE,121,7,40,14
-    PUSHBUTTON      "Domyœlny",IDC_VIEW_DEFUALTRESULT,121,26,40,14
+    LTEXT           "Sukno sto³u:", IDC_STATIC, 7, 27, 54, 12
+    PUSHBUTTON      "<", IDC_VIEW_FELTLEFT, 62, 15, 10, 31
+    CONTROL         "Felt", IDC_VIEW_FELT, "SELECTBITMAP", 0, 73, 8, 35, 45
+    PUSHBUTTON      ">", IDC_VIEW_FELTRIGHT, 109, 15, 10, 31
+    LTEXT           "Koszulka:", IDC_STATIC, 7, 78, 54, 12
+    PUSHBUTTON      "<", IDC_VIEW_COVERLEFT, 62, 66, 10, 31
+    CONTROL         "Cover", IDC_VIEW_COVER, "SELECTBITMAP", SBM_STRETCH | SBM_ANIMATE, 73, 59, 35, 45
+    PUSHBUTTON      ">", IDC_VIEW_COVERRIGHT, 109, 66, 10, 31
 END
 
 IDD_OPT_TIME DIALOGEX 0, 0, 186, 90
@@ -144,7 +143,7 @@ IDD_HELP DIALOGEX 0, 0, 400, 19
 STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE
 FONT 9, "Segoe UI", 400, 0, 0x1
 BEGIN
-    LTEXT           "Sekcja:", IDC_STATIC, 1, 4, 24, 12
+    LTEXT           "Sekcja:",IDC_STATIC,1,4,24,12
     PUSHBUTTON      "<<",IDC_HELP_LEFT,49,2,20,12
     COMBOBOX        IDC_HELP_SECTION,70,2,100,100,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      ">>",IDC_HELP_RIGHT,171,2,20,12
@@ -205,7 +204,7 @@ BEGIN
 
     IDD_OPTIONS, DIALOG
     BEGIN
-        BOTTOMMARGIN, 176
+        BOTTOMMARGIN, 216
     END
 
     IDD_OPT_VIEW, DIALOG
@@ -297,14 +296,7 @@ END
 //
 
 IDB_NOTRUMPS            BITMAP                  "res\\notrumps.bmp"
-
-IDB_BLANKET             BITMAP                  "res\\table_blanket.bmp"
-
 IDB_PAPER               BITMAP                  "res\\paper_canvas.bmp"
-
-IDB_BLANKET_DARK        BITMAP                  "res\\table_blanket_dark.bmp"
-
-IDB_BLANKET_LIGHT       BITMAP                  "res\\table_blanket_light.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////

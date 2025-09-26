@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by Kierki.rc
+// Used by Kierki_en_uk.rc
 //
 #define IDC_MYICON                      2
 #define IDC_PHYSICAL_MEM                101
@@ -99,41 +99,32 @@
 #define IDR_PNG_PASS                    179
 #define IDS_HELPTITLE_GAME              180
 #define IDR_JSON_INSTRUCTIONS           181
-#define IDB_BLANKET                     182
 #define IDB_PAPER                       183
-#define IDB_BLANKET_DARK                184
-#define IDB_BLANKET_LIGHT               185
-#define IDD_HELP						186
+#define IDD_HELP                        186
 #define IDC_HELP_SECTION                187
 #define IDC_HELP_SHOWHELP               188
-#define IDC_HELP_LEFT					189
-#define IDC_HELP_RIGHT					190
-#define IDC_VIEW_TABLECOLOR             1000
-#define IDC_VIEW_RESULTCOLOR            1001
+#define IDC_HELP_LEFT                   189
+#define IDC_HELP_RIGHT                  190
 #define IDC_PLAYER1                     1001
 #define IDC_PLAYER2                     1002
-#define IDC_COVER                       1002
-#define IDC_PLAYER3                     1003
-#define IDC_BUTTON1                     1003
-#define IDC_CHANGECOVER                 1003
-#define IDC_PLAYER4                     1004
-#define IDC_VIEW_DEFUALTTABLE           1004
-#define IDC_VIEW_DEFUALTRESULT          1005
-#define IDC_IMAGE                       1006
-#define IDC_VIEW_COVER                  1008
-#define IDC_VIEW_LEFT                   1009
-#define IDC_VIEW_RIGHT                  1010
-#define IDC_RULES_CONFIRMTRICK          1011
-#define IDC_RULES_LANGUAGE              1012
-#define IDC_LOGON_LANGUAGE              1013
-#define IDC_LOGON_NOTSHOW               1014
-#define IDC_RULES_SHOWDLG               1015
-#define IDC_COMBO1                      1015
-#define IDC_RULES_HELPVISIBLE           1016
-#define IDC_COMBO2                      1016
-#define IDC_EDIT1                       1017
-#define IDC_LIST1                       1018
-#define IDC_EDIT2                       1019
+#define IDC_COVER                       1003
+#define IDC_PLAYER3                     1004
+#define IDC_BUTTON1                     1005
+#define IDC_CHANGECOVER                 1006
+#define IDC_PLAYER4                     1007
+#define IDC_IMAGE                       1008
+#define IDC_VIEW_FELTLEFT				1009
+#define IDC_VIEW_FELT					1010
+#define IDC_VIEW_FELTRIGHT				1011
+#define IDC_VIEW_COVERLEFT				1012
+#define IDC_VIEW_COVER					1013
+#define IDC_VIEW_COVERRIGHT				1014
+#define IDC_RULES_CONFIRMTRICK          1015
+#define IDC_RULES_LANGUAGE              1016
+#define IDC_LOGON_LANGUAGE              1017
+#define IDC_LOGON_NOTSHOW               1019
+#define IDC_RULES_SHOWDLG               1020
+#define IDC_RULES_HELPVISIBLE           1022
 #define IDM_GAME_NEW                    32780
 #define IDM_GAME_OPEN                   32781
 #define IDM_GAME_SAVE                   32782

@@ -32,7 +32,7 @@ static const TCHAR c_sPlayer2Reg[] = _T("Software\\Medea\\Kierki\\PLAYER2");
 static const TCHAR c_sPlayer3Reg[] = _T("Software\\Medea\\Kierki\\PLAYER3");
 static const TCHAR c_sPlayer4Reg[] = _T("Software\\Medea\\Kierki\\PLAYER4");
 
-static const TCHAR c_sTableColorReg[] = _T("Software\\Medea\\Kierki\\TABLECOLOR");
+static const TCHAR c_sTableFeltReg[] = _T("Software\\Medea\\Kierki\\TABLEFELT");
 static const TCHAR c_sResultColorReg[] = _T("Software\\Medea\\Kierki\\RESULTCOLOR");
 
 static const TCHAR c_sStartPointReg[] = _T("Software\\Medea\\Kierki\\STARTPOINT");
@@ -72,15 +72,9 @@ void RRegData::Serialize(void)
 
 RRegData::RViewRegData::RViewRegData(void)
 {
-	m_colorTable = (COLORREF)RRegColorDef(c_sTableColorReg, HKEY_CURRENT_USER, GetDefaultTableColor());
+	m_idFelt = (UINT)RRegUIntDef(c_sTableFeltReg, HKEY_CURRENT_USER, IDB_FELT_DEFAULT);
 	m_colorResult = (COLORREF)RRegColorDef(c_sResultColorReg, HKEY_CURRENT_USER, GetDefaultResultColor());
 	m_idCover = (UINT)RRegUIntDef(c_sCoverID, HKEY_CURRENT_USER, IDB_COVER_1);
-}
-
-
-COLORREF RRegData::RViewRegData::GetDefaultTableColor(void) const 
-{
-	return DARK_GREEN_COLOR;
 }
 
 
@@ -92,8 +86,8 @@ COLORREF RRegData::RViewRegData::GetDefaultResultColor(void) const
 
 void RRegData::RViewRegData::Serialize(void)
 {
-	RRegColor l_regTableColor(c_sTableColorReg, HKEY_CURRENT_USER); 
-	l_regTableColor = m_colorTable;
+	RRegUInt l_regTableFelt(c_sTableFeltReg, HKEY_CURRENT_USER);
+	l_regTableFelt = m_idFelt;
 	RRegColor l_regResultColor(c_sResultColorReg, HKEY_CURRENT_USER); 
 	l_regResultColor = m_colorResult;
 	RRegUInt l_regCover(c_sCoverID, HKEY_CURRENT_USER);

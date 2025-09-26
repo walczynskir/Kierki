@@ -298,6 +298,7 @@
     <ClCompile Include="ResultWnd.cpp" />
     <ClCompile Include="RobberDecider.cpp" />
     <ClCompile Include="RRegData.cpp" />
+    <ClCompile Include="RSelectBitmap.cpp" />
     <ClCompile Include="Score.cpp" />
     <ClCompile Include="Scores.cpp" />
     <ClCompile Include="SortCards.cpp" />
@@ -349,6 +350,7 @@
     <ClInclude Include="RFile.h" />
     <ClInclude Include="RobberDecider.h" />
     <ClInclude Include="RRegData.h" />
+    <ClInclude Include="RSelectBitmap.h" />
     <ClInclude Include="Score.h" />
     <ClInclude Include="Scores.h" />
     <ClInclude Include="SortCards.h" />
@@ -370,9 +372,6 @@
     <Image Include="res\pas_icon_80x80.png" />
     <Image Include="res\save_game_48x48.png" />
     <Image Include="res\save_game_as_48x48.png" />
-    <Image Include="res\table_blanket.bmp" />
-    <Image Include="res\table_blanket_dark.bmp" />
-    <Image Include="res\table_blanket_light.bmp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Kierki.rc" />

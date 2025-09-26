@@ -9,6 +9,7 @@
 #include <rcommon/drawutl.h>
 #include <rcommon/RBtnWnd.h>
 #include <rcommon/RSystemExc.h>
+#include <RCards/resource.h>
 #include <commctrl.h>
 #include "layout.h"
 #include <format>
@@ -52,7 +53,6 @@ static int TopCardEdgePuzzle(const CCard& a_card);
 
 // bitmaps
 static bool LoadBitmaps(HWND a_hWnd);
-static bool LoadCover(HWND a_hWnd);
 
 // drawing
 static void Draw(HWND a_hWnd, HDC a_hDC);
@@ -163,12 +163,9 @@ void GameWnd_NewDeal(HWND a_hWnd, bool a_bOpen)
 void GameWnd_Refresh(HWND a_hWnd)
 {
 	GameWndData* l_pData = GetData(a_hWnd);
-	l_pData->SetBrush(::CreateSolidBrush(l_pData->m_pGameData->m_regData.m_regView.m_colorTable));
-#pragma warning(disable:4244)
-	::SetClassLongPtr(a_hWnd, GCLP_HBRBACKGROUND, reinterpret_cast<LONG_PTR>(l_pData->GetBrush()));
-#pragma warning(default:4244)
 
-	VERIFY(LoadCover(a_hWnd));
+	if (!LoadBitmaps(a_hWnd))
+		throw RSystemExc(_T("LOAD_BITMAP_FAILED"));
 }
 
 
@@ -248,15 +245,6 @@ OnCreate(
 	{
 		return -1;
 	}
-
-	l_pData->SetBrush(::CreateSolidBrush(l_pData->m_pGameData->m_regData.m_regView.m_colorTable));
-	::SetClassLongPtr(a_hWnd, GCLP_HBRBACKGROUND, reinterpret_cast<LONG_PTR>(l_pData->GetBrush()));
-
-	l_pData->SetBmpBlanket((HBITMAP)::LoadImage(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_BLANKET),
-		IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION));
-
-	if (l_pData->GetBmpBlanket() == NULL)
-		return -1;
 
 	return 0;
 }
@@ -433,11 +421,11 @@ static void DrawBlanket(HWND a_hWnd, HDC a_hDC)
 
 	// Create compatible DC and select bitmap
 	HDC l_hdcMem = CreateCompatibleDC(a_hDC);
-	HBITMAP l_hBmpOld = (HBITMAP)SelectObject(l_hdcMem, l_pData->GetBmpBlanket());
+	HBITMAP l_hBmpOld = (HBITMAP)SelectObject(l_hdcMem, l_pData->GetBmpFelt());
 
 	// Get bitmap size
 	BITMAP l_bmp;
-	GetObject(l_pData->GetBmpBlanket(), sizeof(BITMAP), &l_bmp);
+	GetObject(l_pData->GetBmpFelt(), sizeof(BITMAP), &l_bmp);
 
 	RECT l_rect;
 	::GetClientRect(a_hWnd, &l_rect);
@@ -617,7 +605,7 @@ InvalidateCardHorz(
 
 	short l_iCard = a_iCard + 1; // karta sprawdzana
 	short l_dxWidth = c_dxCardGap ; // szerokoœæ rysowana
-	short l_iAt = l_pData->m_iTileHorz ;	// ile kart trzeba sprawdziæ
+	short l_iAt = (short)(c_dxCard / c_dxCardGap) + 1;	// ile kart trzeba sprawdziæ
 	// dla reszty kart trzeba sprawdziæ, czy s¹ nastêpne
 	while (l_iAt-- > 0)
 	{
@@ -681,7 +669,7 @@ InvalidateCardVert(
 
 	short l_iCard = a_iCard + 1; // karta sprawdzana
 	short l_dyHeight = c_dxCardGap ; // szerokoœæ rysowana
-	short l_iAt = l_pData->m_iTileVert ;	// ile kart trzeba sprawdziæ
+	short l_iAt = (short)(c_dyCard / c_dxCardGap) + 1;	// ile kart trzeba sprawdziæ
 	// dla reszty kart trzeba sprawdziæ, czy s¹ nastêpne
 	while (l_iAt-- > 0)
 	{
@@ -1241,32 +1229,27 @@ void InvalidateResult(HWND a_hWnd, bool a_bAll,	T_PLAYER a_enPlayer)
 
 
 // ---------------------------------------------------------
-// Load bitmaps 
+// Load bitmaps - felt and cover
 //
 bool LoadBitmaps(HWND a_hWnd)
 {
-	if (!LoadCover(a_hWnd))
-	{
-		return false;
-	}
-
 	GameWndData* l_pData = GetData(a_hWnd);
-	l_pData->m_iTileHorz = (short)(c_dxCard / c_dxCardGap) + 1 ;
-	l_pData->m_iTileVert = (short)(c_dyCard / c_dxCardGap) + 1 ;
+
+	l_pData->SetBmpCover(reinterpret_cast<HBITMAP>(::LoadBitmap(RCards_GetInstance(),
+		MAKEINTRESOURCE(l_pData->m_pGameData->m_regData.m_regView.m_idCover))));
+	if (l_pData->GetBmpCover() == nullptr)
+		return false;
+
+	l_pData->SetBmpFelt(reinterpret_cast<HBITMAP>(::LoadImage(RCards_GetInstance(),
+		MAKEINTRESOURCE(l_pData->m_pGameData->m_regData.m_regView.m_idFelt), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION)));
+
+	if (l_pData->GetBmpFelt() == NULL)
+		return false;
+
 	return true;
 }
 
 
-// ---------------------------------------------------------
-// loads reverses of cards
-//
-bool LoadCover(HWND a_hWnd)
-{
-	GameWndData* l_pData = GetData(a_hWnd);
-	l_pData->SetBmpCover(reinterpret_cast<HBITMAP>(::LoadBitmap(RCards_GetInstance(),
-		MAKEINTRESOURCE(l_pData->m_pGameData->m_regData.m_regView.m_idCover))));
-	return (l_pData->GetBmpCover() != NULL);
-}
 
 
 

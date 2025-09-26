@@ -129,6 +129,9 @@
     <ClCompile Include="JsonParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RSelectBitmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AllowedCards.h">
@@ -266,6 +269,9 @@
     <ClInclude Include="JsonParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RSelectBitmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Kierki.ico">
@@ -298,16 +304,7 @@
     <Image Include="res\pas_icon_80x80.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\table_blanket.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\paper_canvas.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\table_blanket_dark.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\table_blanket_light.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

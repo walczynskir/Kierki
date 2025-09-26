@@ -24,22 +24,16 @@ public:
 		m_hWndApp(a_hWndApp), m_pGameData(a_pGameData)
 	{
 		m_hWndNoTrump = NULL;
-		m_hBmpPass = NULL;
-		m_hBmpCover = NULL;
-		m_hBrush = NULL;
 		m_nLastHighlighted = -1;
 		m_enPassPlayer = E_DL_NULL;
 		m_bConfirmTrick = false;
-		m_iTileHorz = 0;
-		m_iTileVert = 0;
 	}
 
 	~GameWndData(void)
 	{
 		SetBmpCover(NULL);
-		SetBrush(NULL);
 		SetBmpPass(NULL);
-		SetBmpBlanket(NULL);
+		SetBmpFelt(NULL);
 	}
 
 	void SetBmpCover(HBITMAP a_hBmp) 
@@ -54,18 +48,6 @@ public:
 
 	HBITMAP GetBmpCover() const { return m_hBmpCover; };
 	
-	void SetBrush(HBRUSH a_hBrush) 
-	{ 
-		if (m_hBrush != NULL)
-		{
-			::DeleteObject(m_hBrush);
-			m_hBrush = NULL;
-		}
-		m_hBrush = a_hBrush; 
-	}
-
-	HBRUSH GetBrush() const { return m_hBrush; };
-
 	void SetBmpPass(HBITMAP a_hBmp) 
 	{ 
 		if (m_hBmpPass != NULL)
@@ -78,17 +60,17 @@ public:
 
 	HBITMAP GetBmpPass() const { return m_hBmpPass; };
 	
-	void SetBmpBlanket(HBITMAP a_hBmp)
+	void SetBmpFelt(HBITMAP a_hBmp)
 	{
-		if (m_hBmpBlanket != NULL)
+		if (m_hBmpFelt != NULL)
 		{
-			::DeleteObject(m_hBmpBlanket);
-			m_hBmpBlanket = NULL;
+			::DeleteObject(m_hBmpFelt);
+			m_hBmpFelt = NULL;
 		}
-		m_hBmpBlanket = a_hBmp;
+		m_hBmpFelt = a_hBmp;
 	}
 
-	HBITMAP GetBmpBlanket() const { return m_hBmpBlanket; };
+	HBITMAP GetBmpFelt() const { return m_hBmpFelt; };
 
 
 	GameData* m_pGameData;
@@ -108,15 +90,10 @@ public:
 	T_PLAYER    m_enPassPlayer;
 
 	bool     m_bConfirmTrick;
-
-	short m_iTileVert;
-	short m_iTileHorz;
-
 	short m_nLastHighlighted;
 
 private:
-	HBITMAP  m_hBmpBlanket{};
-	HBITMAP  m_hBmpCover;
-	HBRUSH   m_hBrush;
-	HBITMAP  m_hBmpPass;
+	HBITMAP  m_hBmpFelt{};
+	HBITMAP  m_hBmpCover{};
+	HBITMAP  m_hBmpPass{};
 };

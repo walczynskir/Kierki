@@ -23,10 +23,9 @@ public:
 	{
 	public:
 		RViewRegData(void);
-		COLORREF	m_colorTable;
+		UINT		m_idFelt;
 		COLORREF	m_colorResult;
 		UINT		m_idCover;
-		COLORREF GetDefaultTableColor(void) const;
 		COLORREF GetDefaultResultColor(void) const;
 		virtual  void Serialize(void);
 	};

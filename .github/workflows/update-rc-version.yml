@@ -1,0 +1,49 @@
+name: Update RC Version on Commit
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  update-rc-version:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get version from commit count
+        run: |
+          git fetch --unshallow || true
+          $commitCount = git rev-list --count HEAD
+          $version = "1.0.0.$commitCount"
+          echo "VERSION=$version" >> $env:GITHUB_ENV
+
+      - name: Update .rc file
+        run: |
+          $rcPaths = @(
+		   "Kierki.rc",
+		    "Kierki_en_uk.rc"
+			)
+
+ 	 foreach ($rcPath in $rcPaths) {
+	    Write-Host "Updating version in $rcPath"
+	    (Get-Content $rcPath) -replace 'FILEVERSION \d+,\d+,\d+,\d+', "FILEVERSION 1,0,0,$env:VERSION.Split('.')[3]" `
+                          -replace 'PRODUCTVERSION \d+,\d+,\d+,\d+', "PRODUCTVERSION 1,0,0,$env:VERSION.Split('.')[3]" `
+                          -replace 'FileVersion\", \".*\"', "FileVersion\", \"$env:VERSION\"" `
+                          -replace 'ProductVersion\", \".*\"', "ProductVersion\", \"$env:VERSION\"" |
+                          Set-Content $rcPath 
+             }
+      - name: Commit updated version
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+         $rcPaths = @(
+		   "Kierki.rc",
+		    "Kierki_en_uk.rc"
+		    )
+	 foreach ($rcPath in $rcPaths) {
+          git add $rcPath
+          git commit -m "Auto-update version to $env:VERSION"
+          git push

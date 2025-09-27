@@ -3,6 +3,8 @@
 #include "resource.h"
 #include <rcommon/RSystemExc.h>
 #include <rcommon/ROwnExc.h>
+#include <rcommon/RMemDC.h>
+#include <rcommon/drawutl.h>
 #include <richedit.h>
 #include <CommCtrl.h>
 #include <wininet.h>
@@ -33,6 +35,8 @@ public:
 	const LanguageManager& m_lang;
 	HelpJson	m_jsonHelp;
 	RRegData* m_pRegData = nullptr;	
+	HBITMAP m_hBmpBackground{};
+
 };
 
 
@@ -45,6 +49,7 @@ inline static LRESULT OnNCCreate(HWND a_hWnd, LPCREATESTRUCT a_pCreateStruct);
 inline static LRESULT OnCreate(HWND a_hWnd);
 inline static void OnNcDestroy(HWND a_hWnd);
 inline static void OnSize(HWND a_hWnd, int a_dxWidth, int a_dyHeight);
+inline static void OnPaint(HWND a_hWnd);
 inline static void OnCommand(HWND a_hWnd, WPARAM a_wParam, LPARAM a_lParam);
 inline static void OnSelChange(HWND a_hWnd);
 
@@ -57,6 +62,7 @@ static void NextSection(HWND a_hWnd, bool a_bNext);
 static void ShowHelpChanged(HWND a_hWnd);
 void EnableDisableButtons(HWND a_hWnd);
 
+inline static void Draw(HWND a_hWnd, HDC a_hDC);
 
 static void AlignCheckboxRight(HWND a_hDlg, int a_idCheck, int a_iWidth);
 
@@ -95,11 +101,21 @@ HWND HelpWnd_Create(DWORD a_dwExStyle, DWORD a_dwStyle, HWND a_hWndParent, const
 	l_pData->m_hWndPanel = ::CreateDialogParam(::GetModuleHandle(nullptr),
 		MAKEINTRESOURCEW(IDD_HELP), l_hWndHelp, Panel_WndProc, reinterpret_cast<LPARAM>(l_pData));
 
-	l_pData->m_hWndRich = ::CreateWindowEx(a_dwExStyle | WS_EX_CLIENTEDGE, MSFTEDIT_CLASS, _T(""),
-		a_dwStyle | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL | WS_VISIBLE,
+	l_pData->m_hWndRich = ::CreateWindowEx(WS_EX_TRANSPARENT | WS_EX_CLIENTEDGE, MSFTEDIT_CLASS, _T(""),
+		a_dwStyle | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL | WS_VISIBLE ,
 		0, 0, 0, 0, l_hWndHelp, NULL, nullptr, NULL);
 	if (l_pData->m_hWndRich == NULL)
 		throw RSystemExc(_T("CREATE_HWNDHELP_RICHEDIT"));
+
+
+	l_pData->m_hBmpBackground = (HBITMAP)::LoadImage(
+		::GetModuleHandle(nullptr),
+		MAKEINTRESOURCE(IDB_PAPER), // Use full path or resource ID
+		IMAGE_BITMAP,
+		0, 0, LR_CREATEDIBSECTION
+	);
+	if (l_pData->m_hBmpBackground == nullptr)
+		throw RSystemExc(_T("LOAD_BACKGROUND_HLP"));
 
 	return l_hWndHelp;
 }
@@ -127,6 +143,10 @@ LRESULT CALLBACK HelpWnd_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPAR
 
 		case WM_COMMAND:
 			OnCommand(a_hWnd, a_wParam, a_lParam);
+			break;
+
+		case WM_PAINT:
+			OnPaint(a_hWnd);
 			break;
 
 		default:
@@ -231,6 +251,59 @@ void OnSize(HWND a_hWnd, int a_dxWidth, int a_dyHeight)
 }
 
 
+// ---------------------------------------------------------
+// Painting
+void OnPaint(
+	HWND a_hWnd		//IN game wnd
+)
+{
+	PAINTSTRUCT l_ps;
+	HDC l_hdc = ::BeginPaint(a_hWnd, &l_ps);
+
+	RECT l_rectWin;
+	::GetClientRect(a_hWnd, &l_rectWin);
+	{
+		// prepare correct DC
+#ifdef _DEBUG 
+		HDC l_hPaintDC = l_hdc;
+#else
+		RMemDC l_memDC(l_hdc, &l_rectWin);
+		HDC l_hPaintDC = l_memDC;
+#endif
+		Draw(a_hWnd, l_hPaintDC);
+	}
+	::EndPaint(a_hWnd, &l_ps);
+}
+
+
+
+void Draw(HWND a_hWnd, HDC a_hDC)
+{
+	HelpWndData* l_pData = HelpWndData::GetData(a_hWnd);
+
+	RECT l_rect;
+	::GetClientRect(a_hWnd, &l_rect);
+
+	if (l_pData->m_hBmpBackground)
+	{
+		HDC l_hdcMem = ::CreateCompatibleDC(a_hDC);
+		HBITMAP hOldBmp = (HBITMAP)::SelectObject(l_hdcMem, l_pData->m_hBmpBackground);
+
+		BITMAP l_bmp;
+		::GetObject(l_pData->m_hBmpBackground, sizeof(BITMAP), &l_bmp);
+
+		::StretchBlt(a_hDC, 0, 0, l_rect.right, l_rect.bottom,
+			l_hdcMem, 0, 0, l_bmp.bmWidth, l_bmp.bmHeight, SRCCOPY);
+
+		::SelectObject(l_hdcMem, hOldBmp);
+		::DeleteDC(l_hdcMem);
+	}
+
+	RDraw::BlendOverlay(a_hDC, l_rect, l_pData->m_pRegData->m_regHidden.m_btTintHelpBackground, l_pData->m_pRegData->m_regHidden.m_btAlphaHelpBackground);
+
+}
+
+ 
 
 static void OnCommand(HWND a_hWnd, WPARAM a_wParam, LPARAM a_lParam)
 {
@@ -472,3 +545,5 @@ void EnableDisableButtons(HWND a_hWnd)
 	::EnableWindow(l_hWndLeft, (l_idx > 0));
 	::EnableWindow(l_hWndRight, (l_idx < l_iSize - 1));
 }
+
+

@@ -133,6 +133,7 @@
     </CustomBuild>
     <ResourceCompile>
       <PreprocessorDefinitions>RCARDS_DLL;RCOMMON_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDE_PATH)</AdditionalIncludeDirectories>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugLib|Win32'">
@@ -265,6 +266,9 @@
     <CustomBuild>
       <AdditionalInputs>.\HeartsRibbon.xml;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
+    <ResourceCompile>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDE_PATH)</AdditionalIncludeDirectories>
+    </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AllowedCards.cpp" />

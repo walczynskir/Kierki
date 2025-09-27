@@ -22,6 +22,8 @@ typedef registry_int<UINT> RRegUInt;
 typedef registry_int_def<UINT> RRegUIntDef;
 typedef registry_int<LANGID> RRegLangid;
 typedef registry_int_def<LANGID> RRegLangidDef;
+typedef registry_int<BYTE> RRegByte;
+typedef registry_int_def<BYTE> RRegByteDef;
 
 static const TCHAR c_sDealerReg[] = _T("Software\\Medea\\Kierki\\DEALER");
 static const TCHAR c_sWaitTimeReg[] = _T("Software\\Medea\\Kierki\\WAITTIME");
@@ -45,6 +47,9 @@ static const TCHAR c_sLanguageReg[] = _T("Software\\Medea\\Kierki\\LANGUAGE");
 static const TCHAR c_sLogonDlgReg[] = _T("Software\\Medea\\Kierki\\LOGONDLG");
 static const TCHAR c_sHelpVisibleReg[] = _T("Software\\Medea\\Kierki\\HELPVISIBLE");
 static const TCHAR c_sHelpFontReg[] = _T("Software\\Medea\\Kierki\\HELPFONT");
+
+static const TCHAR c_sAlphaHelpBackground[] = _T("Software\\Medea\\Kierki\\ALPHAHELPBACKGROUND");
+static const TCHAR c_sTintHelpBackground[] = _T("Software\\Medea\\Kierki\\TINTHELPBACKGROUND");
 
 
 #define DARK_GREEN_COLOR RGB(0, 128, 0)
@@ -192,5 +197,21 @@ void RRegData::RRulesRegData::Serialize(void)
 	l_regHelpVisible = m_bHelpVisible;
 	RRegTString l_regHelpFont(c_sHelpFontReg, HKEY_CURRENT_USER);
 	l_regHelpFont = m_sHelpFont;
+}
+
+
+RRegData::RHiddenRegData::RHiddenRegData(void)
+{
+	m_btAlphaHelpBackground = (BYTE)RRegByteDef(c_sAlphaHelpBackground, HKEY_CURRENT_USER, 160);;
+	m_btTintHelpBackground = (COLORREF)RRegColorDef(c_sTintHelpBackground, HKEY_CURRENT_USER, RGB(255, 255, 255));
+}
+
+
+void RRegData::RHiddenRegData::Serialize(void)
+{
+	RRegByte l_regAlphaHelpBackground(c_sAlphaHelpBackground, HKEY_CURRENT_USER);
+	l_regAlphaHelpBackground = m_btAlphaHelpBackground;
+	RRegColor l_regTintHelpBackground(c_sTintHelpBackground, HKEY_CURRENT_USER);
+	l_regTintHelpBackground = m_btTintHelpBackground;
 }
 

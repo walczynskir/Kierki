@@ -27,35 +27,35 @@
 
 
 
-#pragma todo("implement different background for instructions/help")
-#pragma todo ("implement help for every game")
-#pragma todo("change background for results")
-#pragma todo("check saving and loading the game - it behaves strangely, starts from incorrect directory")
-#pragma todo("handle nlohmann json library in a proper way - downloading from repository")
-#pragma todo("some card edges not painted correctly - it seems something wrong after drawing at least one card form player's cards")
-#pragma todo("sometimes trump color is not displayed in the window title")
-#pragma todo("replace SetCapture with TrackMouseEvent in GameWnd")
-#pragma todo("improve / refactor exception handling")
-#pragma todo("allow selecting different table blanket")
-#pragma todo("add more languages")
-#pragma todo("Move main window functionalities such as own toolbar and status bar to separate class")
-#pragma todo("OwnToolbar - add AdjustRect function")
-#pragma todo("Rethink OwnToolbar architecture, add to library of components")
-#pragma todo("check behaviour of cover, when app used for the first time")
-#pragma todo("implement DPI awareness, replace AdjustWindowRectEx with AdjustWindowRectExForDpi")
-#pragma todo("instead of a few structures in GameWndData regarding positions, prepare one structure for all positions regarding players")
-#pragma todo("ask about saving after pushing exit button")
-#pragma todo("disabling items in own toolbar, as previously with menu items: check and remove function OnEnterMenuLoop")
-#pragma todo("About system button doesn't work")
-#pragma todo("remove unused resources")
-#pragma todo("check all resources for unicode")
-#pragma todo("remove unused code")	
-#pragma todo("bad rendering of covers (background)")
-#pragma todo("during recover if I selected card very quickly it has a problem with inverting card - maybe replacing SetCapture is correct approach")
-#pragma todo("refactor of cover selecting")
-#pragma todo("add option to load other cards decks and/or graphics")
-#pragma todo("refactor of all graphics")
-#pragma todo("TRACE family of macros doesn't work correctly with wstring")
+// TODO implement different background for instructions/help
+// TODO implement help for every game
+// TODO change background for results
+// TODO check saving and loading the game - it behaves strangely, starts from incorrect directory
+// TODO handle nlohmann json library in a proper way - downloading from repository
+// TODO some card edges not painted correctly - it seems something wrong after drawing at least one card form player's cards
+// TODO sometimes trump color is not displayed in the window title
+// TODO replace SetCapture with TrackMouseEvent in GameWnd
+// TODO improve / refactor exception handling
+// TODO allow selecting different table blanket
+// TODO add more languages
+// TODO Move main window functionalities such as own toolbar and status bar to separate class
+// TODO OwnToolbar - add AdjustRect function
+// TODO Rethink OwnToolbar architecture, add to library of components
+// TODO check behaviour of cover, when app used for the first time
+// TODO implement DPI awareness, replace AdjustWindowRectEx with AdjustWindowRectExForDpi
+// TODO instead of a few structures in GameWndData regarding positions, prepare one structure for all positions regarding players
+// TODO ask about saving after pushing exit button
+// TODO disabling items in own toolbar, as previously with menu items: check and remove function OnEnterMenuLoop
+// TODO About system button doesn't work
+// TODO remove unused resources
+// TODO check all resources for unicode
+// TODO remove unused code	
+// TODO bad rendering of covers (background)
+// TODO during recover if I selected card very quickly it has a problem with inverting card - maybe replacing SetCapture is correct approach
+// TODO refactor of cover selecting
+// TODO add option to load other cards decks and/or graphics
+// TODO refactor of all graphics
+// TODO TRACE family of macros doesn't work correctly with wstring
 
 
 

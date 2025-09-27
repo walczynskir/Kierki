@@ -71,9 +71,20 @@ public:
 		bool		m_bSaveScores;
 	};
 
+	class RHiddenRegData
+	{
+	public:
+		RHiddenRegData();
+		virtual void Serialize(void);
+
+		BYTE	 m_btAlphaHelpBackground;	
+		COLORREF m_btTintHelpBackground;
+	};
+
 	RViewRegData	m_regView;
 	RTimeRegData	m_regTime;
 	RPlayersRegData m_regPlayers;
 	ROtherRegData	m_regOther;
 	RRulesRegData	m_regRules;
+	RHiddenRegData  m_regHidden;
 };

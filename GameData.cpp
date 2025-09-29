@@ -896,19 +896,7 @@ BOOL	//WY TRUE - kontynuowaæ grê
 GameData::NextSerie()
 {
 	if (m_enSerie == E_SR_4)
-	{
-		// TODO : code not finished,  unknown idea
-		// save scores to file
-//#ifndef _DEBUG
-		if (m_regData.m_regOther.m_bSaveScores)
-		{
-//			TCHAR l_sFile[1024];
-//			::LoadString(::GetModuleHandle(NULL), IDS_FILE_RESULTS, l_sFile, ArraySize(l_sFile));
-//			m_pPlayers->SaveScores(l_sFile);
-		}
-//#endif
 		return FALSE;
-	}
 	else
 	{
 		m_enDealer = GetFirstDealerAndSetNext();

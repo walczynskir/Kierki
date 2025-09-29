@@ -23,10 +23,7 @@ public:
 	{
 	public:
 		RViewRegData(void);
-		UINT		m_idFelt;
-		COLORREF	m_colorResult;
 		UINT		m_idCover;
-		COLORREF GetDefaultResultColor(void) const;
 		virtual  void Serialize(void);
 	};
 
@@ -56,7 +53,7 @@ public:
 		LANGID m_idLanguage;	// LANGID
 		bool m_bLogonDlg;		// show the LogonDlg?
 		bool m_bHelpVisible;	// show help at startup?
-		tstring m_sHelpFont;	// help font name
+		bool m_bHandWrittenResult;  // fancy style of results (handwritten)
 		virtual void Serialize(void);
 	};
 	
@@ -78,7 +75,13 @@ public:
 		virtual void Serialize(void);
 
 		BYTE	 m_btAlphaHelpBackground;	
-		COLORREF m_btTintHelpBackground;
+		COLORREF m_clrTintHelpBackground;
+		BYTE	 m_btAlphaResultBackground;
+		COLORREF m_clrTintResultBackground;
+		tstring	 m_sResultFont;	// result font name
+		tstring  m_sHelpFont;	// help font name
+
+
 	};
 
 	RViewRegData	m_regView;

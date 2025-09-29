@@ -301,6 +301,9 @@
     <Image Include="res\paper_canvas.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\notebook_canvas.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Kierki.rc">

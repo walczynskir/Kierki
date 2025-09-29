@@ -84,7 +84,7 @@ BOOL HelpWnd_Register(HINSTANCE a_hInst)
 	return ::RegisterClassEx(&l_wcex);
 }
 
-HWND HelpWnd_Create(DWORD a_dwExStyle, DWORD a_dwStyle, HWND a_hWndParent, const LanguageManager& a_lang, RRegData* a_pRegData)
+HWND HelpWnd_Create( DWORD a_dwStyle, HWND a_hWndParent, const LanguageManager& a_lang, RRegData* a_pRegData)
 {
 	HelpWndData* l_pData = new HelpWndData(a_lang);
 	HWND l_hWndHelp = ::CreateWindowEx(0, c_sWindowClass, NULL, WS_CHILD | WS_CLIPSIBLINGS,
@@ -115,7 +115,7 @@ HWND HelpWnd_Create(DWORD a_dwExStyle, DWORD a_dwStyle, HWND a_hWndParent, const
 		0, 0, LR_CREATEDIBSECTION
 	);
 	if (l_pData->m_hBmpBackground == nullptr)
-		throw RSystemExc(_T("LOAD_BACKGROUND_HLP"));
+		throw RSystemExc(_T("LOAD_BACKGROUND_HELP"));
 
 	return l_hWndHelp;
 }
@@ -299,7 +299,7 @@ void Draw(HWND a_hWnd, HDC a_hDC)
 		::DeleteDC(l_hdcMem);
 	}
 
-	RDraw::BlendOverlay(a_hDC, l_rect, l_pData->m_pRegData->m_regHidden.m_btTintHelpBackground, l_pData->m_pRegData->m_regHidden.m_btAlphaHelpBackground);
+	RDraw::BlendOverlay(a_hDC, l_rect, l_pData->m_pRegData->m_regHidden.m_clrTintHelpBackground, l_pData->m_pRegData->m_regHidden.m_btAlphaHelpBackground);
 
 }
 

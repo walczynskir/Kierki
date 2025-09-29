@@ -366,6 +366,7 @@
     <Image Include="Kierki.ico" />
     <Image Include="res\kierki.ico" />
     <Image Include="res\new_game_48x48.png" />
+    <Image Include="res\notebook_canvas.bmp" />
     <Image Include="res\notrumps.bmp" />
     <Image Include="res\open_game_48x48.png" />
     <Image Include="res\options_48x48.png" />

@@ -103,9 +103,13 @@ void SetCtrlValues(HWND a_hDlg)
 	::SendMessage(::GetDlgItem(a_hDlg, IDC_RULES_SHOWDLG), BM_SETCHECK,
 		l_pData->m_pData->m_bLogonDlg ? BST_CHECKED : BST_UNCHECKED, 0L);
 
-	// set Logondlg checkbox
+	// set show help checkbox
 	::SendMessage(::GetDlgItem(a_hDlg, IDC_RULES_HELPVISIBLE), BM_SETCHECK,
 		l_pData->m_pData->m_bHelpVisible ? BST_CHECKED : BST_UNCHECKED, 0L);
+
+	// set Fancy style checkbox
+	::SendMessage(::GetDlgItem(a_hDlg, IDC_RULES_FANCYRESULTS), BM_SETCHECK,
+		l_pData->m_pData->m_bHandWrittenResult ? BST_CHECKED : BST_UNCHECKED, 0L);
 }
 
 
@@ -141,4 +145,8 @@ static void GetCtrlValues(HWND a_hDlg)
 
 	// get ShowHelp checkbox
 	l_pData->m_pData->m_bHelpVisible = (::SendMessage(::GetDlgItem(a_hDlg, IDC_RULES_HELPVISIBLE), BM_GETCHECK, 0, 0L) == BST_CHECKED);
+
+	// get Fancy style checkbox
+	l_pData->m_pData->m_bHandWrittenResult = (::SendMessage(::GetDlgItem(a_hDlg, IDC_RULES_FANCYRESULTS), BM_GETCHECK, 0, 0L) == BST_CHECKED);
+
 }

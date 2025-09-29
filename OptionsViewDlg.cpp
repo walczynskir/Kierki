@@ -32,7 +32,6 @@ public:
 
 	RRegData::RViewRegData* GetRegData() const { return m_pRegViewData; }
 
-	HWND  m_hFelt = nullptr;
 	HWND  m_hCover = nullptr;
 
 private:
@@ -113,13 +112,8 @@ static void OnInitDialog(HWND a_hDlg, ROptionsViewData* a_pData)
 {
 	::SetWindowLongPtr(a_hDlg, GWL_USERDATA, reinterpret_cast<LONG_PTR>(a_pData));
 
-	a_pData->m_hFelt = ::GetDlgItem(a_hDlg, IDC_VIEW_FELT);
 	a_pData->m_hCover = ::GetDlgItem(a_hDlg, IDC_VIEW_COVER);
 
-	for (int l_iAt = IDB_FELT_START; l_iAt <= IDB_FELT_END; l_iAt++)
-	{
-		SelectBitmap_AddBitmap(a_pData->m_hFelt, RCards_GetInstance(), l_iAt);
-	}
 
 	for (int l_iAt = IDB_COVER_START; l_iAt <= IDB_COVER_END; l_iAt++)
 	{
@@ -135,14 +129,6 @@ void OnCommand(HWND a_hDlg, UINT a_idCtrl, UINT a_idCmd)
 	ROptionsViewData* l_pData = GetRData(a_hDlg);
 	switch (a_idCtrl)
 	{
-
-	case IDC_VIEW_FELTLEFT:
-		SelectBitmap_MoveLeft(l_pData->m_hFelt);
-		break;
-
-	case IDC_VIEW_FELTRIGHT:
-		SelectBitmap_MoveRight(l_pData->m_hFelt);
-		break;
 
 	case IDC_VIEW_COVERLEFT:
 		SelectBitmap_MoveLeft(l_pData->m_hCover);
@@ -171,10 +157,6 @@ void SetCtrlValues(HWND a_hDlg)
 	if (l_pRegData->m_idCover == 0)
 		l_pRegData->m_idCover = IDB_COVER_DEFAULT; // default
 
-	if (l_pRegData->m_idFelt == 0)
-		l_pRegData->m_idFelt = IDB_FELT_DEFAULT; // default
-
-	SelectBitmap_SetSelected(l_pData->m_hFelt, l_pRegData->m_idFelt);
 	SelectBitmap_SetSelected(l_pData->m_hCover, l_pRegData->m_idCover);
 }
 
@@ -191,7 +173,6 @@ static void GetCtrlValues(HWND a_hDlg)
 	RRegData::RViewRegData* l_pRegData = l_pData->GetRegData();
 
 #pragma todo("Brakuje sprawdzenia b³êdu")
-	l_pRegData->m_idFelt = SelectBitmap_GetSelected(l_pData->m_hFelt);
 	l_pRegData->m_idCover = SelectBitmap_GetSelected(l_pData->m_hCover);
 }
 

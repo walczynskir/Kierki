@@ -1241,7 +1241,7 @@ bool LoadBitmaps(HWND a_hWnd)
 		return false;
 
 	l_pData->SetBmpFelt(reinterpret_cast<HBITMAP>(::LoadImage(RCards_GetInstance(),
-		MAKEINTRESOURCE(l_pData->m_pGameData->m_regData.m_regView.m_idFelt), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION)));
+		MAKEINTRESOURCE(IDB_FELT_DEFAULT), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION)));
 
 	if (l_pData->GetBmpFelt() == NULL)
 		return false;

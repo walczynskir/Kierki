@@ -5,6 +5,10 @@
 #include <rcommon/RListCtrl.h>
 #include <rcommon/RTheme.h>
 #include <rcommon/drawutl.h>
+#include <rcommon/RSystemExc.h>
+
+
+
 
 #define MAX_LOADSTRING 100
 
@@ -23,11 +27,42 @@ public:
 		m_enSerie = a_pData->m_enSerie;
 		m_pGameData = a_pData->m_pGameData;
 		m_hWndList = NULL;
+		m_hBmpBackground = a_pData->m_hBmpBackground;
+		m_hFont = a_pData->m_hFont;
+
+	}
+	~ResultWndData()
+	{
+		SetBackground(nullptr);
+		SetFont(nullptr);
+	}
+
+	void SetBackground(HBITMAP a_hBmpBackground)
+	{
+		if (m_hBmpBackground != nullptr)
+		{
+			::DeleteObject(m_hBmpBackground);
+		}
+		m_hBmpBackground = a_hBmpBackground;
+
+	}
+
+	void SetFont(HFONT a_hFont)
+	{
+		if (m_hFont != nullptr)
+		{
+			::DeleteObject(m_hFont);
+		}
+		m_hFont = a_hFont;
 	}
 
 	T_SERIE   m_enSerie;
 	GameData* m_pGameData;
 	HWND      m_hWndList;
+	HBITMAP   m_hBmpBackground{};
+	HFONT     m_hFont{};
+
+
 };
 
 
@@ -46,10 +81,20 @@ inline static void OnAppRefresh(HWND a_hWnd);
 inline static void OnSetSerie(HWND a_hWnd, T_SERIE a_enSerie);
 
 static void SetColors(HWND a_hWnd);
+static void SetBackground(HWND a_hWnd);
+static void SetFont(HWND a_hWnd);
+
+
 
 static BOOL ListDataProc(void* a_pObj, long a_iRow, long a_iCol, const TCHAR** a_ppData);
 static long ListCountProc(void* a_pObj);
 static BOOL ListDrawProc(HWND a_hWnd, HDC a_hDC, void* a_pObj, LPRLCELL a_pCell);
+static BOOL ListGridProc(HWND a_hWnd, HDC a_hDC, void* a_pObj, LPRLGRID a_pGrid);
+static BOOL ListBackgroundProc(HWND a_hWnd, HDC a_hDC, void* a_pObj, LPRECT a_pRect);
+
+
+
+
 
 
 HWND ResultWnd_Create(DWORD a_dwStyleEx, DWORD a_dwStyle, int a_x, int a_y,
@@ -83,9 +128,7 @@ ATOM ResultWnd_Register(HINSTANCE a_hInst)
 
 ResultWndData* GetData(HWND a_hWnd)
 {
-#pragma warning(disable: 4312) // I do not understand why compiler issues this warning!
 	return reinterpret_cast<ResultWndData*>(::GetWindowLongPtr(a_hWnd, c_iWindowOfs));
-#pragma warning(default: 4312)
 }
 
 
@@ -146,16 +189,20 @@ OnCreate(
 	{
 		return -1;
 	}
-#pragma warning(disable: 4244)
 	::SetWindowLongPtr(a_hWnd, c_iWindowOfs, (LONG_PTR)l_pData);
-#pragma warning(default: 4244)
 
 	RListCtrl_Register();
 	l_pData->m_hWndList = RListCtrl_Create(NULL, WS_VISIBLE | WS_CHILD, 
 		0, 0, 0, 0, a_hWnd, 0, NULL);
+
+	// TODO - unify what is passed to these procedures, too prone for errors now
 	RListCtrl_SetDataProc(l_pData->m_hWndList, a_hWnd, ListDataProc);
 	RListCtrl_SetCountProc(l_pData->m_hWndList, l_pData->m_pGameData, ListCountProc);
 	RListCtrl_SetDrawProc(l_pData->m_hWndList, l_pData->m_pGameData, ListDrawProc);
+	RListCtrl_SetGridProc(l_pData->m_hWndList, l_pData, ListGridProc);
+	RListCtrl_SetDrawBkProc(l_pData->m_hWndList, l_pData, ListBackgroundProc);
+
+	
 
 	RLCCOLDEF l_col;
 	l_col.psColName = _T("");
@@ -166,6 +213,9 @@ OnCreate(
 	RListCtrl_SetCol(l_pData->m_hWndList, &l_col);
 
 	SetColors(a_hWnd);
+	SetBackground(a_hWnd);
+	SetFont(a_hWnd);
+
 
 	return 0;
 }
@@ -207,6 +257,7 @@ void OnSetFocus(HWND a_hWnd)
 void OnAppRefresh(HWND a_hWnd)
 {
 	SetColors(a_hWnd);
+	SetFont(a_hWnd);
 }
 
 
@@ -249,30 +300,29 @@ BOOL ListDataProc(void* a_pObj, long a_iRow, long a_iCol, const TCHAR** a_ppData
 			// summary of previous games
 
 			int l_iScore;
-			bool l_bSprintf = true;
+			bool l_bData = true;
 
 			if (a_iRow == 1)
 			{
 				l_iScore = l_pGameData->SumPlayerScore((T_PLAYER)a_iCol, l_pData->m_enSerie);
 			}
 			// minuses
-			// TODO - check why this condition is different from others?
 			else if ((a_iRow >= 2) && (a_iRow <= 7) && (a_iRow <= l_enGame + 2))
 			{
 				l_iScore = l_pGameData->GetPlayerScore((T_PLAYER)a_iCol, l_pData->m_enSerie, (T_GAMES)(a_iRow - 2));
 			}
 			// sum of minuses
-			else if ((a_iRow == 8))
+			else if ((a_iRow == 8) && (l_enGame > E_GM_NOTRICKS))
 			{
 				l_iScore = l_pGameData->SumPlayerMinuses((T_PLAYER)a_iCol, l_pData->m_enSerie);
 			}
 			// robber
 			else if ((a_iRow == 9) && (a_iRow <= l_enGame + 3))
 			{
-				l_iScore = l_pGameData->GetPlayerScore((T_PLAYER)a_iCol, l_pData->m_enSerie, (T_GAMES)(a_iRow - 3));
+					l_iScore = l_pGameData->GetPlayerScore((T_PLAYER)a_iCol, l_pData->m_enSerie, (T_GAMES)(a_iRow - 3));
 			}
 			// sum of all minuses
-			else if ((a_iRow == 10))
+			else if ((a_iRow == 10) && (l_enGame > E_GM_NOTRICKS))
 			{
 				l_iScore = l_pGameData->SumPlayerMinuses((T_PLAYER)a_iCol, l_pData->m_enSerie, TRUE);
 			}
@@ -282,7 +332,7 @@ BOOL ListDataProc(void* a_pObj, long a_iRow, long a_iCol, const TCHAR** a_ppData
 				l_iScore = l_pGameData->GetPlayerScore((T_PLAYER)a_iCol, l_pData->m_enSerie, (T_GAMES)(a_iRow - 4));
 			}
 			// sum of minuses and pluses
-			else if (a_iRow == 15)
+			else if ((a_iRow == 15) && (l_enGame > E_GM_NOTRICKS))
 			{
 				l_iScore = l_pGameData->SumPlayer((T_PLAYER)a_iCol, l_pData->m_enSerie);
 			}
@@ -292,21 +342,21 @@ BOOL ListDataProc(void* a_pObj, long a_iRow, long a_iCol, const TCHAR** a_ppData
 				l_iScore = l_pGameData->GetPlayerScore((T_PLAYER)a_iCol, l_pData->m_enSerie, (T_GAMES)(a_iRow - 5));
 			}
 			// after puzzle
-			else if (a_iRow == 17)
+			else if ((a_iRow == 17) && (l_enGame > E_GM_NOTRICKS))
 			{
 				l_iScore = l_pGameData->SumPlayerAll((T_PLAYER)a_iCol, l_pData->m_enSerie);
 			}
 			// sum of all games
-			else if (a_iRow == 18)
+			else if ((a_iRow == 18) && (l_enGame > E_GM_NOTRICKS))
 			{
 				l_iScore = l_pGameData->SumPlayerAllScore((T_PLAYER)a_iCol, l_pData->m_enSerie);
 			}
 			else
 			{
-				l_bSprintf = false; // no data
+				l_bData = false; // no data
 			}
 
-			if (l_bSprintf)
+			if (l_bData)
 			{
 				_sntprintf_s(l_sData, ArraySize(l_sData), _TRUNCATE, _T("%d"), l_iScore);
 			}
@@ -337,46 +387,91 @@ BOOL ListDrawProc(HWND a_hWnd, HDC a_hDC, void* a_pObj, LPRLCELL a_pCell)
 	}
 	if (l_iRow == 0)
 	{
-		RTheme l_theme;
-		if (l_theme.OpenData(a_hWnd, L"HEADER") != NULL)
-		{
-			HRESULT l_hr = l_theme.DrawBackground(a_hDC, HP_HEADERITEM, HIS_NORMAL, &(a_pCell->pos.rect));
-			RECT l_rectContent;
-			l_hr = l_theme.GetBackgroundContentRect(a_hDC, HP_HEADERITEM, 
-					HIS_NORMAL, &(a_pCell->pos.rect), &l_rectContent);
- 
-			l_hr = l_theme.DrawText(a_hDC, HP_HEADERITEM, HIS_NORMAL,
-							a_pCell->sText.c_str(), static_cast<int>(a_pCell->sText.length()),
-							DT_CENTER | DT_VCENTER | DT_SINGLELINE,
-							0, &l_rectContent);
-		}
-		else
-		{
-			RListCtrl_DrawCell(a_hWnd, a_hDC, a_pObj, a_pCell);
-			RECT l_rect;
-			l_rect.top = a_pCell->pos.rect.bottom - 2;
-			l_rect.bottom = a_pCell->pos.rect.bottom;
-			l_rect.left = a_pCell->pos.rect.left;
-			l_rect.right = a_pCell->pos.rect.right;
-			RDraw::FillSolidRect(a_hDC, l_rect, RGB(230, 139, 44));
-			l_rect.bottom = l_rect.top;
-			l_rect.top = l_rect.bottom - 1;
-			RDraw::FillSolidRect(a_hDC, l_rect, RGB(255, 199, 60));
-		}
-		return TRUE;
-	}
-	if ((l_iRow == 1) || (l_iRow == 7) || (l_iRow == 9) || (l_iRow == 14) || (l_iRow == 16) || (l_iRow == 18))
-	{
+// TODO correct header drawing, at least put the colors into the registry
 		RListCtrl_DrawCell(a_hWnd, a_hDC, a_pObj, a_pCell);
 		RECT l_rect;
-		l_rect.top = a_pCell->pos.rect.bottom - 1;
-		l_rect.bottom = a_pCell->pos.rect.bottom - 1;
+		l_rect.top = a_pCell->pos.rect.bottom - 2;
+		l_rect.bottom = a_pCell->pos.rect.bottom;
 		l_rect.left = a_pCell->pos.rect.left;
 		l_rect.right = a_pCell->pos.rect.right;
-		RDraw::Draw3DRect(a_hDC, l_rect, RGB(0, 0, 0), RGB(0, 0, 0));
+		RDraw::FillSolidRect(a_hDC, l_rect, RGB(230, 139, 44));
+		l_rect.bottom = l_rect.top;
+		l_rect.top = l_rect.bottom - 1;
+		RDraw::FillSolidRect(a_hDC, l_rect, RGB(255, 199, 60));
 		return TRUE;
 	}
 	return RListCtrl_DrawCell(a_hWnd, a_hDC, a_pObj, a_pCell);
+}
+
+BOOL ListGridProc(HWND a_hWnd, HDC a_hDC, void* a_pObj, LPRLGRID a_pGrid)
+{
+
+	ResultWndData* l_pData = reinterpret_cast<ResultWndData*>(a_pObj);
+	if (l_pData->m_pGameData->m_regData.m_regRules.m_bHandWrittenResult)
+	{
+		Gdiplus::Graphics l_graphics(a_hDC);
+		if (a_pGrid->bVert)
+		{
+			if (a_pGrid->iRowCol < 3)
+				RDraw::DrawSketchLineGDIPlus(&l_graphics, { a_pGrid->rect.right, a_pGrid->rect.top }, { a_pGrid->rect.right, a_pGrid->rect.bottom }, 1, 60, 1.5f, Gdiplus::Color(255, 0, 0, 0));
+		}
+		else
+		{
+			int l_iRow = a_pGrid->iRowCol;
+			float l_fThickness = ((l_iRow == 1) || (l_iRow == 7) || (l_iRow == 9) || (l_iRow == 14) || (l_iRow == 16) || (l_iRow == 18)) ? 3.0f : 1.5f;
+			{
+				RDraw::DrawSketchLineGDIPlus(&l_graphics, { a_pGrid->rect.left, a_pGrid->rect.bottom }, { a_pGrid->rect.right, a_pGrid->rect.bottom }, 1, 60, l_fThickness, Gdiplus::Color(255, 0, 0, 0));
+			}
+		}
+	}
+	else
+	{
+		if (a_pGrid->bVert)
+		{
+			if (a_pGrid->iRowCol < 3)
+				RListCtrl_DrawGrid(a_hWnd, a_hDC, a_pObj, a_pGrid);
+		}
+		else
+		{
+			int l_iRow = a_pGrid->iRowCol;
+			int l_iThickness = ((l_iRow == 1) || (l_iRow == 7) || (l_iRow == 9) || (l_iRow == 14) || (l_iRow == 16) || (l_iRow == 18)) ? 3 : 1;
+			a_pGrid->hPen = ::CreatePen(PS_SOLID, l_iThickness, RGB(0, 0, 0));
+			HPEN l_hPenOld = (HPEN)::SelectObject(a_hDC, a_pGrid->hPen);
+			RListCtrl_DrawGrid(a_hWnd, a_hDC, a_pObj, a_pGrid);
+			// reset and delete pen
+			a_pGrid->hPen = l_hPenOld;
+			::SelectObject(a_hDC, l_hPenOld);
+			::DeleteObject(a_pGrid->hPen);
+		}
+
+	}
+
+	return TRUE;
+}
+
+
+static BOOL ListBackgroundProc(HWND a_hWnd, HDC a_hDC, void* a_pObj, LPRECT a_pRect)
+{
+	ResultWndData* l_pData = reinterpret_cast<ResultWndData*>(a_pObj);
+	if (l_pData->m_hBmpBackground)
+	{
+		HDC l_hdcMem = ::CreateCompatibleDC(a_hDC);
+		HBITMAP hOldBmp = (HBITMAP)::SelectObject(l_hdcMem, l_pData->m_hBmpBackground);
+
+		BITMAP l_bmp;
+		::GetObject(l_pData->m_hBmpBackground, sizeof(BITMAP), &l_bmp);
+
+		::StretchBlt(a_hDC, 0, 0, a_pRect->right, a_pRect->bottom,
+			l_hdcMem, 0, 0, l_bmp.bmWidth, l_bmp.bmHeight, SRCCOPY);
+
+		::SelectObject(l_hdcMem, hOldBmp);
+		::DeleteDC(l_hdcMem);
+	}
+
+	// TODO add registry positions
+	RDraw::BlendOverlay(a_hDC, *a_pRect, l_pData->m_pGameData->m_regData.m_regHidden.m_clrTintResultBackground, l_pData->m_pGameData->m_regData.m_regHidden.m_btAlphaResultBackground);
+
+	return TRUE;
 }
 
 
@@ -395,6 +490,76 @@ void SetColors(HWND a_hWnd)
 	RListCtrl_SetColor(l_pData->m_hWndList, RLC_DBOR_CELLACTSEL, RListCtrl_GetColor(l_pData->m_hWndList, RLC_DBOR_CELLACT));
 	RListCtrl_SetColor(l_pData->m_hWndList, RLC_CELL_FIXEDACT, ::GetSysColor(COLOR_BTNFACE));
 	RListCtrl_SetColor(l_pData->m_hWndList, RLC_CELL_FIXEDNOACTNOSEL, ::GetSysColor(COLOR_BTNFACE));
-	RListCtrl_SetColor(l_pData->m_hWndList, RLC_BK_ACT, l_pData->m_pGameData->m_regData.m_regView.m_colorResult);
-	RListCtrl_SetColor(l_pData->m_hWndList, RLC_BK_NOACT, l_pData->m_pGameData->m_regData.m_regView.m_colorResult);
 }
+
+
+void SetBackground(HWND a_hWnd)
+{
+	ResultWndData* l_pData = GetData(a_hWnd);
+	if (l_pData->m_hBmpBackground == nullptr)
+	{
+		l_pData->SetBackground(reinterpret_cast<HBITMAP>(::LoadImage(
+			::GetModuleHandle(nullptr),
+			MAKEINTRESOURCE(IDB_NOTEBOOK),
+			IMAGE_BITMAP,
+			0, 0, LR_CREATEDIBSECTION)));
+		if (l_pData->m_hBmpBackground == nullptr)
+			throw RSystemExc(_T("LOAD_BACKGROUND_RESULT"));
+	}
+}
+
+
+void SetFont(HWND a_hWnd)
+{
+	ResultWndData* l_pData = GetData(a_hWnd);
+	if (l_pData->m_pGameData->m_regData.m_regRules.m_bHandWrittenResult)
+	{
+		l_pData->SetFont(::CreateFont(18, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+			DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
+			DEFAULT_PITCH | FF_DONTCARE, l_pData->m_pGameData->m_regData.m_regHidden.m_sResultFont.c_str()));
+	}
+	else
+	{
+		// create my own copy of GUI FONT to be able to delete it safely
+		HFONT l_hFontStock = reinterpret_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
+		LOGFONT l_lf;
+		::GetObject(l_hFontStock, sizeof(LOGFONT), &l_lf);
+		l_pData->SetFont(::CreateFontIndirect(&l_lf));
+	}
+	RListCtrl_SetFont(l_pData->m_hWndList, l_pData->m_hFont);
+}
+
+/* maybe instead of bitmap? Then I can draw results on the right side of the vertical red line ;-)
+void DrawNotebookBackground(HDC a_hDC, RECT a_rect, COLORREF lineColor = RGB(180, 200, 255), COLORREF marginColor = RGB(255, 100, 100), int lineSpacing = 20)
+{
+	// Wype³nij t³o na bia³o
+	HBRUSH bgBrush = CreateSolidBrush(RGB(255, 255, 255));
+	FillRect(a_hDC, &a_rect, bgBrush);
+	DeleteObject(bgBrush);
+
+	// Pióro do linii poziomych
+	HPEN hLinePen = CreatePen(PS_SOLID, 1, lineColor);
+	HPEN hOldPen = (HPEN)SelectObject(a_hDC, hLinePen);
+
+	// Rysuj linie poziome
+	for (int y = a_rect.top + lineSpacing; y < a_rect.bottom; y += lineSpacing)
+	{
+		MoveToEx(a_hDC, a_rect.left, y, nullptr);
+		LineTo(a_hDC, a_rect.right, y);
+	}
+
+	// Pióro do marginesu
+	HPEN hMarginPen = CreatePen(PS_SOLID, 2, marginColor);
+	SelectObject(a_hDC, hMarginPen);
+
+	// Rysuj pionow¹ liniê marginesu
+	int marginX = a_rect.left + 50;
+	MoveToEx(a_hDC, marginX, a_rect.top, nullptr);
+	LineTo(a_hDC, marginX, a_rect.bottom);
+
+	// Przywróæ poprzednie pióro
+	SelectObject(a_hDC, hOldPen);
+	DeleteObject(hLinePen);
+	DeleteObject(hMarginPen);
+}
+*/

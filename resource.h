@@ -1,8 +1,10 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by Kierki_en_uk.rc
+// Used by Kierki.rc
 //
+#define SBM_ANIMATE                     0x0001
 #define IDC_MYICON                      2
+#define SBM_STRETCH                     0x0002
 #define IDC_PHYSICAL_MEM                101
 #define IDC_TAB                         101
 #define IDD_KIERKI_DIALOG               102
@@ -105,6 +107,7 @@
 #define IDC_HELP_SHOWHELP               188
 #define IDC_HELP_LEFT                   189
 #define IDC_HELP_RIGHT                  190
+#define IDB_NOTEBOOK                    191
 #define IDC_PLAYER1                     1001
 #define IDC_PLAYER2                     1002
 #define IDC_COVER                       1003
@@ -113,12 +116,10 @@
 #define IDC_CHANGECOVER                 1006
 #define IDC_PLAYER4                     1007
 #define IDC_IMAGE                       1008
-#define IDC_VIEW_FELTLEFT				1009
-#define IDC_VIEW_FELT					1010
-#define IDC_VIEW_FELTRIGHT				1011
-#define IDC_VIEW_COVERLEFT				1012
-#define IDC_VIEW_COVER					1013
-#define IDC_VIEW_COVERRIGHT				1014
+#define IDC_RULES_FANCYRESULTS          1009
+#define IDC_VIEW_COVERLEFT              1012
+#define IDC_VIEW_COVER                  1013
+#define IDC_VIEW_COVERRIGHT             1014
 #define IDC_RULES_CONFIRMTRICK          1015
 #define IDC_RULES_LANGUAGE              1016
 #define IDC_LOGON_LANGUAGE              1017

@@ -51,9 +51,19 @@ static const TCHAR c_sHelpFontReg[] = _T("Software\\Medea\\Kierki\\HELPFONT");
 static const TCHAR c_sAlphaHelpBackground[] = _T("Software\\Medea\\Kierki\\ALPHAHELPBACKGROUND");
 static const TCHAR c_sTintHelpBackground[] = _T("Software\\Medea\\Kierki\\TINTHELPBACKGROUND");
 
+static const TCHAR c_sHandWrittenResult[] = _T("Software\\Medea\\Kierki\\HANDWRITTENRESULT");
+static const TCHAR c_sAlphaResultBackground[] = _T("Software\\Medea\\Kierki\\ALPHARESULTBACKGROUND");
+static const TCHAR c_sTintResultBackground[] = _T("Software\\Medea\\Kierki\\TINTRESULTBACKGROUND");
+
+
+static const TCHAR c_sResultFontReg[] = _T("Software\\Medea\\Kierki\\RESULTFONT");
+
+
 
 #define DARK_GREEN_COLOR RGB(0, 128, 0)
 #define LIME_GREEN_COLOR RGB(50, 205, 50)
+
+#define HANDWRITTEN_FONT _T("Segoe Print")
 
 
 RRegData::RRegData(void)
@@ -77,24 +87,14 @@ void RRegData::Serialize(void)
 
 RRegData::RViewRegData::RViewRegData(void)
 {
-	m_idFelt = (UINT)RRegUIntDef(c_sTableFeltReg, HKEY_CURRENT_USER, IDB_FELT_DEFAULT);
-	m_colorResult = (COLORREF)RRegColorDef(c_sResultColorReg, HKEY_CURRENT_USER, GetDefaultResultColor());
 	m_idCover = (UINT)RRegUIntDef(c_sCoverID, HKEY_CURRENT_USER, IDB_COVER_1);
 }
 
 
-COLORREF RRegData::RViewRegData::GetDefaultResultColor(void) const
-{
-	return LIME_GREEN_COLOR;
-}
 
 
 void RRegData::RViewRegData::Serialize(void)
 {
-	RRegUInt l_regTableFelt(c_sTableFeltReg, HKEY_CURRENT_USER);
-	l_regTableFelt = m_idFelt;
-	RRegColor l_regResultColor(c_sResultColorReg, HKEY_CURRENT_USER); 
-	l_regResultColor = m_colorResult;
 	RRegUInt l_regCover(c_sCoverID, HKEY_CURRENT_USER);
 	l_regCover = m_idCover;
 }
@@ -181,7 +181,7 @@ RRegData::RRulesRegData::RRulesRegData(void)
 	m_idLanguage = (LANGID)RRegLangidDef(c_sLanguageReg, HKEY_CURRENT_USER, ::GetThreadUILanguage());
 	m_bLogonDlg = (bool)RRegBoolDef(c_sLogonDlgReg, HKEY_CURRENT_USER, true);
 	m_bHelpVisible = (bool)RRegBoolDef(c_sHelpVisibleReg, HKEY_CURRENT_USER, true);	
-	m_sHelpFont = (tstring)RRegTStringDef(c_sHelpFontReg, HKEY_CURRENT_USER, _T("Segoe Print"));
+	m_bHandWrittenResult = (BOOL)RRegBoolDef(c_sHandWrittenResult, HKEY_CURRENT_USER, TRUE);;
 }
 
 
@@ -195,15 +195,23 @@ void RRegData::RRulesRegData::Serialize(void)
 	l_regLogonDlg = m_bLogonDlg;
 	RRegBool l_regHelpVisible(c_sHelpVisibleReg, HKEY_CURRENT_USER);
 	l_regHelpVisible = m_bHelpVisible;
-	RRegTString l_regHelpFont(c_sHelpFontReg, HKEY_CURRENT_USER);
-	l_regHelpFont = m_sHelpFont;
+	RRegBool l_regHandWrittenResult(c_sHandWrittenResult, HKEY_CURRENT_USER);
+	l_regHandWrittenResult = m_bHandWrittenResult;
+
 }
 
 
 RRegData::RHiddenRegData::RHiddenRegData(void)
 {
 	m_btAlphaHelpBackground = (BYTE)RRegByteDef(c_sAlphaHelpBackground, HKEY_CURRENT_USER, 160);;
-	m_btTintHelpBackground = (COLORREF)RRegColorDef(c_sTintHelpBackground, HKEY_CURRENT_USER, RGB(255, 255, 255));
+	m_clrTintHelpBackground = (COLORREF)RRegColorDef(c_sTintHelpBackground, HKEY_CURRENT_USER, RGB(255, 255, 255));
+
+	m_btAlphaResultBackground = (BYTE)RRegByteDef(c_sAlphaResultBackground, HKEY_CURRENT_USER, 160);;
+	m_clrTintResultBackground = (COLORREF)RRegColorDef(c_sTintResultBackground, HKEY_CURRENT_USER, RGB(255, 255, 255));
+
+	m_sHelpFont = (tstring)RRegTStringDef(c_sHelpFontReg, HKEY_CURRENT_USER, HANDWRITTEN_FONT);
+	m_sResultFont = (tstring)RRegTStringDef(c_sResultFontReg, HKEY_CURRENT_USER, HANDWRITTEN_FONT);
+
 }
 
 
@@ -212,6 +220,17 @@ void RRegData::RHiddenRegData::Serialize(void)
 	RRegByte l_regAlphaHelpBackground(c_sAlphaHelpBackground, HKEY_CURRENT_USER);
 	l_regAlphaHelpBackground = m_btAlphaHelpBackground;
 	RRegColor l_regTintHelpBackground(c_sTintHelpBackground, HKEY_CURRENT_USER);
-	l_regTintHelpBackground = m_btTintHelpBackground;
+	l_regTintHelpBackground = m_clrTintHelpBackground;
+
+	RRegByte l_regAlphaResultBackground(c_sAlphaResultBackground, HKEY_CURRENT_USER);
+	l_regAlphaResultBackground = m_btAlphaResultBackground;
+	RRegColor l_regTintResultBackground(c_sTintResultBackground, HKEY_CURRENT_USER);
+	l_regTintResultBackground = m_clrTintResultBackground;
+
+	RRegTString l_regHelpFont(c_sHelpFontReg, HKEY_CURRENT_USER);
+	l_regHelpFont = m_sHelpFont;
+	RRegTString l_regResultFont(c_sResultFontReg, HKEY_CURRENT_USER);
+	l_regResultFont = m_sResultFont;
+
 }
 

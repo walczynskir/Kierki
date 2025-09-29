@@ -1,7 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
-#include <rcommon/RSelectBitmap.h>
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -71,7 +70,7 @@ BEGIN
     PUSHBUTTON      "&Zapisz",IDSAVE,169,185,58,14
     PUSHBUTTON      "&Anuluj",IDCANCEL,169,202,58,14
     LTEXT           "Wersja:",IDC_STATIC,7,169,26,14
-    LTEXT           "", IDC_VERSION, 39, 169, 41, 14
+    LTEXT           "",IDC_VERSION,39,169,41,14
     CONTROL         "",IDC_INFO_MAILTO,"RHYPERLINKWND",0x0,7,185,76,14
     PUSHBUTTON      "O systemie ...",IDB_INFO_SYSTEMINFO,7,202,76,14,WS_DISABLED | WS_GROUP
 END
@@ -80,14 +79,10 @@ IDD_OPT_VIEW DIALOGEX 0, 0, 220, 175
 STYLE DS_SETFONT | WS_CHILD | WS_SYSMENU
 FONT 9, "Segoe UI", 400, 0, 0x1
 BEGIN
-    LTEXT           "Sukno sto³u:", IDC_STATIC, 7, 27, 54, 12
-    PUSHBUTTON      "<", IDC_VIEW_FELTLEFT, 62, 15, 10, 31
-    CONTROL         "Felt", IDC_VIEW_FELT, "SELECTBITMAP", 0, 73, 8, 35, 45
-    PUSHBUTTON      ">", IDC_VIEW_FELTRIGHT, 109, 15, 10, 31
-    LTEXT           "Koszulka:", IDC_STATIC, 7, 78, 54, 12
-    PUSHBUTTON      "<", IDC_VIEW_COVERLEFT, 62, 66, 10, 31
-    CONTROL         "Cover", IDC_VIEW_COVER, "SELECTBITMAP", SBM_STRETCH | SBM_ANIMATE, 73, 59, 35, 45
-    PUSHBUTTON      ">", IDC_VIEW_COVERRIGHT, 109, 66, 10, 31
+    LTEXT           "Koszulka:",IDC_STATIC,7,19,54,12
+    PUSHBUTTON      "<",IDC_VIEW_COVERLEFT,62,14,10,31
+    CONTROL         "Cover",IDC_VIEW_COVER,"SELECTBITMAP", SBM_STRETCH | SBM_ANIMATE,73,7,35,45
+    PUSHBUTTON      ">",IDC_VIEW_COVERRIGHT,109,14,10,31
 END
 
 IDD_OPT_TIME DIALOGEX 0, 0, 186, 90
@@ -127,7 +122,7 @@ BEGIN
     CONTROL         "Custom1",IDC_IMAGE,"RCHOOSEBMPWND",WS_TABSTOP,101,27,56,69
 END
 
-IDD_OPT_RULES DIALOGEX 0, 0, 210, 90
+IDD_OPT_RULES DIALOGEX 0, 0, 210, 109
 STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE
 FONT 9, "Segoe UI", 400, 0, 0x1
 BEGIN
@@ -135,8 +130,9 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,106,10
     CONTROL         "Pokazuj okno startowe",IDC_RULES_SHOWDLG,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,24,106,10
     CONTROL         "Pokazuj instrukcje",IDC_RULES_HELPVISIBLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,41,106,10
-    LTEXT           "Jêzyk (wymaga restartu):",IDC_STATIC,7,58,107,8
-    COMBOBOX        IDC_RULES_LANGUAGE,121,58,72,60,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Ozdobny styl rezultatów",IDC_RULES_FANCYRESULTS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,58,106,10
+    LTEXT           "Jêzyk (wymaga restartu):", IDC_STATIC, 7, 75, 107, 8
+    COMBOBOX        IDC_RULES_LANGUAGE, 121, 75, 72, 60, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
 END
 
 IDD_HELP DIALOGEX 0, 0, 400, 19
@@ -242,7 +238,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 204
         TOPMARGIN, 7
-        BOTTOMMARGIN, 83
+        BOTTOMMARGIN, 102
     END
 
     IDD_HELP, DIALOG
@@ -296,7 +292,10 @@ END
 //
 
 IDB_NOTRUMPS            BITMAP                  "res\\notrumps.bmp"
+
 IDB_PAPER               BITMAP                  "res\\paper_canvas.bmp"
+
+IDB_NOTEBOOK            BITMAP                  "res\\notebook_canvas.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////

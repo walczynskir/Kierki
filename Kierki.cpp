@@ -25,11 +25,17 @@
 #include <rcommon/RMemDC.h>
 #include <rcommon/RMessageBox.h>
 
+// better drawing
+#include <gdiplus.h>
+#pragma comment(lib, "gdiplus.lib")
 
 
-// TODO implement different background for instructions/help
+
+
+// TODO change background for results window
+// TODO names and number of taken tricks are not visible after changinging felt
+// possibility of changing ligthnes of the background available in statusbar
 // TODO implement help for every game
-// TODO change background for results
 // TODO check saving and loading the game - it behaves strangely, starts from incorrect directory
 // TODO handle nlohmann json library in a proper way - downloading from repository
 // TODO some card edges not painted correctly - it seems something wrong after drawing at least one card form player's cards
@@ -56,6 +62,8 @@
 // TODO add option to load other cards decks and/or graphics
 // TODO refactor of all graphics
 // TODO TRACE family of macros doesn't work correctly with wstring
+// TODO Instead of using bitmap as a background for the results I can use function to draw notebook, and then draw table on the right side of the vertical red line ;-)
+
 
 
 
@@ -204,6 +212,11 @@ int RunAppThrow(HINSTANCE a_hInst,
 	::RCards_InitCards(a_hInst);
 #endif
 
+	// GDI+ for better graphics
+	ULONG_PTR l_gdiplusToken;
+	Gdiplus::GdiplusStartupInput l_gdiplusStartupInput;
+	Gdiplus::GdiplusStartup(&l_gdiplusToken, &l_gdiplusStartupInput, nullptr);
+
 	// Perform application initialization:
 	HWND l_hWndMain;
 	try
@@ -243,6 +256,7 @@ int RunAppThrow(HINSTANCE a_hInst,
 		}
 	}
 
+	Gdiplus::GdiplusShutdown(l_gdiplusToken);
 	::RCards_DoneCards();
 	return static_cast<int>(l_msg.wParam);
 }
@@ -319,12 +333,12 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 	if (!HelpWnd_Register(a_hInst))
 		throw RSystemExc(_T("REGISTER_HWNDHELP"));
 
-	l_pData->SetHelpWnd(HelpWnd_Create(0, WS_CHILD, l_pData->m_hWndTab, l_pData->m_langManager, &(l_pData->m_gameData.m_regData)));
+	l_pData->SetHelpWnd(HelpWnd_Create(WS_CHILD, l_pData->m_hWndTab, l_pData->m_langManager, &(l_pData->m_gameData.m_regData)));
 
 	if (l_pData->GetHelpWnd() == NULL)
 		throw RSystemExc(_T("HWNDHELP"));
 
-	HelpWnd_SetFont(l_pData->GetHelpWnd(), l_reg.m_sHelpFont);
+	HelpWnd_SetFont(l_pData->GetHelpWnd(), l_pData->m_gameData.m_regData.m_regHidden.m_sHelpFont.c_str());
 	HelpWnd_LoadInstructions(l_pData->GetHelpWnd(), c_sJsonSect_HowToUseApp);
 
 	if (l_pData->m_gameData.m_regData.m_regRules.m_bHelpVisible)

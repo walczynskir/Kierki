@@ -379,14 +379,6 @@ BOOL ListDrawProc(HWND a_hWnd, HDC a_hDC, void* a_pObj, LPRLCELL a_pCell)
 	long l_iRow = a_pCell->pos.cell.iRow;
 	if (l_iRow == 0)
 	{
-		a_pCell->iState |= RLS_DRAWBK;
-	}
-	else
-	{
-		a_pCell->iState &= ~RLS_DRAWBK;
-	}
-	if (l_iRow == 0)
-	{
 // TODO correct header drawing, at least put the colors into the registry
 		RListCtrl_DrawCell(a_hWnd, a_hDC, a_pObj, a_pCell);
 		RECT l_rect;
@@ -409,18 +401,17 @@ BOOL ListGridProc(HWND a_hWnd, HDC a_hDC, void* a_pObj, LPRLGRID a_pGrid)
 	ResultWndData* l_pData = reinterpret_cast<ResultWndData*>(a_pObj);
 	if (l_pData->m_pGameData->m_regData.m_regRules.m_bHandWrittenResult)
 	{
-		Gdiplus::Graphics l_graphics(a_hDC);
 		if (a_pGrid->bVert)
 		{
 			if (a_pGrid->iRowCol < 3)
-				RDraw::DrawSketchLineGDIPlus(&l_graphics, { a_pGrid->rect.right, a_pGrid->rect.top }, { a_pGrid->rect.right, a_pGrid->rect.bottom }, 1, 60, 1.5f, Gdiplus::Color(255, 0, 0, 0));
+				RDraw::DrawSketchLine(a_hDC, { a_pGrid->rect.right, a_pGrid->rect.top }, { a_pGrid->rect.right, a_pGrid->rect.bottom }, 1, 60, 1.5f, RGB(0, 0, 0), 255);
 		}
 		else
 		{
 			int l_iRow = a_pGrid->iRowCol;
 			float l_fThickness = ((l_iRow == 1) || (l_iRow == 7) || (l_iRow == 9) || (l_iRow == 14) || (l_iRow == 16) || (l_iRow == 18)) ? 3.0f : 1.5f;
 			{
-				RDraw::DrawSketchLineGDIPlus(&l_graphics, { a_pGrid->rect.left, a_pGrid->rect.bottom }, { a_pGrid->rect.right, a_pGrid->rect.bottom }, 1, 60, l_fThickness, Gdiplus::Color(255, 0, 0, 0));
+				RDraw::DrawSketchLine(a_hDC, { a_pGrid->rect.left, a_pGrid->rect.bottom }, { a_pGrid->rect.right, a_pGrid->rect.bottom }, 1, 60, l_fThickness, RGB(0, 0, 0), 255);
 			}
 		}
 	}

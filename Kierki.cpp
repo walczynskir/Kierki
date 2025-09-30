@@ -26,16 +26,14 @@
 #include <rcommon/RMessageBox.h>
 
 // better drawing
-#include <gdiplus.h>
 #pragma comment(lib, "gdiplus.lib")
 
 
 
 
-// TODO change background for results window
-// TODO names and number of taken tricks are not visible after changinging felt
-// possibility of changing ligthnes of the background available in statusbar
+// TODO possibility of changing ligthnes of the background available in statusbar
 // TODO implement help for every game
+// TODO clean up / refactor fancy style (the same font and size for fancy and regular styles)
 // TODO check saving and loading the game - it behaves strangely, starts from incorrect directory
 // TODO handle nlohmann json library in a proper way - downloading from repository
 // TODO some card edges not painted correctly - it seems something wrong after drawing at least one card form player's cards
@@ -63,6 +61,7 @@
 // TODO refactor of all graphics
 // TODO TRACE family of macros doesn't work correctly with wstring
 // TODO Instead of using bitmap as a background for the results I can use function to draw notebook, and then draw table on the right side of the vertical red line ;-)
+// TODO refactor to get rid of TCHAR (just use w_char)
 
 
 

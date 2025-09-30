@@ -12,7 +12,6 @@
 #include <RCards/resource.h>
 #include <commctrl.h>
 #include "layout.h"
-#include <format>
 
 
 static const TCHAR c_sWindowClass[] = _T("GAMEWND");	// game window class name
@@ -96,9 +95,13 @@ static bool CanPlayCard(HWND a_hWnd, short a_nCard, T_PLAYER a_enPlayer);
 static bool CanPlayFirstCard(HWND a_hWnd, const CCard& a_card, T_PLAYER a_enPlayer);
 
 
+
+
+
 #pragma todo("consider using resource.h for IDB_... definitions")
 #define IDB_NOTRUMP  1001
 
+// TODO add this to registry
 // only for debug purposes
 #ifdef _DEBUG
 //#define DEBUG_SHOWCARD
@@ -898,37 +901,29 @@ DrawNames(
 {
 	GameWndData* l_pData = GetData(a_hWnd);
 	tstring l_sDrawText;
-	int l_iBkMode = ::SetBkMode(a_hDC, TRANSPARENT);
 
-	COLORREF l_clrPrevText = 0;
-	if (a_bPass)
-	{
-		l_clrPrevText = ::SetTextColor(a_hDC, RGB(255, 0, 0));
-	}
-
-	// players
+	// all players
 
 	for (short l_iAt = E_DL_1; l_iAt <= E_DL_4; l_iAt++)
 	{
 		tstring l_sDrawText;
-		const tstring& l_sPlayerName = l_pData->m_pGameData->m_regData.GetPlayerName(static_cast<T_PLAYER>(l_iAt));
+		const RRegData& l_regData = l_pData->m_pGameData->m_regData;
+		const tstring& l_sPlayerName = l_regData.GetPlayerName(static_cast<T_PLAYER>(l_iAt));
 		if (a_bTakenTricksCount)
 		{
-			l_sDrawText = std::format(_T("{} ({})"), l_sPlayerName, l_pData->m_pGameData->GetPlayerTricksCnt(static_cast<T_PLAYER>(l_iAt)));
+			l_sDrawText = FormatTextT(_T("{} ({})"), l_sPlayerName, l_pData->m_pGameData->GetPlayerTricksCnt(static_cast<T_PLAYER>(l_iAt)));
 		}
 		else
 		{
 			l_sDrawText = l_sPlayerName;
 		}
 
-		::DrawText(a_hDC, l_sDrawText.c_str(), static_cast<int>(l_sDrawText.length()), &(l_pData->m_rectsNames[l_iAt]), DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+		RDraw::DrawSmartText(a_hDC, l_regData.m_regHidden.m_sGameFont.c_str(), l_regData.m_regHidden.m_iGameFontSize, l_pData->m_rectsNames[l_iAt], l_sDrawText.c_str());
+	
+
+		//::DrawText(a_hDC, l_sDrawText.c_str(), static_cast<int>(l_sDrawText.length()), &(l_pData->m_rectsNames[l_iAt]), DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 	}
 
-	if (a_bPass)
-	{
-		::SetTextColor(a_hDC, l_clrPrevText);
-	}
-	::SetBkMode(a_hDC, l_iBkMode);	
 }
 
 
@@ -2046,3 +2041,5 @@ void ClickConfirmTrick(HWND a_hWnd, const POINT& a_pt)
 		Play(a_hWnd);
 	}
 }
+
+

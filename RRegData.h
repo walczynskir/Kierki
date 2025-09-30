@@ -80,6 +80,8 @@ public:
 		COLORREF m_clrTintResultBackground;
 		tstring	 m_sResultFont;	// result font name
 		tstring  m_sHelpFont;	// help font name
+		tstring m_sGameFont;
+		int m_iGameFontSize;
 
 
 	};

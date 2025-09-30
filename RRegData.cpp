@@ -58,6 +58,9 @@ static const TCHAR c_sTintResultBackground[] = _T("Software\\Medea\\Kierki\\TINT
 
 static const TCHAR c_sResultFontReg[] = _T("Software\\Medea\\Kierki\\RESULTFONT");
 
+static const TCHAR c_sGameFontReg[] = _T("Software\\Medea\\Kierki\\GAMEFONT");
+static const TCHAR c_sGameFontSizeReg[] = _T("Software\\Medea\\Kierki\\GAMEFONTSIZE");
+
 
 
 #define DARK_GREEN_COLOR RGB(0, 128, 0)
@@ -212,6 +215,9 @@ RRegData::RHiddenRegData::RHiddenRegData(void)
 	m_sHelpFont = (tstring)RRegTStringDef(c_sHelpFontReg, HKEY_CURRENT_USER, HANDWRITTEN_FONT);
 	m_sResultFont = (tstring)RRegTStringDef(c_sResultFontReg, HKEY_CURRENT_USER, HANDWRITTEN_FONT);
 
+	m_sGameFont = (tstring)RRegTStringDef(c_sGameFontReg, HKEY_CURRENT_USER, HANDWRITTEN_FONT);
+	m_iGameFontSize = (int)(RRegIntDef(c_sGameFontSizeReg, HKEY_CURRENT_USER, 12));
+
 }
 
 
@@ -232,5 +238,10 @@ void RRegData::RHiddenRegData::Serialize(void)
 	RRegTString l_regResultFont(c_sResultFontReg, HKEY_CURRENT_USER);
 	l_regResultFont = m_sResultFont;
 
+	RRegTString l_regGameFont(c_sGameFontReg, HKEY_CURRENT_USER);
+	l_regGameFont = m_sGameFont;
+
+	RRegInt l_regGameFontSize(c_sGameFontSizeReg, HKEY_CURRENT_USER);
+	l_regGameFontSize = m_iGameFontSize;
 }
 

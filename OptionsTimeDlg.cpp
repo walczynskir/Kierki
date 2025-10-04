@@ -7,21 +7,21 @@
 #include <rcommon/RColorWnd.h>
 #include <commctrl.h>
 
-inline static void OnInitDialog(HWND a_hDlg, RRegData::RTimeRegData* a_pData);
+inline static void OnInitDialog(HWND a_hDlg, CRegData::RTimeRegData* a_pData);
 static INT_PTR CALLBACK OptionsTimeDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
 inline static void SetCtrlValues(HWND a_hDlg);
-static RRegData::RTimeRegData* GetRData(HWND a_hDlg);
+static CRegData::RTimeRegData* GetRData(HWND a_hDlg);
 inline static void GetCtrlValues(HWND a_hDlg);
 
 
-HWND CreateOptTimeDlg(HWND a_hParent, RRegData::RBaseRegData* a_pData, LPVOID a_pObj)
+HWND CreateOptTimeDlg(HWND a_hParent, CRegData::RBaseRegData* a_pData, LPVOID a_pObj)
 {
 	return ::CreateDialogParam(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_OPT_TIME), 
 		a_hParent, OptionsTimeDlgProc, reinterpret_cast<LPARAM>(a_pData));
 }
 
 
-static void OnInitDialog(HWND a_hDlg, RRegData::RTimeRegData* a_pData)
+static void OnInitDialog(HWND a_hDlg, CRegData::RTimeRegData* a_pData)
 {
 #pragma warning(disable: 4244)
 	::SetWindowLongPtr(a_hDlg, GWL_USERDATA, reinterpret_cast<LONG_PTR>(a_pData));
@@ -45,7 +45,7 @@ static INT_PTR CALLBACK OptionsTimeDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wP
 	switch (a_iMsg)
 	{
 	case WM_INITDIALOG:
-		OnInitDialog(a_hDlg, reinterpret_cast<RRegData::RTimeRegData*>(a_lParam));
+		OnInitDialog(a_hDlg, reinterpret_cast<CRegData::RTimeRegData*>(a_lParam));
 		return TRUE;
 
 	case WM_GETVALUES:
@@ -60,7 +60,7 @@ static INT_PTR CALLBACK OptionsTimeDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wP
 
 void SetCtrlValues(HWND a_hDlg)
 {
-	RRegData::RTimeRegData* l_pData = GetRData(a_hDlg);
+	CRegData::RTimeRegData* l_pData = GetRData(a_hDlg);
 	TCHAR l_sBuf[128];
 	_ltot_s(l_pData->m_iWaitThrowTime, l_sBuf, ArraySize(l_sBuf), 10);
 	::SetWindowText(::GetDlgItem(a_hDlg, IDC_AFTERCARD), l_sBuf);
@@ -71,17 +71,17 @@ void SetCtrlValues(HWND a_hDlg)
 }
 
 
-static RRegData::RTimeRegData* GetRData(HWND a_hDlg)
+static CRegData::RTimeRegData* GetRData(HWND a_hDlg)
 {
 	#pragma warning(disable: 4312)
-	return reinterpret_cast<RRegData::RTimeRegData*>(::GetWindowLong(a_hDlg, GWL_USERDATA));
+	return reinterpret_cast<CRegData::RTimeRegData*>(::GetWindowLong(a_hDlg, GWL_USERDATA));
 	#pragma warning(default: 4312)
 }
 
 
 static void GetCtrlValues(HWND a_hDlg)
 {
-	RRegData::RTimeRegData* l_pData = GetRData(a_hDlg);
+	CRegData::RTimeRegData* l_pData = GetRData(a_hDlg);
 	TCHAR l_sBuf[128];
 	::GetWindowText(::GetDlgItem(a_hDlg, IDC_AFTERCARD), l_sBuf, ArraySize(l_sBuf));
 	l_pData->m_iWaitThrowTime = _tstol(l_sBuf);

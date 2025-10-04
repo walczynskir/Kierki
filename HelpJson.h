@@ -10,12 +10,12 @@ constexpr LPCSTR c_sJsonSect_HowToUseApp = "how_to_use_app";	// UTF-8
 
 
 
-class HelpJson :
-    public BaseJson
+class CHelpJson :
+    public CBaseJson
 {
  public:
-    HelpJson() = default;
-    ~HelpJson() = default;
+    CHelpJson() = default;
+    ~CHelpJson() = default;
 
     bool load(const LanguageManager& a_lang);
 

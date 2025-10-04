@@ -1,5 +1,5 @@
 #pragma once
 
-#include "RRegData.h"
+#include "RegData.h"
 
-HWND CreateOptRulesDlg(HWND a_hParent, RRegData::RBaseRegData* a_pData, LPVOID a_pObj);
+HWND CreateOptRulesDlg(HWND a_hParent, CRegData::RBaseRegData* a_pData, LPVOID a_pObj);

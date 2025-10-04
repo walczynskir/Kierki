@@ -2,6 +2,7 @@
 #include "Kierki.h"
 #include "typedefs.h"
 #include "ResultWnd.h"
+#include "FontFactory.h"
 #include <rcommon/RListCtrl.h>
 #include <rcommon/RTheme.h>
 #include <rcommon/drawutl.h>
@@ -28,13 +29,12 @@ public:
 		m_pGameData = a_pData->m_pGameData;
 		m_hWndList = NULL;
 		m_hBmpBackground = a_pData->m_hBmpBackground;
-		m_hFont = a_pData->m_hFont;
 
 	}
+
 	~ResultWndData()
 	{
 		SetBackground(nullptr);
-		SetFont(nullptr);
 	}
 
 	void SetBackground(HBITMAP a_hBmpBackground)
@@ -47,26 +47,16 @@ public:
 
 	}
 
-	void SetFont(HFONT a_hFont)
-	{
-		if (m_hFont != nullptr)
-		{
-			::DeleteObject(m_hFont);
-		}
-		m_hFont = a_hFont;
-	}
 
 	T_SERIE   m_enSerie;
 	GameData* m_pGameData;
 	HWND      m_hWndList;
 	HBITMAP   m_hBmpBackground{};
-	HFONT     m_hFont{};
-
 
 };
 
 
-static const TCHAR c_sWindowClass[] = _T("RESULTWND");	// game window class name
+static const TCHAR cc_sWindowClass[] = _T("RESULTWND");	// game window class name
 static const long c_iWindowOfs = sizeof(ResultWndData*) - sizeof(int);
 static ResultWndData* GetData(HWND a_hWnd);
 
@@ -80,10 +70,13 @@ inline static void OnSetFocus(HWND a_hWnd);
 inline static void OnAppRefresh(HWND a_hWnd);
 inline static void OnSetSerie(HWND a_hWnd, T_SERIE a_enSerie);
 
+inline static void OnSetBrightness(HWND a_hWnd, BYTE a_btBrightness);
+inline static BYTE OnGetBrightness(HWND a_hWnd, BOOL* a_pSet);
+
+
 static void SetColors(HWND a_hWnd);
 static void SetBackground(HWND a_hWnd);
 static void SetFont(HWND a_hWnd);
-
 
 
 static BOOL ListDataProc(void* a_pObj, long a_iRow, long a_iCol, const TCHAR** a_ppData);
@@ -101,7 +94,7 @@ HWND ResultWnd_Create(DWORD a_dwStyleEx, DWORD a_dwStyle, int a_x, int a_y,
 	int a_dx, int a_dy, HWND a_hWndParent, HINSTANCE a_hInst, T_SERIE a_enSerie, GameData* a_pGameData)
 {
 	ResultWndData l_data(a_enSerie, a_pGameData);
-	return ::CreateWindowEx(a_dwStyleEx, c_sWindowClass, _T(""), a_dwStyle, a_x, a_y, 
+	return ::CreateWindowEx(a_dwStyleEx, cc_sWindowClass, _T(""), a_dwStyle, a_x, a_y, 
 		a_dx, a_dy, a_hWndParent, NULL, a_hInst, &l_data);
 }
 
@@ -120,7 +113,7 @@ ATOM ResultWnd_Register(HINSTANCE a_hInst)
 	l_wcex.hCursor			= ::LoadCursor(NULL, IDC_ARROW);
 	l_wcex.hbrBackground	= NULL;
 	l_wcex.lpszMenuName		= NULL;
-	l_wcex.lpszClassName	= c_sWindowClass;
+	l_wcex.lpszClassName	= cc_sWindowClass;
 	l_wcex.hIconSm			= NULL;
 	return ::RegisterClassEx(&l_wcex);
 }
@@ -162,6 +155,13 @@ LRESULT CALLBACK ResultWnd_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LP
 		OnAppRefresh(a_hWnd);
 		break;
 
+	case WM_APP_SETBRIGHTNESS:
+		OnSetBrightness(a_hWnd, static_cast<BYTE>(a_wParam));
+		break;
+
+	case WM_APP_GETBRIGHTNESS:
+		return OnGetBrightness(a_hWnd, reinterpret_cast<BOOL*>(a_lParam));
+
 	case WM_APP_SETSERIE:
 		OnSetSerie(a_hWnd, static_cast<T_SERIE>(a_wParam));
 		break;
@@ -202,11 +202,12 @@ OnCreate(
 	RListCtrl_SetGridProc(l_pData->m_hWndList, l_pData, ListGridProc);
 	RListCtrl_SetDrawBkProc(l_pData->m_hWndList, l_pData, ListBackgroundProc);
 
+	RListCtrl_SetMode(l_pData->m_hWndList, LMB_READONLY, TRUE);
 	
 
 	RLCCOLDEF l_col;
 	l_col.psColName = _T("");
-	l_col.iLength = 100; // doesn't matter
+	l_col.iLength = 100; // doesn't matter, will be resized on WM_SIZE
 	RListCtrl_SetCol(l_pData->m_hWndList, &l_col);
 	RListCtrl_SetCol(l_pData->m_hWndList, &l_col);
 	RListCtrl_SetCol(l_pData->m_hWndList, &l_col);
@@ -215,7 +216,6 @@ OnCreate(
 	SetColors(a_hWnd);
 	SetBackground(a_hWnd);
 	SetFont(a_hWnd);
-
 
 	return 0;
 }
@@ -260,6 +260,22 @@ void OnAppRefresh(HWND a_hWnd)
 	SetFont(a_hWnd);
 }
 
+
+void OnSetBrightness(HWND a_hWnd, BYTE a_btBrightness)
+{
+	ResultWndData* l_pData = GetData(a_hWnd);
+	l_pData->m_pGameData->m_regData.m_regAuto.m_btAlphaResultBackground = a_btBrightness;
+	::RedrawWindow(a_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+}
+
+BYTE OnGetBrightness(HWND a_hWnd, BOOL* a_pSet)
+{
+	ResultWndData* l_pData = GetData(a_hWnd);
+	if (l_pData == nullptr)
+		return 0;
+	*a_pSet = TRUE;
+	return l_pData->m_pGameData->m_regData.m_regAuto.m_btAlphaResultBackground;
+}
 
 void OnSetSerie(HWND a_hWnd, T_SERIE a_enSerie)
 {
@@ -399,7 +415,7 @@ BOOL ListGridProc(HWND a_hWnd, HDC a_hDC, void* a_pObj, LPRLGRID a_pGrid)
 {
 
 	ResultWndData* l_pData = reinterpret_cast<ResultWndData*>(a_pObj);
-	if (l_pData->m_pGameData->m_regData.m_regRules.m_bHandWrittenResult)
+	if (l_pData->m_pGameData->m_regData.m_regView.m_bFancyStyle)
 	{
 		if (a_pGrid->bVert)
 		{
@@ -459,8 +475,7 @@ static BOOL ListBackgroundProc(HWND a_hWnd, HDC a_hDC, void* a_pObj, LPRECT a_pR
 		::DeleteDC(l_hdcMem);
 	}
 
-	// TODO add registry positions
-	RDraw::BlendOverlay(a_hDC, *a_pRect, l_pData->m_pGameData->m_regData.m_regHidden.m_clrTintResultBackground, l_pData->m_pGameData->m_regData.m_regHidden.m_btAlphaResultBackground);
+	RDraw::BlendOverlay(a_hDC, *a_pRect, l_pData->m_pGameData->m_regData.m_regHidden.m_clrTintResultBackground, l_pData->m_pGameData->m_regData.m_regAuto.m_btAlphaResultBackground);
 
 	return TRUE;
 }
@@ -503,21 +518,8 @@ void SetBackground(HWND a_hWnd)
 void SetFont(HWND a_hWnd)
 {
 	ResultWndData* l_pData = GetData(a_hWnd);
-	if (l_pData->m_pGameData->m_regData.m_regRules.m_bHandWrittenResult)
-	{
-		l_pData->SetFont(::CreateFont(18, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
-			DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-			DEFAULT_PITCH | FF_DONTCARE, l_pData->m_pGameData->m_regData.m_regHidden.m_sResultFont.c_str()));
-	}
-	else
-	{
-		// create my own copy of GUI FONT to be able to delete it safely
-		HFONT l_hFontStock = reinterpret_cast<HFONT>(::GetStockObject(DEFAULT_GUI_FONT));
-		LOGFONT l_lf;
-		::GetObject(l_hFontStock, sizeof(LOGFONT), &l_lf);
-		l_pData->SetFont(::CreateFontIndirect(&l_lf));
-	}
-	RListCtrl_SetFont(l_pData->m_hWndList, l_pData->m_hFont);
+	HFONT l_hFont = CFontFactory::Instance().GetFont(a_hWnd);
+	RListCtrl_SetFont(l_pData->m_hWndList, l_hFont);
 }
 
 /* maybe instead of bitmap? Then I can draw results on the right side of the vertical red line ;-)

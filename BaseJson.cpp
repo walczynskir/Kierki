@@ -10,7 +10,7 @@
 #pragma todo("Consider using WinHTTP instead of WinINet for better performance and security.")
 #pragma todo("Improve formatting .")
 // Load JSON from GitHub or resource
-bool BaseJson::load(const tstring& a_sUrl, int a_idResource, HINSTANCE a_hInstance)
+bool CBaseJson::load(const tstring& a_sUrl, int a_idResource, HINSTANCE a_hInstance)
 {
 
     // Try GitHub
@@ -23,19 +23,19 @@ bool BaseJson::load(const tstring& a_sUrl, int a_idResource, HINSTANCE a_hInstan
 
 
 // Access JSON (UTF-8 string)
-std::optional<std::string> BaseJson::getA(const std::string& path) const
+std::optional<std::string> CBaseJson::getA(const std::string& path) const
 {
     return m_parser.get_path<std::string>(path);
 }
 
 // Access JSON (wide string)
-std::optional<std::wstring> BaseJson::getW(const std::string& path) const
+std::optional<std::wstring> CBaseJson::getW(const std::string& path) const
 {
     return m_parser.get_path_w(path);
 }
 
 // Access JSON (wide string)
-std::optional<tstring> BaseJson::get(const std::string& path) const
+std::optional<tstring> CBaseJson::get(const std::string& path) const
 {
 #ifdef _UNICODE
     return getW(path);
@@ -46,7 +46,7 @@ std::optional<tstring> BaseJson::get(const std::string& path) const
 
 
 
-std::vector<std::string> BaseJson::getArrayA(const std::string& path) const
+std::vector<std::string> CBaseJson::getArrayA(const std::string& path) const
 {
     std::vector<std::string> result;
     auto section = m_parser.section_path(path);
@@ -60,7 +60,7 @@ std::vector<std::string> BaseJson::getArrayA(const std::string& path) const
     return result;
 }
 
-std::vector<std::wstring> BaseJson::getArrayW(const std::string& path) const
+std::vector<std::wstring> CBaseJson::getArrayW(const std::string& path) const
 {
     std::vector<std::wstring> result;
     auto section = m_parser.section_path(path);
@@ -75,7 +75,7 @@ std::vector<std::wstring> BaseJson::getArrayW(const std::string& path) const
     return result;
 }
 
-std::vector<tstring> BaseJson::getArray(const std::string& path) const
+std::vector<tstring> CBaseJson::getArray(const std::string& path) const
 {
  #ifdef _UNICODE
 	return getArrayW(path);
@@ -84,7 +84,7 @@ std::vector<tstring> BaseJson::getArray(const std::string& path) const
 #endif
 }
 
-std::vector<std::string> BaseJson::getSectionNamesA() const
+std::vector<std::string> CBaseJson::getSectionNamesA() const
 {
     std::vector<std::string> names;
     for (auto it = m_parser.data().begin(); it != m_parser.data().end(); ++it) {
@@ -93,7 +93,7 @@ std::vector<std::string> BaseJson::getSectionNamesA() const
     return names;
 }
 
-std::vector<std::wstring> BaseJson::getSectionNamesW() const
+std::vector<std::wstring> CBaseJson::getSectionNamesW() const
 {
     std::vector<std::wstring> names;
     for (auto it = m_parser.data().begin(); it != m_parser.data().end(); ++it) {
@@ -103,7 +103,7 @@ std::vector<std::wstring> BaseJson::getSectionNamesW() const
 }
 
 
-std::vector<tstring> BaseJson::getSectionNames() const
+std::vector<tstring> CBaseJson::getSectionNames() const
 {
 #ifdef _UNICODE
 	return getSectionNamesW();
@@ -135,14 +135,14 @@ static void collectPaths(const nlohmann::json& j,
     }
 }
 
-std::vector<std::string> BaseJson::getAllSectionPathsA() const
+std::vector<std::string> CBaseJson::getAllSectionPathsA() const
 {
     std::vector<std::string> result;
     collectPaths(m_parser.data(), "", result);
     return result;
 }
 
-std::vector<std::wstring> BaseJson::getAllSectionPathsW() const
+std::vector<std::wstring> CBaseJson::getAllSectionPathsW() const
 {
     auto utf8paths = getAllSectionPathsA();
     std::vector<std::wstring> result;
@@ -153,7 +153,7 @@ std::vector<std::wstring> BaseJson::getAllSectionPathsW() const
 }
 
 
-std::vector<tstring> BaseJson::getAllSectionPaths() const
+std::vector<tstring> CBaseJson::getAllSectionPaths() const
 {
 #ifdef _UNICODE
 	return getAllSectionPathsW();
@@ -174,7 +174,7 @@ bool JsonHelper::loadFromUrl(const tstring& a_sUrl, const tstring& a_sPathLocal)
 }
 */
 
-bool BaseJson::LoadFromUrl(const tstring& a_sUrl, std::string& a_sContent) 
+bool CBaseJson::LoadFromUrl(const tstring& a_sUrl, std::string& a_sContent) 
 {
     HINTERNET l_hInternet = ::InternetOpen(_T("Hearts"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
     if (!l_hInternet)
@@ -247,7 +247,7 @@ bool JsonHelper::loadFromResource(int resourceId, HINSTANCE hInstance, const tst
 
 //if (loadFromResource(a_idResource, a_hInstance, c_sTempJsonFile) && m_parser.parse(c_sTempJsonFile))
 
-bool BaseJson::LoadFromResource(int a_idResource, HINSTANCE a_hInstance, std::string& a_sContent)
+bool CBaseJson::LoadFromResource(int a_idResource, HINSTANCE a_hInstance, std::string& a_sContent)
 {
     HRSRC l_hRes = ::FindResource(a_hInstance, MAKEINTRESOURCE(a_idResource), _T("JSON"));
     if (!l_hRes)

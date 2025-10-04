@@ -4,7 +4,7 @@
 #include <rcommon/rstring.h>
 #include "JsonParser.h"
 
-class BaseJson
+class CBaseJson
 {
 public:
     // Load JSON from GitHub URL, fallback to resource

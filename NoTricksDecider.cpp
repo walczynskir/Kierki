@@ -4,6 +4,7 @@
 
 #include "stdafx.h"
 #include "NoTricksDecider.h"
+#include <algorithm>
 
 
 //////////////////////////////////////////////////////////////////////
@@ -144,10 +145,10 @@ CNoTricksDecider::NextCard(
 
 	// próbujemy znaleŸæ kartê o iloœæ graczy przed nami wy¿sz¹
 	// od najwy¿szej w lewie
-	l_cardLowest = CCard(l_enColor, min((T_CARDVAL)(l_pCard->CardValue() + 1), E_CV_A));
+	l_cardLowest = CCard(l_enColor, std::min((T_CARDVAL)(l_pCard->CardValue() + 1), E_CV_A));
 	l_cardBiggest = 
 		CCard(l_enColor, 
-			min((T_CARDVAL)(l_pCard->CardValue() + c_app_btPlayersCnt - l_nCards), E_CV_A));
+			std::min((T_CARDVAL)(l_pCard->CardValue() + c_app_btPlayersCnt - l_nCards), E_CV_A));
 	if (m_pCards->CardsBetween(l_cardLowest, l_cardBiggest) > 0)
 	{
 		return m_pCards->LessOrFirstBiggerInColor(l_pCard);

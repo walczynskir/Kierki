@@ -15,7 +15,7 @@ constexpr const char c_sJson_Separator = '.';	// UTF-8
 
 
 
-std::vector<std::pair<std::string, tstring>> HelpJson::getSectionTitles() const
+std::vector<std::pair<std::string, tstring>> CHelpJson::getSectionTitles() const
 {
     std::vector<std::pair<std::string, tstring>> l_vectDesc;
     auto l_sectionNames = getSectionNamesA(); // ASCII section names
@@ -29,31 +29,31 @@ std::vector<std::pair<std::string, tstring>> HelpJson::getSectionTitles() const
 }
 
 
-std::vector<tstring> HelpJson::getHowToPlay() const
+std::vector<tstring> CHelpJson::getHowToPlay() const
 {
     return getArray(c_sJsonSect_HowToPlay + c_sJson_Separator + std::string(c_sJsonSect_Instructions));
 }
 
-std::vector<tstring> HelpJson::getHowToUseApp() const
+std::vector<tstring> CHelpJson::getHowToUseApp() const
 {
 	return getArray(c_sJsonSect_HowToUseApp + c_sJson_Separator + std::string(c_sJsonSect_Instructions));
 }
 
 
-std::vector<tstring> HelpJson::getInstructions(const std::string& a_sSection)
+std::vector<tstring> CHelpJson::getInstructions(const std::string& a_sSection)
 {
 	return getArray(a_sSection + c_sJson_Separator + c_sJsonSect_Instructions);
 }
 
 
-bool HelpJson::load(const LanguageManager& a_lang)
+bool CHelpJson::load(const LanguageManager& a_lang)
 {
-	return BaseJson::load(GetInstructionFileNameFromLangID(a_lang), IDR_JSON_INSTRUCTIONS, GetModuleHandle(NULL));
+	return CBaseJson::load(GetInstructionFileNameFromLangID(a_lang), IDR_JSON_INSTRUCTIONS, GetModuleHandle(NULL));
 }
 
 
 
-tstring HelpJson::GetInstructionFileNameFromLangID(const LanguageManager& a_lang)
+tstring CHelpJson::GetInstructionFileNameFromLangID(const LanguageManager& a_lang)
 {
 
 	tstring l_sDefaultUrl = tstring(c_sInstructionsPath) + tstring(c_sDefaultInstructions);

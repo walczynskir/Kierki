@@ -24,18 +24,18 @@
 class ROptionsViewData
 {
 public:
-	ROptionsViewData(RRegData::RBaseRegData* a_pRegData) : m_pRegViewData(reinterpret_cast<RRegData::RViewRegData*>(a_pRegData))
+	ROptionsViewData(CRegData::RBaseRegData* a_pRegData) : m_pRegViewData(reinterpret_cast<CRegData::RViewRegData*>(a_pRegData))
 	{
 
 	}
 	~ROptionsViewData() = default;
 
-	RRegData::RViewRegData* GetRegData() const { return m_pRegViewData; }
+	CRegData::RViewRegData* GetRegData() const { return m_pRegViewData; }
 
 	HWND  m_hCover = nullptr;
 
 private:
-	RRegData::RViewRegData* m_pRegViewData;
+	CRegData::RViewRegData* m_pRegViewData;
 
 };
 
@@ -56,7 +56,7 @@ static void MoveDlgItem(HWND a_hDlg, UINT a_idItem, LONG a_x, LONG a_y);
 static void ResizeDlgItem(HWND a_hDlg, UINT a_idItem, LONG a_dx, LONG a_dy);
 
 
-HWND CreateOptViewDlg(HWND a_hParent, RRegData::RBaseRegData* a_pData, LPVOID a_pObj)
+HWND CreateOptViewDlg(HWND a_hParent, CRegData::RBaseRegData* a_pData, LPVOID a_pObj)
 {
 	ROptionsViewData* l_pViewData = new ROptionsViewData(a_pData);
 	RSelectBitmap_RegisterClass(::GetModuleHandle(NULL));
@@ -152,7 +152,11 @@ void OnNcDestroy(HWND a_hDlg)
 void SetCtrlValues(HWND a_hDlg)
 {
 	ROptionsViewData* l_pData = GetRData(a_hDlg);
-	RRegData::RViewRegData* l_pRegData = l_pData->GetRegData();
+	CRegData::RViewRegData* l_pRegData = l_pData->GetRegData();
+
+	// set Fancy style checkbox
+	::SendMessage(::GetDlgItem(a_hDlg, IDC_VIEW_FANCYSTYLE), BM_SETCHECK,
+		l_pRegData->m_bFancyStyle ? BST_CHECKED : BST_UNCHECKED, 0L);
 
 	if (l_pRegData->m_idCover == 0)
 		l_pRegData->m_idCover = IDB_COVER_DEFAULT; // default
@@ -170,7 +174,11 @@ static ROptionsViewData* GetRData(HWND a_hDlg)
 static void GetCtrlValues(HWND a_hDlg)
 {
 	ROptionsViewData* l_pData = GetRData(a_hDlg);
-	RRegData::RViewRegData* l_pRegData = l_pData->GetRegData();
+	CRegData::RViewRegData* l_pRegData = l_pData->GetRegData();
+
+	// get Fancy style checkbox
+	l_pRegData->m_bFancyStyle = (::SendMessage(::GetDlgItem(a_hDlg, IDC_VIEW_FANCYSTYLE), BM_GETCHECK, 0, 0L) == BST_CHECKED);
+
 
 #pragma todo("Brakuje sprawdzenia b³êdu")
 	l_pRegData->m_idCover = SelectBitmap_GetSelected(l_pData->m_hCover);

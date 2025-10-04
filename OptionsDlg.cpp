@@ -19,14 +19,14 @@
 
 typedef struct S_OPTDATA
 {
-	RRegData* m_pData; 
+	CRegData* m_pData; 
 	CHeartsData* m_pHeartsData;
 } TOptData, *LPOptData;
 
 class ROptionsData
 {
 public:
-	ROptionsData(RRegData* a_pRegData, CHeartsData* a_pHeartsData)
+	ROptionsData(CRegData* a_pRegData, CHeartsData* a_pHeartsData)
 	{
 		m_ahDlg[0].m_pfnCreateDlg = static_cast<RCREATEDLGPROC>(CreateOptViewDlg);
 		m_ahDlg[0].m_pRegData = &(a_pRegData->m_regView);
@@ -53,7 +53,7 @@ public:
 		HWND m_hWnd;
 		TCHAR m_sTitle[MAX_TABTITLE];
 		RCREATEDLGPROC m_pfnCreateDlg;
-		RRegData::RBaseRegData* m_pRegData;
+		CRegData::RBaseRegData* m_pRegData;
 		LPVOID  m_pObj;
 	};
 	RTabData	m_ahDlg[4];
@@ -75,7 +75,7 @@ inline static void SetActiveTab(HWND a_hDlg, int a_iTab);
 static ROptionsData* GetRData(HWND a_hDlg);
 
 
-UINT OptionsDlg_DoModal(HWND a_hWndParent, RRegData* a_pData, CHeartsData* a_pHeartsData)
+UINT OptionsDlg_DoModal(HWND a_hWndParent, CRegData* a_pData, CHeartsData* a_pHeartsData)
 {
 	TOptData l_optData;
 	l_optData.m_pData = a_pData;

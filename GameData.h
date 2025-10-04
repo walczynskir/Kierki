@@ -4,8 +4,8 @@
 #include "Players.h"	
 #include "SortCards.h"	
 #include "Scores.h"	
+#include "RegData.h"	
 #include <rcommon/RString.h>
-#include "RRegData.h"
 
 
 class GameData
@@ -73,7 +73,7 @@ public:
 	bool Restore(LPCTSTR a_psFile);
 	void GameOver(void);
 
-	RRegData	 m_regData;
+	CRegData	 m_regData;
 
 private:
 	BOOL ChooseTrumps();

@@ -12,7 +12,7 @@
 
 typedef struct S_OPTRULESDATA
 {
-	RRegData::RRulesRegData* m_pData;
+	CRegData::RRulesRegData* m_pData;
 	LanguageManager* m_pLangManager;
 } TOptRulesData, *LPOptRulesData;
 
@@ -23,10 +23,10 @@ static LPOptRulesData GetRData(HWND a_hDlg);
 inline static void GetCtrlValues(HWND a_hDlg);
 
 
-HWND CreateOptRulesDlg(HWND a_hParent, RRegData::RBaseRegData* a_pData, LPVOID a_pObj)
+HWND CreateOptRulesDlg(HWND a_hParent, CRegData::RBaseRegData* a_pData, LPVOID a_pObj)
 {
 	LPOptRulesData l_pData = new TOptRulesData; // to be deleted in WM_NCDESTROY
-	l_pData->m_pData = static_cast<RRegData::RRulesRegData*>(a_pData);
+	l_pData->m_pData = static_cast<CRegData::RRulesRegData*>(a_pData);
 	l_pData->m_pLangManager = static_cast<LanguageManager*>(a_pObj);
 
 	HWND l_hDlg = ::CreateDialogParam(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_OPT_RULES), 
@@ -107,9 +107,6 @@ void SetCtrlValues(HWND a_hDlg)
 	::SendMessage(::GetDlgItem(a_hDlg, IDC_RULES_HELPVISIBLE), BM_SETCHECK,
 		l_pData->m_pData->m_bHelpVisible ? BST_CHECKED : BST_UNCHECKED, 0L);
 
-	// set Fancy style checkbox
-	::SendMessage(::GetDlgItem(a_hDlg, IDC_RULES_FANCYRESULTS), BM_SETCHECK,
-		l_pData->m_pData->m_bHandWrittenResult ? BST_CHECKED : BST_UNCHECKED, 0L);
 }
 
 
@@ -145,8 +142,5 @@ static void GetCtrlValues(HWND a_hDlg)
 
 	// get ShowHelp checkbox
 	l_pData->m_pData->m_bHelpVisible = (::SendMessage(::GetDlgItem(a_hDlg, IDC_RULES_HELPVISIBLE), BM_GETCHECK, 0, 0L) == BST_CHECKED);
-
-	// get Fancy style checkbox
-	l_pData->m_pData->m_bHandWrittenResult = (::SendMessage(::GetDlgItem(a_hDlg, IDC_RULES_FANCYRESULTS), BM_GETCHECK, 0, 0L) == BST_CHECKED);
 
 }

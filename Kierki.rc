@@ -79,10 +79,11 @@ IDD_OPT_VIEW DIALOGEX 0, 0, 220, 175
 STYLE DS_SETFONT | WS_CHILD | WS_SYSMENU
 FONT 9, "Segoe UI", 400, 0, 0x1
 BEGIN
-    LTEXT           "Koszulka:",IDC_STATIC,7,19,54,12
-    PUSHBUTTON      "<",IDC_VIEW_COVERLEFT,62,14,10,31
-    CONTROL         "Cover",IDC_VIEW_COVER,"SELECTBITMAP", SBM_STRETCH | SBM_ANIMATE,73,7,35,45
-    PUSHBUTTON      ">",IDC_VIEW_COVERRIGHT,109,14,10,31
+    CONTROL         "Ozdobny styl", IDC_VIEW_FANCYSTYLE, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 7, 7, 106, 10
+    LTEXT           "Koszulka:",IDC_STATIC,7,29,54,12
+    PUSHBUTTON      "<",IDC_VIEW_COVERLEFT,62,24,10,31
+    CONTROL         "Cover",IDC_VIEW_COVER,"SELECTBITMAP", SBM_STRETCH | SBM_ANIMATE,73,17,35,45
+    PUSHBUTTON      ">",IDC_VIEW_COVERRIGHT,109,24,10,31
 END
 
 IDD_OPT_TIME DIALOGEX 0, 0, 186, 90
@@ -130,20 +131,19 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,7,106,10
     CONTROL         "Pokazuj okno startowe",IDC_RULES_SHOWDLG,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,24,106,10
     CONTROL         "Pokazuj instrukcje",IDC_RULES_HELPVISIBLE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,41,106,10
-    CONTROL         "Ozdobny styl rezultatów",IDC_RULES_FANCYRESULTS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,58,106,10
-    LTEXT           "Jêzyk (wymaga restartu):", IDC_STATIC, 7, 75, 107, 8
-    COMBOBOX        IDC_RULES_LANGUAGE, 121, 75, 72, 60, CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Jêzyk (wymaga restartu):",IDC_STATIC,7,58,107,8
+    COMBOBOX        IDC_RULES_LANGUAGE,121,58,72,60,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
 END
 
 IDD_HELP DIALOGEX 0, 0, 400, 19
 STYLE DS_SETFONT | WS_CHILD | WS_VISIBLE
 FONT 9, "Segoe UI", 400, 0, 0x1
 BEGIN
-    LTEXT           "Sekcja:",IDC_STATIC,1,4,24,12
+    LTEXT           "Sekcja:",IDC_HELP_SECTIONLABEL,1,4,32,12
     PUSHBUTTON      "<<",IDC_HELP_LEFT,49,2,20,12
     COMBOBOX        IDC_HELP_SECTION,70,2,100,100,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      ">>",IDC_HELP_RIGHT,171,2,20,12
-    CONTROL         "Nie pokazuj wiêcej instrukcji",IDC_HELP_SHOWHELP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,260,2,97,10
+    CONTROL         "Bez instrukcji (po restarcie)",IDC_HELP_SHOWHELP,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,260,2,97,10
 END
 
 
@@ -183,6 +183,8 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_KIERKI              ICON                    "res\\kierki.ico"
+IDI_BRIGHTNESSDOWN      ICON                    "res\\brightness-.ico"
+IDI_BRIGHTNESSUP        ICON                    "res\\brightness+.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -297,6 +299,8 @@ IDB_PAPER               BITMAP                  "res\\paper_canvas.bmp"
 
 IDB_NOTEBOOK            BITMAP                  "res\\notebook_canvas.bmp"
 
+IDB_BRIGHTNESS          BITMAP                  "res\\brightness.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -403,6 +407,7 @@ BEGIN
     IDS_SAVEGAMEAS          "Zapisz grê jako"
     IDS_LANG_NAME           "Polski"
     IDS_HELPTITLE_GAME      "Instrukcje"
+    IDS_SLIDER_TT           "Jasnoœæ t³a"
 END
 
 #endif    // Polish (Poland) resources

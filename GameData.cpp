@@ -43,7 +43,7 @@ GameData::~GameData()
 void 
 GameData::CreatePlayers()
 {
-	m_pPlayers = new CPlayers(m_regData.m_regOther.m_enFirstDealer);
+	m_pPlayers = new CPlayers(m_regData.m_regAuto.m_enFirstDealer);
 	m_pPlayers->SetName(E_DL_1, &(m_regData.GetPlayerName(E_DL_1)));
 	m_pPlayers->SetName(E_DL_2, &(m_regData.GetPlayerName(E_DL_2)));
 	m_pPlayers->SetName(E_DL_3, &(m_regData.GetPlayerName(E_DL_3)));
@@ -1027,9 +1027,9 @@ bool GameData::Restore(LPCTSTR a_psFile)
 //
 T_PLAYER GameData::GetFirstDealerAndSetNext()
 {
-	T_PLAYER l_playerLast = m_regData.m_regOther.m_enFirstDealer;
+	T_PLAYER l_playerLast = m_regData.m_regAuto.m_enFirstDealer;
 	T_PLAYER l_playerNew = CPlayers::NextPlayer(l_playerLast);
-	m_regData.m_regOther.m_enFirstDealer = l_playerNew;
+	m_regData.m_regAuto.m_enFirstDealer = l_playerNew;
 	return l_playerLast;
 }
 

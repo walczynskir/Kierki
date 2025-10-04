@@ -1,11 +1,14 @@
 #include "StdAfx.h"
 #include "HelpWnd.h"
+#include "Kierki.h"
 #include "resource.h"
+#include "FontFactory.h"
 #include <rcommon/RSystemExc.h>
 #include <rcommon/ROwnExc.h>
 #include <rcommon/RMemDC.h>
 #include <rcommon/drawutl.h>
 #include <richedit.h>
+#include <algorithm>
 #include <CommCtrl.h>
 #include <wininet.h>
 #include <fstream>
@@ -17,7 +20,10 @@
 
 
 
-
+constexpr TCHAR cc_sWindowClass[] = _T("HELPWND");	// game window class name
+constexpr int cc_dxPanelGap = 20;		// gap before checkbox to show instruction
+constexpr int cc_dxPanelCtrlGap = 2;		// gap between controls
+constexpr int cc_dyLabelGap = 4;		// gap for label to be "in line" with other controls
 
 class HelpWndData
 {
@@ -31,16 +37,13 @@ public:
 
 	HWND m_hWndRich = nullptr;
 	HWND m_hWndPanel = nullptr;
-	HFONT m_hFont = nullptr;
 	const LanguageManager& m_lang;
-	HelpJson	m_jsonHelp;
-	RRegData* m_pRegData = nullptr;	
+	CHelpJson	m_jsonHelp;
+	CRegData* m_pRegData = nullptr;	
 	HBITMAP m_hBmpBackground{};
 
 };
 
-
-constexpr TCHAR c_sWindowClass[] = _T("HELPWND");	// game window class name
 
 static LRESULT CALLBACK	HelpWnd_WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK Panel_WndProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
@@ -53,7 +56,13 @@ inline static void OnPaint(HWND a_hWnd);
 inline static void OnCommand(HWND a_hWnd, WPARAM a_wParam, LPARAM a_lParam);
 inline static void OnSelChange(HWND a_hWnd);
 
-BOOL OnInitDialog(HWND a_hDlg, HelpWndData* a_pData);
+inline static void OnAppRefresh(HWND a_hWnd);
+inline static void OnSetBrightness(HWND a_hWnd, BYTE a_btBrightness);
+inline static BYTE OnGetBrightness(HWND a_hWnd, BOOL* a_pSet);
+
+static BOOL OnInitDialog(HWND a_hDlg, HelpWndData* a_pData);
+
+static std::string GetSelectedSection(HWND a_hWnd);
 
 static void LoadInstructions(HWND a_hWndHelp , const std::string& a_sSection);
 void LoadInstructionsAndRedraw(HWND a_hWndHelp, const std::string& a_sSection);
@@ -64,14 +73,19 @@ void EnableDisableButtons(HWND a_hWnd);
 
 inline static void Draw(HWND a_hWnd, HDC a_hDC);
 
-static void AlignCheckboxRight(HWND a_hDlg, int a_idCheck, int a_iWidth);
+static void AlignPanelControls(HWND a_hWnd);
+static int GetControlTextWidth(HWND a_hWndCtrl);
 
+void SetFont(HWND a_hWnd);
 
+bool IsRtfText(const tstring& a_sText);
+void SetRichEditText(HWND a_hWnd, const tstring& a_sText);
+void SetRichEditFont(HWND a_hWndRich, HFONT a_hFont);
+CHARFORMAT2 CharFormatFromFont(HFONT a_hFont);
 
 
 BOOL HelpWnd_Register(HINSTANCE a_hInst)
 {
-
 	if (::LoadLibrary(_T("Msftedit.dll")) == NULL)
 		throw RSystemExc(_T("LOAD_MSFTEDIT_DLL"));
 
@@ -80,14 +94,14 @@ BOOL HelpWnd_Register(HINSTANCE a_hInst)
 	l_wcex.cbSize = sizeof(WNDCLASSEX);
 	l_wcex.lpfnWndProc = HelpWnd_WndProc;
 	l_wcex.hInstance = a_hInst;
-	l_wcex.lpszClassName = c_sWindowClass;
+	l_wcex.lpszClassName = cc_sWindowClass;
 	return ::RegisterClassEx(&l_wcex);
 }
 
-HWND HelpWnd_Create( DWORD a_dwStyle, HWND a_hWndParent, const LanguageManager& a_lang, RRegData* a_pRegData)
+HWND HelpWnd_Create( DWORD a_dwStyle, HWND a_hWndParent, const LanguageManager& a_lang, CRegData* a_pRegData)
 {
 	HelpWndData* l_pData = new HelpWndData(a_lang);
-	HWND l_hWndHelp = ::CreateWindowEx(0, c_sWindowClass, NULL, WS_CHILD | WS_CLIPSIBLINGS,
+	HWND l_hWndHelp = ::CreateWindowEx(0, cc_sWindowClass, NULL, WS_CHILD | WS_CLIPSIBLINGS,
 			0, 0, 0, 0, a_hWndParent, NULL, NULL, reinterpret_cast<LPVOID>(l_pData));
 
 	if (l_hWndHelp == NULL)
@@ -116,6 +130,8 @@ HWND HelpWnd_Create( DWORD a_dwStyle, HWND a_hWndParent, const LanguageManager& 
 	);
 	if (l_pData->m_hBmpBackground == nullptr)
 		throw RSystemExc(_T("LOAD_BACKGROUND_HELP"));
+
+	SetFont(l_hWndHelp);
 
 	return l_hWndHelp;
 }
@@ -149,23 +165,31 @@ LRESULT CALLBACK HelpWnd_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPAR
 			OnPaint(a_hWnd);
 			break;
 
+		case WM_APP_REFRESH:
+			OnAppRefresh(a_hWnd);
+			break;
+
+		case WM_APP_SETBRIGHTNESS:
+			OnSetBrightness(a_hWnd, static_cast<BYTE>(a_wParam));
+			break;
+
+		case WM_APP_GETBRIGHTNESS:
+			return OnGetBrightness(a_hWnd, reinterpret_cast<BOOL*>(a_lParam));
+
 		default:
 			return ::DefWindowProc(a_hWnd, a_iMsg, a_wParam, a_lParam);
 		}
 	}
 	catch (const RSystemExc& l_exc) 
 	{
-		TRACE1("%s\n", l_exc.GetFormattedMsg().c_str());
-		return FALSE; // abort safely
+		return 0; // abort safely
 	}
 	catch (const ROwnExc& l_exc) 
 	{
-		TRACE1("%s\n", l_exc.GetFormattedMsg().c_str());
-		return FALSE;
+		return 0;
 	}
 	catch (...)
 	{
-		TRACE0("Unknown exception\n");
 	}
 
 	return 0;
@@ -229,17 +253,21 @@ void OnSize(HWND a_hWnd, int a_dxWidth, int a_dyHeight)
 	if (l_pData == NULL)
 		return;
 
+	// here it is possible I don't have yet other windows created, as I am creating them after OnCreate
+	// as it is easier 
+	if ((l_pData->m_hWndPanel == nullptr) || (l_pData->m_hWndRich == nullptr))
+		return;
 
 	HDWP l_hdwp = ::BeginDeferWindowPos(2);
 
 	if (l_hdwp == NULL)
 		throw RSystemExc(_T("HELPWND:BEGIN_DEFER_WINDOW_POS"));
 	
-	l_hdwp = ::DeferWindowPos(l_hdwp, l_pData->m_hWndPanel, NULL, 0, 0, a_dxWidth, 30, SWP_NOZORDER);
+	l_hdwp = ::DeferWindowPos(l_hdwp, l_pData->m_hWndPanel, NULL, 0, 0, a_dxWidth, 36, SWP_NOZORDER);
 	if (l_hdwp == NULL)
 		throw RSystemExc(_T("HELPWND:DEFER_WINDOW_POS_DIALOG"));
 
-	l_hdwp = ::DeferWindowPos(l_hdwp, l_pData->m_hWndRich, NULL, 0, 30, a_dxWidth, a_dyHeight - 30, SWP_NOZORDER);
+	l_hdwp = ::DeferWindowPos(l_hdwp, l_pData->m_hWndRich, NULL, 0, 36, a_dxWidth, a_dyHeight - 36, SWP_NOZORDER);
 	if (l_hdwp == NULL)
 		throw RSystemExc(_T("HELPWND:DEFER_WINDOW_POS_RICHEDIT"));
 
@@ -247,7 +275,7 @@ void OnSize(HWND a_hWnd, int a_dxWidth, int a_dyHeight)
 		throw RSystemExc(_T("HELPWND:END_DEFER_WINDOW_POS"));
 
 #pragma todo("Check how to do it in Defer batch above ")
-	AlignCheckboxRight(l_pData->m_hWndPanel, IDC_HELP_SHOWHELP, a_dxWidth);
+	AlignPanelControls(a_hWnd);
 }
 
 
@@ -277,6 +305,33 @@ void OnPaint(
 
 
 
+void OnAppRefresh(HWND a_hWnd)
+{
+	HelpWndData* l_pData = HelpWndData::GetData(a_hWnd);
+	SetFont(a_hWnd);
+	::RedrawWindow(l_pData->m_hWndRich, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+}
+
+
+void OnSetBrightness(HWND a_hWnd, BYTE a_btBrightness)
+{
+	HelpWndData* l_pData = HelpWndData::GetData(a_hWnd);
+	l_pData->m_pRegData->m_regAuto.m_btAlphaHelpBackground = a_btBrightness;
+	::RedrawWindow(a_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+}
+
+
+BYTE OnGetBrightness(HWND a_hWnd, BOOL* a_pSet)
+{
+	HelpWndData* l_pData = HelpWndData::GetData(a_hWnd);
+	if (l_pData == nullptr)
+		return 0;
+	*a_pSet = TRUE;
+	return l_pData->m_pRegData->m_regAuto.m_btAlphaHelpBackground;
+
+}
+
+
 void Draw(HWND a_hWnd, HDC a_hDC)
 {
 	HelpWndData* l_pData = HelpWndData::GetData(a_hWnd);
@@ -299,7 +354,7 @@ void Draw(HWND a_hWnd, HDC a_hDC)
 		::DeleteDC(l_hdcMem);
 	}
 
-	RDraw::BlendOverlay(a_hDC, l_rect, l_pData->m_pRegData->m_regHidden.m_clrTintHelpBackground, l_pData->m_pRegData->m_regHidden.m_btAlphaHelpBackground);
+	RDraw::BlendOverlay(a_hDC, l_rect, l_pData->m_pRegData->m_regHidden.m_clrTintHelpBackground, l_pData->m_pRegData->m_regAuto.m_btAlphaHelpBackground);
 
 }
 
@@ -352,20 +407,9 @@ BOOL OnInitDialog(HWND a_hDlg, HelpWndData* a_pData)
 
 inline static void OnSelChange(HWND a_hWnd)
 {
-
-	HelpWndData* l_pData = HelpWndData::GetData(a_hWnd);
-	HWND l_hWndSection = ::GetDlgItem(l_pData->m_hWndPanel, IDC_HELP_SECTION);
-	int l_iSel = ComboBox_GetCurSel(l_hWndSection);
-	if (l_iSel == CB_ERR)
-		return;
-	int l_iAt = static_cast<int>(::SendMessage(l_hWndSection, CB_GETITEMDATA, l_iSel, 0));
-	if (l_iAt == CB_ERR)
-		return;
-
-	auto l_vect = l_pData->m_jsonHelp.getSectionTitles();
-	LoadInstructionsAndRedraw(a_hWnd, l_vect[l_iAt].first);
+	std::string l_sSection = GetSelectedSection(a_hWnd);
+	LoadInstructionsAndRedraw(a_hWnd, l_sSection);
 	EnableDisableButtons(a_hWnd);
-
 }
 
 
@@ -389,73 +433,97 @@ BOOL SetSection(HWND a_hWnd, const std::string& a_sSection)
 	return FALSE;
 }
 
-// Helper: align a checkbox control to the right edge of the dialog
-void AlignCheckboxRight(HWND a_hDlg, int a_idCheck, int a_iWidth)
-{
-	HWND l_hCheck = GetDlgItem(a_hDlg, a_idCheck);
-	if (!l_hCheck)
-		return;
-
-	// --- Get font ---
-	HFONT l_hFont = (HFONT)SendMessage(a_hDlg, WM_GETFONT, 0, 0);
-	if (!l_hFont)
-		l_hFont = (HFONT)GetStockObject(DEFAULT_GUI_FONT);
-
-	// --- Get checkbox text ---
-	TCHAR l_sText[256];
-	GetWindowTextW(l_hCheck, l_sText, ArraySize(l_sText));
-
-	// --- Measure text ---
-	HDC l_hdc = GetDC(l_hCheck);
-	HFONT l_hFontOld = (HFONT)SelectObject(l_hdc, l_hFont);
-
-	SIZE l_size{};
-	::GetTextExtentPoint32(l_hdc, l_sText, _tcslen(l_sText), &l_size);
-
-	SelectObject(l_hdc, l_hFontOld);
-	ReleaseDC(l_hCheck, l_hdc);
-
-	// --- Compute total width (box + padding + text) ---
-	int l_dxCheck = GetSystemMetrics(SM_CXMENUCHECK);
-	int l_dxFull = l_dxCheck + 6 + l_size.cx;
-
-
-	// --- Get current checkbox rect ---
-	RECT l_rectCheck{};
-	GetWindowRect(l_hCheck, &l_rectCheck);
-	MapWindowPoints(NULL, a_hDlg, (LPPOINT)&l_rectCheck, 2);
-
-
-	// --- Align to right ---
-	int l_xNew = a_iWidth - l_dxFull - 2;
-
-	SetWindowPos(l_hCheck, NULL, l_xNew, l_rectCheck.top,
-		l_dxFull, RectHeight(l_rectCheck),
-		SWP_NOZORDER | SWP_NOACTIVATE);
-}
-
-
-
-void HelpWnd_SetFont(HWND a_hWnd, const tstring& a_sFont)
+// Helper: align dialog controls to be at the middle (vertically) of the Panel
+// must be run after SetFont
+//
+void AlignPanelControls(HWND a_hWnd)
 {
 	HelpWndData* l_pData = HelpWndData::GetData(a_hWnd);
 
-	if (l_pData->m_hFont != NULL)
-	{
-		::DeleteObject(l_pData->m_hFont);
-		l_pData->m_hFont = NULL;
-	}
 
-	l_pData->m_hFont = ::CreateFont(18, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
-		DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-		DEFAULT_PITCH | FF_DONTCARE, a_sFont.c_str());
+	// TODO do it in DeferWindowPos batch
 
-	if (l_pData->m_hFont == NULL)
-		throw RSystemExc(_T("HELPWND:CREATE_FONT"));
+	// controls, unfortunately we need to do all resizing manually
+	HWND l_hWndLabelSect = ::GetDlgItem(l_pData->m_hWndPanel, IDC_HELP_SECTIONLABEL);
+	HWND l_hWndLeft = ::GetDlgItem(l_pData->m_hWndPanel, IDC_HELP_LEFT);
+	HWND l_hWndSect = ::GetDlgItem(l_pData->m_hWndPanel, IDC_HELP_SECTION);
+	HWND l_hWndRight = ::GetDlgItem(l_pData->m_hWndPanel, IDC_HELP_RIGHT);
+	HWND l_hWndCheck = ::GetDlgItem(l_pData->m_hWndPanel, IDC_HELP_SHOWHELP);
 
-	::SendMessage(l_pData->m_hWndRich, WM_SETFONT, reinterpret_cast<WPARAM>(l_pData->m_hFont), TRUE);
+	// combobox changes the height after the change of font
+	RECT l_rectSection{};
+	::GetWindowRect(l_hWndSect, &l_rectSection);
+	int l_dyMax = RectHeight(l_rectSection);
+
+	int l_dxLabelSect = GetControlTextWidth(l_hWndLabelSect);
+	int l_dxCheck = GetControlTextWidth(l_hWndCheck) + GetSystemMetrics(SM_CXMENUCHECK) + 6;
+
+	RECT l_rectPanel{};
+	::GetClientRect(l_pData->m_hWndPanel, &l_rectPanel);
+	int l_dyPos = (RectHeight(l_rectPanel) - l_dyMax) / 2;
+
+	int l_xNext = 2;
+	::SetWindowPos(l_hWndLabelSect, NULL, l_xNext, l_dyPos + cc_dyLabelGap,		// label needs special treatments to be "inline", hence +4
+		l_dxLabelSect + cc_dxPanelCtrlGap, l_dyMax,
+		SWP_NOZORDER | SWP_NOACTIVATE);
+
+	l_xNext = l_xNext + l_dxLabelSect + cc_dxPanelCtrlGap;
+
+	int l_dxBtn = l_dyMax * 2;
+	::SetWindowPos(l_hWndLeft, NULL, l_xNext, l_dyPos,
+		l_dxBtn, l_dyMax,
+		SWP_NOZORDER | SWP_NOACTIVATE);
+
+	l_xNext = l_xNext + l_dxBtn;
+	int l_dxSection = RectWidth(l_rectPanel) - (cc_dxPanelCtrlGap + l_dxLabelSect + cc_dxPanelCtrlGap + l_dxBtn + l_dxBtn + cc_dxPanelGap + l_dxCheck + cc_dxPanelCtrlGap);
+	::SetWindowPos(l_hWndSect, NULL, l_xNext, l_dyPos,
+		l_dxSection, l_dyMax,
+		SWP_NOZORDER | SWP_NOACTIVATE);
+
+	l_xNext = l_xNext + l_dxSection;
+	::SetWindowPos(l_hWndRight, NULL, l_xNext, l_dyPos,
+		l_dxBtn, l_dyMax,
+		SWP_NOZORDER | SWP_NOACTIVATE);
+
+	l_xNext = l_xNext + l_dxBtn + cc_dxPanelGap;
+
+	::SetWindowPos(l_hWndCheck, NULL, l_xNext, l_dyPos,
+		l_dxCheck, l_dyMax,
+		SWP_NOZORDER | SWP_NOACTIVATE);
+
 }
 
+
+
+void SetFont(HWND a_hWnd)
+{
+	HelpWndData* l_pData = HelpWndData::GetData(a_hWnd);
+	HFONT l_hFont = CFontFactory::Instance().GetFont(a_hWnd);
+
+	SetRichEditFont(l_pData->m_hWndRich, l_hFont);
+
+	::SendMessage(l_pData->m_hWndPanel, WM_SETFONT, reinterpret_cast<WPARAM>(l_hFont), TRUE);
+	HWND l_hWndChild = ::GetWindow(l_pData->m_hWndPanel, GW_CHILD);
+	while (l_hWndChild)
+	{
+		::SendMessage(l_hWndChild, WM_SETFONT, reinterpret_cast<WPARAM>(l_hFont), TRUE);
+		l_hWndChild = ::GetWindow(l_hWndChild, GW_HWNDNEXT);
+	}
+
+	AlignPanelControls(a_hWnd);
+	LoadInstructions(a_hWnd, GetSelectedSection(a_hWnd));
+	
+}
+
+
+void SetRichEditFont(HWND a_hWndRich, HFONT a_hFont)
+{
+	::SendMessage(a_hWndRich, WM_SETFONT, reinterpret_cast<WPARAM>(a_hFont), TRUE);
+
+	CHARFORMAT2 l_cf = CharFormatFromFont(a_hFont);
+	::SendMessage(a_hWndRich, EM_SETSEL, 0, -1); // Select all
+	::SendMessage(a_hWndRich, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(& l_cf));
+}
 
 void HelpWnd_LoadInstructions(HWND a_hWndHelp, const std::string& a_sSection)
 {
@@ -469,8 +537,7 @@ void LoadInstructionsAndRedraw(HWND a_hWndHelp, const std::string& a_sSection)
 {
 	LoadInstructions(a_hWndHelp, a_sSection);
 	HelpWndData* l_pData = HelpWndData::GetData(a_hWndHelp);
-	::InvalidateRect(l_pData->m_hWndRich, nullptr, TRUE);
-	::UpdateWindow(l_pData->m_hWndRich);
+	::RedrawWindow(l_pData->m_hWndRich, nullptr, nullptr, RDW_ERASENOW | RDW_INVALIDATE | RDW_UPDATENOW);
 }
 
 
@@ -483,7 +550,7 @@ void LoadInstructions(HWND a_hWndHelp, const std::string& a_sSection)
 	for (const auto& l_sLine : l_vect)
 		l_sInstructions += l_sLine + _T('\n');
 
-	::SetWindowText(l_pData->m_hWndRich, l_sInstructions.c_str());
+	SetRichEditText(a_hWndHelp, l_sInstructions);
 }
 
 
@@ -546,4 +613,136 @@ void EnableDisableButtons(HWND a_hWnd)
 	::EnableWindow(l_hWndRight, (l_idx < l_iSize - 1));
 }
 
+bool IsRtfText(const tstring& a_sText)
+{
+	return a_sText.substr(0, 5) == _T("{\\rtf");
+}
 
+
+void SetRichEditText(HWND a_hWnd, const tstring& a_sText)
+{
+	HelpWndData* l_pData = HelpWndData::GetData(a_hWnd);
+	if (!IsRtfText(a_sText))
+	{
+		SetWindowText(l_pData->m_hWndRich, a_sText.c_str());
+		return;
+	}
+
+	EDITSTREAM l_es = {};
+	l_es.dwCookie = reinterpret_cast<DWORD_PTR>(&a_sText);
+	l_es.pfnCallback = [](DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG* pcb) -> DWORD {
+		tstring* pText = reinterpret_cast<tstring*>(dwCookie);
+
+		// Defensive: if cb < 0, treat as 0
+		size_t requested = (cb > 0) ? static_cast<size_t>(cb) : 0;
+		size_t available = pText->size() * sizeof(TCHAR);
+
+		size_t bytesToCopy = std::min(requested, available);
+
+		if (bytesToCopy > 0) {
+			memcpy(pbBuff, pText->c_str(), bytesToCopy);
+			pText->erase(0, bytesToCopy / sizeof(TCHAR));
+		}
+
+		*pcb = static_cast<LONG>(bytesToCopy);
+		return 0;
+		};
+	SendMessage(l_pData->m_hWndRich, EM_STREAMIN, SF_RTF, reinterpret_cast<LPARAM>(&l_es));
+
+}
+
+
+int GetControlTextWidth(HWND a_hWndCtrl)
+{
+
+	// --- Get checkbox text ---
+	TCHAR l_sText[256];
+	::GetWindowText(a_hWndCtrl, l_sText, ArraySize(l_sText));
+
+	// --- Measure text ---
+	HDC l_hdc = ::GetDC(a_hWndCtrl);
+	HFONT l_hFont = reinterpret_cast<HFONT>(::SendMessage(a_hWndCtrl, WM_GETFONT, 0, 0));
+
+	HFONT l_hFontOld = (HFONT)::SelectObject(l_hdc, l_hFont);
+
+	SIZE l_size{};
+	::GetTextExtentPoint32(l_hdc, l_sText, _tcslen(l_sText), &l_size);
+
+	::SelectObject(l_hdc, l_hFontOld);
+	::ReleaseDC(a_hWndCtrl, l_hdc);
+	return l_size.cx;
+}
+
+
+
+std::string GetSelectedSection(HWND a_hWnd)
+{
+	HelpWndData* l_pData = HelpWndData::GetData(a_hWnd);
+	HWND l_hWndSection = ::GetDlgItem(l_pData->m_hWndPanel, IDC_HELP_SECTION);
+	int l_iSel = ComboBox_GetCurSel(l_hWndSection);
+	if (l_iSel == CB_ERR)
+		return "";
+	int l_iAt = static_cast<int>(::SendMessage(l_hWndSection, CB_GETITEMDATA, l_iSel, 0));
+	if (l_iAt == CB_ERR)
+		return "";
+
+	auto l_vect = l_pData->m_jsonHelp.getSectionTitles();
+	return l_vect[l_iAt].first;
+}
+
+CHARFORMAT2 CharFormatFromFont(HFONT a_hFont)
+{
+	LOGFONT l_lf;
+	::GetObject(a_hFont, sizeof(l_lf), &l_lf);
+
+	CHARFORMAT2 l_cf{};
+	l_cf.cbSize = sizeof(l_cf);
+
+	// Font face name
+	if (l_lf.lfFaceName[0])
+	{
+		_tcscpy_s(l_cf.szFaceName, l_lf.lfFaceName);
+		l_cf.dwMask |= CFM_FACE;
+	}
+
+	// Font size in twips (1 pt = 20 twips)
+	if (l_lf.lfHeight != 0)
+	{
+		l_cf.yHeight = abs(l_lf.lfHeight) * 20;
+		l_cf.dwMask |= CFM_SIZE;
+	}
+
+	// Bold
+	if (l_lf.lfWeight >= FW_BOLD)
+	{
+		l_cf.dwEffects |= CFE_BOLD;
+		l_cf.dwMask |= CFM_BOLD;
+	}
+
+	// Italic
+	if (l_lf.lfItalic)
+	{
+		l_cf.dwEffects |= CFE_ITALIC;
+		l_cf.dwMask |= CFM_ITALIC;
+	}
+
+	// Underline
+	if (l_lf.lfUnderline)
+	{
+		l_cf.dwEffects |= CFE_UNDERLINE;
+		l_cf.dwMask |= CFM_UNDERLINE;
+	}
+
+	// Strikeout
+	if (l_lf.lfStrikeOut)
+	{
+		l_cf.dwEffects |= CFE_STRIKEOUT;
+		l_cf.dwMask |= CFM_STRIKEOUT;
+	}
+
+	// Charset
+	l_cf.bCharSet = l_lf.lfCharSet;
+	l_cf.dwMask |= CFM_CHARSET;
+
+	return l_cf;
+}

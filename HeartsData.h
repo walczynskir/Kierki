@@ -2,6 +2,8 @@
 #include <map>
 #include "GameData.h"
 #include "OwnToolbar.h"
+#include "StatusBar.h"
+#include "FontFactory.h"
 #include <rcommon/LanguageManager.h>
 #include <rcommon/drawutl.h>
 #include <commctrl.h>
@@ -22,7 +24,7 @@ class CHeartsData
 {
 public:
 
-	CHeartsData(HWND a_hWnd) : m_hWndTab(NULL), m_hWndStatusbar(NULL) { m_dpiContext.emplace(a_hWnd);  };
+	CHeartsData(HWND a_hWnd)  { m_dpiContext.emplace(a_hWnd);  };
 
 	static CHeartsData* GetData(HWND a_hWnd) { return reinterpret_cast<CHeartsData*>(::GetWindowLongPtr(a_hWnd, GWLP_USERDATA)); };
 	static void SetData(HWND a_hWnd, CHeartsData* a_pData) { ::SetWindowLongPtr(a_hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(a_pData)); };
@@ -40,11 +42,7 @@ public:
 
 	short GetTabsCount() const { ASSERT(m_hWndTab != NULL); return TabCtrl_GetItemCount(m_hWndTab); };
 
-	HWND m_hWndStatusbar;
-	HWND m_hWndTab;
-
 	std::map<enum T_TABPAGES, HWND> m_mapTabs;
-
 
 	// game data
 	GameData m_gameData;
@@ -53,7 +51,10 @@ public:
 
 	bool m_bHelpVisible = false;
 
-	// own toolbar implementation
+	// internal windows (toolbar, statusbar, tabcontrol
+	HWND m_hWndTab{};
 	COwnToolbar m_toolbar;
+	CStatusBar m_statusbar;
+
 };
 

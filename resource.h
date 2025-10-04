@@ -78,7 +78,9 @@
 #define IDS_COLOR_DIAMOND               155
 #define IDD_DIALOG1                     155
 #define IDS_DEFNAME1                    156
+#define IDI_BRIGHTNESSDOWN              156
 #define IDS_DEFNAME2                    157
+#define IDI_BRIGHTNESSUP                157
 #define IDS_DEFNAME3                    158
 #define IDC_NAME                        159
 #define IDS_SAVEGAMEBEFOREOPENQUESTION  160
@@ -108,6 +110,10 @@
 #define IDC_HELP_LEFT                   189
 #define IDC_HELP_RIGHT                  190
 #define IDB_NOTEBOOK                    191
+#define IDB_BRIGHTNESS                  192
+#define IDI_BRIGHTNESS                  192
+#define IDS_SLIDER_TT					193
+#define IDC_HELP_SECTIONLABEL			194
 #define IDC_PLAYER1                     1001
 #define IDC_PLAYER2                     1002
 #define IDC_COVER                       1003
@@ -116,7 +122,7 @@
 #define IDC_CHANGECOVER                 1006
 #define IDC_PLAYER4                     1007
 #define IDC_IMAGE                       1008
-#define IDC_RULES_FANCYRESULTS          1009
+#define IDC_VIEW_FANCYSTYLE				1009
 #define IDC_VIEW_COVERLEFT              1012
 #define IDC_VIEW_COVER                  1013
 #define IDC_VIEW_COVERRIGHT             1014
@@ -140,7 +146,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        156
+#define _APS_NEXT_RESOURCE_VALUE        158
 #define _APS_NEXT_COMMAND_VALUE         32781
 #define _APS_NEXT_CONTROL_VALUE         1020
 #define _APS_NEXT_SYMED_VALUE           111

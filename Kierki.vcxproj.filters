@@ -90,7 +90,7 @@
     <ClCompile Include="RobberDecider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RRegData.cpp">
+    <ClCompile Include="RegData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Score.cpp">
@@ -127,6 +127,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JsonParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StatusBar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FontFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -221,7 +227,7 @@
     <ClInclude Include="RobberDecider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RRegData.h">
+    <ClInclude Include="RegData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Score.h">
@@ -266,6 +272,12 @@
     <ClInclude Include="JsonParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="StatusBar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FontFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Kierki.ico">
@@ -302,6 +314,18 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\notebook_canvas.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Brightness.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\brightness.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\brightness-.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\brightness+.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -2,6 +2,7 @@
 #include "Kierki.h"
 #include "GameWnd.h"
 #include "GameWndData.h"
+#include "FontFactory.h"
 #include <RCards/RCards.h>
 #include <RCards/resource.h>
 #include <rcommon/RMemDC.h>
@@ -14,7 +15,7 @@
 #include "layout.h"
 
 
-static const TCHAR c_sWindowClass[] = _T("GAMEWND");	// game window class name
+static const TCHAR cc_sWindowClass[] = _T("GAMEWND");	// game window class name
 static GameWndData* GetData(HWND a_hWnd);
 
 static LRESULT CALLBACK	GameWnd_WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -28,6 +29,9 @@ inline static void OnLButtonUp(HWND a_hWnd, int a_x, int a_y) ;
 inline static void OnMouseMove(HWND a_hWnd, UINT a_nFlags, int a_x, int a_y);
 inline static void OnCaptureChanged(HWND a_hWnd);
 inline static void OnNotify(HWND a_hWnd, LPNMHDR a_pNmHdr);
+
+inline static void OnSetBrightness(HWND a_hWnd, BYTE a_btBrightness);
+inline static BYTE OnGetBrightness(HWND a_hWnd, BOOL* a_pSet);
 
 
 static void CalculatePositions(HWND a_hWnd);
@@ -55,7 +59,7 @@ static bool LoadBitmaps(HWND a_hWnd);
 
 // drawing
 static void Draw(HWND a_hWnd, HDC a_hDC);
-static void DrawBlanket(HWND a_hWnd, HDC a_hDC);
+static void DrawFelt(HWND a_hWnd, HDC a_hDC);
 
 static void DrawNames(HWND a_hWnd, HDC a_hDC, bool a_bPass, bool a_bDrawTakenTricks);
 static void DrawCardsHorz(HWND a_hWnd, HDC a_hDC, const CUserCards& a_pCards, LONG a_y, bool a_bReverse, short a_nStart, bool a_bHighlight);
@@ -119,7 +123,7 @@ HWND GameWnd_Create(DWORD a_dwStyleEx, DWORD a_dwStyle, int a_x, int a_y,
 	int a_dx, int a_dy, HWND a_hWndParent, HINSTANCE a_hInst, HWND a_hWndApp, GameData* a_pGameData)
 {
 	RCreateData l_data = { a_hWndApp, a_pGameData };
-	return ::CreateWindowEx(a_dwStyleEx, c_sWindowClass, _T(""), a_dwStyle, a_x, a_y, 
+	return ::CreateWindowEx(a_dwStyleEx, cc_sWindowClass, _T(""), a_dwStyle, a_x, a_y, 
 		a_dx, a_dy, a_hWndParent, NULL, a_hInst, &l_data);
 }
 
@@ -138,7 +142,7 @@ ATOM GameWnd_Register(HINSTANCE a_hInst)
 	l_wcex.hCursor			= ::LoadCursor(NULL, IDC_ARROW);
 	l_wcex.hbrBackground	= NULL;
 	l_wcex.lpszMenuName		= NULL;
-	l_wcex.lpszClassName	= c_sWindowClass;
+	l_wcex.lpszClassName	= cc_sWindowClass;
 	l_wcex.hIconSm			= NULL;
 	return ::RegisterClassEx(&l_wcex);
 }
@@ -219,6 +223,13 @@ LRESULT CALLBACK GameWnd_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPAR
 	case WM_NOTIFY:
 		OnNotify(a_hWnd, reinterpret_cast<LPNMHDR>(a_lParam));
 		break;
+
+	case WM_APP_SETBRIGHTNESS:
+		OnSetBrightness(a_hWnd, static_cast<BYTE>(a_wParam));
+		break;
+
+	case WM_APP_GETBRIGHTNESS:
+		return OnGetBrightness(a_hWnd, reinterpret_cast<BOOL*>(a_lParam));
 
 	default:
 		return ::DefWindowProc(a_hWnd, a_iMsg, a_wParam, a_lParam);
@@ -376,7 +387,7 @@ Draw(
 	GameWndData* l_pData = GetData(a_hWnd);
 	GameData* l_pGameData = l_pData->m_pGameData;
 
-	DrawBlanket(a_hWnd, a_hDC);
+	DrawFelt(a_hWnd, a_hDC);
 
 	if ((!l_pGameData->IsDealed()) && (!l_pGameData->IsTrumpsChoice()))
 	{
@@ -418,13 +429,13 @@ Draw(
 }
 
 
-static void DrawBlanket(HWND a_hWnd, HDC a_hDC)
+static void DrawFelt(HWND a_hWnd, HDC a_hDC)
 {
 	GameWndData* l_pData = GetData(a_hWnd);
 
 	// Create compatible DC and select bitmap
-	HDC l_hdcMem = CreateCompatibleDC(a_hDC);
-	HBITMAP l_hBmpOld = (HBITMAP)SelectObject(l_hdcMem, l_pData->GetBmpFelt());
+	HDC l_hdcMem = ::CreateCompatibleDC(a_hDC);
+	HBITMAP l_hBmpOld = (HBITMAP)::SelectObject(l_hdcMem, l_pData->GetBmpFelt());
 
 	// Get bitmap size
 	BITMAP l_bmp;
@@ -433,12 +444,14 @@ static void DrawBlanket(HWND a_hWnd, HDC a_hDC)
 	RECT l_rect;
 	::GetClientRect(a_hWnd, &l_rect);
 	// Stretch or tile the bitmap
-	StretchBlt(a_hDC, 0, 0, RectWidth(l_rect), RectHeight(l_rect),
+	::StretchBlt(a_hDC, 0, 0, RectWidth(l_rect), RectHeight(l_rect),
 		l_hdcMem, 0, 0, l_bmp.bmWidth, l_bmp.bmHeight, SRCCOPY);
 
 	// Cleanup
-	SelectObject(l_hdcMem, l_hBmpOld);
-	DeleteDC(l_hdcMem);
+	::SelectObject(l_hdcMem, l_hBmpOld);
+	::DeleteDC(l_hdcMem);
+
+	RDraw::BlendOverlay(a_hDC, l_rect, l_pData->m_pGameData->m_regData.m_regHidden.m_clrTintGameBackground, l_pData->m_pGameData->m_regData.m_regAuto.m_btAlphaGameBackground);
 }
 
 // ---------------------------------------------------------
@@ -907,21 +920,20 @@ DrawNames(
 	for (short l_iAt = E_DL_1; l_iAt <= E_DL_4; l_iAt++)
 	{
 		tstring l_sDrawText;
-		const RRegData& l_regData = l_pData->m_pGameData->m_regData;
+		const CRegData& l_regData = l_pData->m_pGameData->m_regData;
 		const tstring& l_sPlayerName = l_regData.GetPlayerName(static_cast<T_PLAYER>(l_iAt));
 		if (a_bTakenTricksCount)
 		{
-			l_sDrawText = FormatTextT(_T("{} ({})"), l_sPlayerName, l_pData->m_pGameData->GetPlayerTricksCnt(static_cast<T_PLAYER>(l_iAt)));
+			l_sDrawText = FormatTextT("{} ({})", l_sPlayerName, l_pData->m_pGameData->GetPlayerTricksCnt(static_cast<T_PLAYER>(l_iAt)));
 		}
 		else
 		{
 			l_sDrawText = l_sPlayerName;
 		}
 
-		RDraw::DrawSmartText(a_hDC, l_regData.m_regHidden.m_sGameFont.c_str(), l_regData.m_regHidden.m_iGameFontSize, l_pData->m_rectsNames[l_iAt], l_sDrawText.c_str());
+		HFONT l_hFont = CFontFactory::Instance().GetFont(a_hWnd, l_regData.m_regHidden.m_iGameFontSize);
+		RDraw::DrawSmartText(a_hDC, l_hFont, l_pData->m_rectsNames[l_iAt], l_sDrawText.c_str());
 	
-
-		//::DrawText(a_hDC, l_sDrawText.c_str(), static_cast<int>(l_sDrawText.length()), &(l_pData->m_rectsNames[l_iAt]), DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 	}
 
 }
@@ -1567,6 +1579,25 @@ void OnNotify(HWND a_hWnd, LPNMHDR a_pNmHdr)
 	{
 		TrumpsChosen(a_hWnd, E_CC_NOTRUMPS);
 	}
+}
+
+
+void OnSetBrightness(HWND a_hWnd, BYTE a_btBrightness)
+{
+	GameWndData* l_pData = GetData(a_hWnd);
+	l_pData->m_pGameData->m_regData.m_regAuto.m_btAlphaGameBackground = a_btBrightness;
+	::RedrawWindow(a_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+}
+
+
+BYTE OnGetBrightness(HWND a_hWnd, BOOL* a_pSet)
+{
+	GameWndData* l_pData = GetData(a_hWnd);
+	if (l_pData == nullptr)
+		return 0;
+	*a_pSet = TRUE;
+	return l_pData->m_pGameData->m_regData.m_regAuto.m_btAlphaGameBackground;
+
 }
 
 

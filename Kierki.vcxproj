@@ -274,6 +274,7 @@
     <ClCompile Include="AllowedCards.cpp" />
     <ClCompile Include="BaseJson.cpp" />
     <ClCompile Include="Card.cpp" />
+    <ClCompile Include="FontFactory.cpp" />
     <ClCompile Include="HelpJson.cpp" />
     <ClCompile Include="HelpWnd.cpp" />
     <ClCompile Include="JsonParser.cpp" />
@@ -301,10 +302,11 @@
     <ClCompile Include="RecoverDecider.cpp" />
     <ClCompile Include="ResultWnd.cpp" />
     <ClCompile Include="RobberDecider.cpp" />
-    <ClCompile Include="RRegData.cpp" />
+    <ClCompile Include="RegData.cpp" />
     <ClCompile Include="Score.cpp" />
     <ClCompile Include="Scores.cpp" />
     <ClCompile Include="SortCards.cpp" />
+    <ClCompile Include="StatusBar.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugDll|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugLib|Win32'">Create</PrecompiledHeader>
@@ -319,6 +321,7 @@
     <ClInclude Include="AllowedCards.h" />
     <ClInclude Include="BaseJson.h" />
     <ClInclude Include="Card.h" />
+    <ClInclude Include="FontFactory.h" />
     <ClInclude Include="HelpJson.h" />
     <ClInclude Include="HelpWnd.h" />
     <ClInclude Include="JsonParser.h" />
@@ -352,10 +355,11 @@
     <ClInclude Include="ResultWnd.h" />
     <ClInclude Include="RFile.h" />
     <ClInclude Include="RobberDecider.h" />
-    <ClInclude Include="RRegData.h" />
+    <ClInclude Include="RegData.h" />
     <ClInclude Include="Score.h" />
     <ClInclude Include="Scores.h" />
     <ClInclude Include="SortCards.h" />
+    <ClInclude Include="StatusBar.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TakenTricks.h" />
     <ClInclude Include="Trick.h" />
@@ -364,6 +368,10 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Kierki.ico" />
+    <Image Include="res\brightness+.ico" />
+    <Image Include="res\brightness-.ico" />
+    <Image Include="res\Brightness.bmp" />
+    <Image Include="res\brightness.ico" />
     <Image Include="res\kierki.ico" />
     <Image Include="res\new_game_48x48.png" />
     <Image Include="res\notebook_canvas.bmp" />

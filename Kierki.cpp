@@ -28,10 +28,9 @@
 
 // for better drawing
 #pragma comment(lib, "gdiplus.lib")
+#pragma comment(lib, "wininet.lib")
 
-// TOOO check if brightnessbmp is needed
-// TODO check this line for RDW_ERASENOW in HelpWnd.cpp ()	::RedrawWindow(l_pData->m_hWndRich, nullptr, nullptr, RDW_ERASENOW | RDW_INVALIDATE | RDW_UPDATENOW);
-// TODO define size of Help panel and put it into HiddenVariables
+
 // TODO implement help for every game
 // TODO clean up / refactor fancy style (the same font and size for fancy and regular styles)
 // TODO check saving and loading the game - it behaves strangely, starts from incorrect directory
@@ -78,6 +77,7 @@ inline static ATOM RegisterKierki(HINSTANCE a_hInst);
 inline static int RunApp(HINSTANCE a_hInst, HINSTANCE a_hPrevInstance, LPTSTR a_lpCmdLine, int a_nCmdShow);
 inline static int RunAppThrow(HINSTANCE a_hInst, HINSTANCE a_hPrevInstance, LPTSTR a_lpCmdLine, int a_nCmdShow);
 inline static HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow);
+LRESULT CALLBACK Kierki_SafeWndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
 static LRESULT CALLBACK	Kierki_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
 
 static inline void ConfigureOwnToolbar(HWND a_hWnd);
@@ -147,10 +147,12 @@ static void SetStatusBarText(HWND a_hWnd, UINT a_idStr);
 
 static void SetFont(HWND a_hWnd);
 
-
 inline static void CalculateWinSize(HWND a_hWnd, LPSIZE a_pSize);
 
 static void EnableSaveMenu(HWND a_hWnd, BOOL a_bEnable);
+
+
+
 static const TCHAR cc_cAsterisk = _T('*');
 
 constexpr BYTE cc_btSliderMax = 255;
@@ -282,7 +284,7 @@ ATOM RegisterKierki(HINSTANCE a_hInst)
 
 	l_wcex.cbSize			= sizeof(WNDCLASSEX); 
 	l_wcex.style			= CS_HREDRAW | CS_VREDRAW;
-	l_wcex.lpfnWndProc		= Kierki_WndProc;
+	l_wcex.lpfnWndProc		= Kierki_SafeWndProc;
 	l_wcex.cbClsExtra		= 0;
 	l_wcex.cbWndExtra		= 0;
 	l_wcex.hInstance		= a_hInst;
@@ -408,6 +410,30 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 	return l_hWndKierki;
 }
 
+
+LRESULT CALLBACK Kierki_SafeWndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
+{
+	LRESULT l_result = 0;
+	try 
+	{
+		l_result = Kierki_WndProc(a_hWnd, a_iMsg, a_wParam, a_lParam);
+	}
+	catch (const RSystemExc& l_exc)
+	{
+		ExceptionMessageBox(a_hWnd, l_exc.GetFormattedMsg().c_str());
+		return 0; // abort safely
+	}
+	catch (const ROwnExc& l_exc)
+	{
+		ExceptionMessageBox(a_hWnd, l_exc.GetFormattedMsg().c_str());
+		return 0; // abort safely
+	}
+	catch (...)
+	{
+		ExceptionMessageBox(a_hWnd, _T(""));
+	}
+	return l_result;
+}
 
 
 LRESULT CALLBACK Kierki_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
@@ -904,8 +930,6 @@ bool DecisionBox(HWND a_hWnd, UINT a_idPrompt)
 	::LoadString(::GetModuleHandle(NULL), IDS_DECISION, l_sTitle, ArraySize(l_sTitle));
 	::LoadString(::GetModuleHandle(NULL), a_idPrompt, l_sPrompt, ArraySize(l_sPrompt));
 	return RCenteredMessageBox::DecisionBox2(a_hWnd, l_sPrompt);
-
-//	return (RCenteredMessageBox::Show(a_hWnd, l_sPrompt, l_sTitle, MB_YESNO | MB_ICONQUESTION) == IDYES);
 }
 
 

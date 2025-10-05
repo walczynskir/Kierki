@@ -110,7 +110,6 @@
 #define IDC_HELP_LEFT                   189
 #define IDC_HELP_RIGHT                  190
 #define IDB_NOTEBOOK                    191
-#define IDB_BRIGHTNESS                  192
 #define IDI_BRIGHTNESS                  192
 #define IDS_SLIDER_TT					193
 #define IDC_HELP_SECTIONLABEL			194

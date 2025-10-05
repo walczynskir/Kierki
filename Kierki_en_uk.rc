@@ -298,7 +298,6 @@ END
 IDB_NOTRUMPS            BITMAP                  "res\\notrumps.bmp"
 IDB_PAPER               BITMAP                  "res\\paper_canvas.bmp"
 IDB_NOTEBOOK            BITMAP                  "res\\notebook_canvas.bmp"
-IDB_BRIGHTNESS          BITMAP                  "res\\brightness.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -406,7 +405,7 @@ BEGIN
     IDS_LANG_NAME           "English (UK)"
     IDS_HELPTITLE_GAME      "Instructions"
     IDS_SLIDER_TT           "Background brightness"
-END
+ END
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

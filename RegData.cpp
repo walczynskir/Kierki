@@ -64,6 +64,7 @@ static const TCHAR c_sFancyFontReg[] = _T("Software\\Medea\\Kierki\\NFANCYFONT")
 static const TCHAR c_sGameFontSizeReg[] = _T("Software\\Medea\\Kierki\\GAMEFONTSIZE");
 
 static const TCHAR c_sStatusBarColor[] = _T("Software\\Medea\\Kierki\\STATUSBARCOLOR");
+static const TCHAR c_sHelpPanelHeight[] = _T("Software\\Medea\\Kierki\\HELPPANELHEIGHT");
 
 
 #define DARK_GREEN_COLOR RGB(0, 128, 0)
@@ -80,7 +81,9 @@ constexpr int cc_dyDefaultHelpPanel = 36;
 constexpr LPCTSTR cc_sFancyFontDefault = _T("Segoe Print");
 constexpr LPCTSTR cc_sNormalFontDefault = _T("Segoe UI");
 
-constexpr int cc_clrStatusBarColorDefault = 0xFF8728;
+constexpr COLORREF cc_clrStatusBarColorDefault = 0xFF8728;
+
+constexpr int cc_iHelpPanelHeightDefault = 36;
 
 
 static tstring GetDeafaultSystemFontName();
@@ -211,9 +214,9 @@ CRegData::RHiddenRegData::RHiddenRegData(void)
 	m_sNormalFont = RRegTStringDef(c_sNormalFontReg, HKEY_CURRENT_USER, GetDeafaultSystemFontName());
 	m_sFancyFont = RRegTStringDef(c_sFancyFontReg, HKEY_CURRENT_USER, cc_sFancyFontDefault);
 
-	RRegInt l_regGameFontSize(c_sGameFontSizeReg, HKEY_CURRENT_USER);
 	m_iGameFontSize = RRegIntDef(c_sGameFontSizeReg, HKEY_CURRENT_USER, cc_iDefaultFontSize);
 
+	m_dyHelpPanel = RRegIntDef(c_sHelpPanelHeight, HKEY_CURRENT_USER, cc_iHelpPanelHeightDefault);
 }
 
 
@@ -240,6 +243,8 @@ void CRegData::RHiddenRegData::Serialize(void)
 	RRegInt l_regGameFontSize(c_sGameFontSizeReg, HKEY_CURRENT_USER);
 	l_regGameFontSize = m_iGameFontSize;
 
+	RRegInt l_regHelpPanelHeight(c_sGameFontSizeReg, HKEY_CURRENT_USER);
+	l_regHelpPanelHeight = m_dyHelpPanel;
 }
 
 

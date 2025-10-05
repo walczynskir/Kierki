@@ -16,7 +16,7 @@
 #include <string>
 #include <external/json.hpp> // Include the JSON library
 #include "HelpJson.h"
-#pragma comment(lib, "wininet.lib")
+
 
 
 
@@ -263,11 +263,12 @@ void OnSize(HWND a_hWnd, int a_dxWidth, int a_dyHeight)
 	if (l_hdwp == NULL)
 		throw RSystemExc(_T("HELPWND:BEGIN_DEFER_WINDOW_POS"));
 	
-	l_hdwp = ::DeferWindowPos(l_hdwp, l_pData->m_hWndPanel, NULL, 0, 0, a_dxWidth, 36, SWP_NOZORDER);
+	int l_dyPanelHeight = l_pData->m_pRegData->m_regHidden.m_dyHelpPanel;
+	l_hdwp = ::DeferWindowPos(l_hdwp, l_pData->m_hWndPanel, NULL, 0, 0, a_dxWidth, l_dyPanelHeight, SWP_NOZORDER);
 	if (l_hdwp == NULL)
 		throw RSystemExc(_T("HELPWND:DEFER_WINDOW_POS_DIALOG"));
 
-	l_hdwp = ::DeferWindowPos(l_hdwp, l_pData->m_hWndRich, NULL, 0, 36, a_dxWidth, a_dyHeight - 36, SWP_NOZORDER);
+	l_hdwp = ::DeferWindowPos(l_hdwp, l_pData->m_hWndRich, NULL, 0, l_dyPanelHeight, a_dxWidth, a_dyHeight - l_dyPanelHeight, SWP_NOZORDER);
 	if (l_hdwp == NULL)
 		throw RSystemExc(_T("HELPWND:DEFER_WINDOW_POS_RICHEDIT"));
 
@@ -537,7 +538,7 @@ void LoadInstructionsAndRedraw(HWND a_hWndHelp, const std::string& a_sSection)
 {
 	LoadInstructions(a_hWndHelp, a_sSection);
 	HelpWndData* l_pData = HelpWndData::GetData(a_hWndHelp);
-	::RedrawWindow(l_pData->m_hWndRich, nullptr, nullptr, RDW_ERASENOW | RDW_INVALIDATE | RDW_UPDATENOW);
+	::RedrawWindow(l_pData->m_hWndRich, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 }
 
 

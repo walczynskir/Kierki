@@ -299,7 +299,6 @@ IDB_PAPER               BITMAP                  "res\\paper_canvas.bmp"
 
 IDB_NOTEBOOK            BITMAP                  "res\\notebook_canvas.bmp"
 
-IDB_BRIGHTNESS          BITMAP                  "res\\brightness.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////

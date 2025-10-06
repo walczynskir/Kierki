@@ -67,6 +67,10 @@ static const TCHAR c_sStatusBarColor[] = _T("Software\\Medea\\Kierki\\STATUSBARC
 static const TCHAR c_sHelpPanelHeight[] = _T("Software\\Medea\\Kierki\\HELPPANELHEIGHT");
 
 
+constexpr TCHAR c_sHelpFromResource[] = _T("Software\\Medea\\Kierki\\HELPFROMRESOURCE");
+constexpr TCHAR c_sHelpUrl[] = _T("Software\\Medea\\Kierki\\HELPURL");
+
+
 #define DARK_GREEN_COLOR RGB(0, 128, 0)
 #define LIME_GREEN_COLOR RGB(50, 205, 50)
 
@@ -84,6 +88,9 @@ constexpr LPCTSTR cc_sNormalFontDefault = _T("Segoe UI");
 constexpr COLORREF cc_clrStatusBarColorDefault = 0xFF8728;
 
 constexpr int cc_iHelpPanelHeightDefault = 36;
+
+constexpr LPCTSTR cc_sHelpUrlDefault = _T("https://raw.githubusercontent.com/walczynskir/Kierki/master/instructions/instructions_");
+
 
 
 static tstring GetDeafaultSystemFontName();
@@ -148,14 +155,14 @@ void CRegData::RTimeRegData::Serialize(void)
 
 CRegData::RPlayersRegData::RPlayersRegData(void)
 {
-	m_arrPlayersNames[0] = (tstring)RRegTString(c_sLastNameReg, HKEY_CURRENT_USER);
+	m_arrPlayersNames[0] = RRegTString(c_sLastNameReg, HKEY_CURRENT_USER);
 	TCHAR l_sDefName[128];
 	::LoadString(::GetModuleHandle(NULL), IDS_DEFNAME1, l_sDefName, ArraySize(l_sDefName));
-	m_arrPlayersNames[1] = (tstring)RRegTStringDef(c_sPlayer2Reg, HKEY_CURRENT_USER, l_sDefName);
+	m_arrPlayersNames[1] = RRegTStringDef(c_sPlayer2Reg, HKEY_CURRENT_USER, l_sDefName);
 	::LoadString(::GetModuleHandle(NULL), IDS_DEFNAME2, l_sDefName, ArraySize(l_sDefName));
-	m_arrPlayersNames[2] = (tstring)RRegTStringDef(c_sPlayer3Reg, HKEY_CURRENT_USER, l_sDefName);
+	m_arrPlayersNames[2] = RRegTStringDef(c_sPlayer3Reg, HKEY_CURRENT_USER, l_sDefName);
 	::LoadString(::GetModuleHandle(NULL), IDS_DEFNAME3, l_sDefName, ArraySize(l_sDefName));
-	m_arrPlayersNames[3] = (tstring)RRegTStringDef(c_sPlayer4Reg, HKEY_CURRENT_USER, l_sDefName);
+	m_arrPlayersNames[3] = RRegTStringDef(c_sPlayer4Reg, HKEY_CURRENT_USER, l_sDefName);
 }
 
 
@@ -183,10 +190,10 @@ void CRegData::SetPlayerName(T_PLAYER a_enPlayer, const tstring& a_sName)
 
 CRegData::RRulesRegData::RRulesRegData(void)
 {
-	m_bConfirmTrick = (bool)RRegBoolDef(c_sConfirmTrickReg, HKEY_CURRENT_USER, true);
-	m_idLanguage = (LANGID)RRegLangidDef(c_sLanguageReg, HKEY_CURRENT_USER, ::GetThreadUILanguage());
-	m_bLogonDlg = (bool)RRegBoolDef(c_sLogonDlgReg, HKEY_CURRENT_USER, true);
-	m_bHelpVisible = (bool)RRegBoolDef(c_sHelpVisibleReg, HKEY_CURRENT_USER, true);	
+	m_bConfirmTrick = RRegBoolDef(c_sConfirmTrickReg, HKEY_CURRENT_USER, true);
+	m_idLanguage = RRegLangidDef(c_sLanguageReg, HKEY_CURRENT_USER, ::GetThreadUILanguage());
+	m_bLogonDlg = RRegBoolDef(c_sLogonDlgReg, HKEY_CURRENT_USER, true);
+	m_bHelpVisible = RRegBoolDef(c_sHelpVisibleReg, HKEY_CURRENT_USER, true);	
 }
 
 
@@ -200,6 +207,7 @@ void CRegData::RRulesRegData::Serialize(void)
 	l_regLogonDlg = m_bLogonDlg;
 	RRegBool l_regHelpVisible(c_sHelpVisibleReg, HKEY_CURRENT_USER);
 	l_regHelpVisible = m_bHelpVisible;
+
 }
 
 
@@ -217,6 +225,8 @@ CRegData::RHiddenRegData::RHiddenRegData(void)
 	m_iGameFontSize = RRegIntDef(c_sGameFontSizeReg, HKEY_CURRENT_USER, cc_iDefaultFontSize);
 
 	m_dyHelpPanel = RRegIntDef(c_sHelpPanelHeight, HKEY_CURRENT_USER, cc_iHelpPanelHeightDefault);
+	m_bHelpFromResource = RRegBoolDef(c_sHelpFromResource, HKEY_CURRENT_USER, false);
+	m_sHelpUrl = RRegTStringDef(c_sHelpUrl, HKEY_CURRENT_USER, cc_sHelpUrlDefault);
 }
 
 
@@ -245,6 +255,12 @@ void CRegData::RHiddenRegData::Serialize(void)
 
 	RRegInt l_regHelpPanelHeight(c_sGameFontSizeReg, HKEY_CURRENT_USER);
 	l_regHelpPanelHeight = m_dyHelpPanel;
+
+	RRegBool l_regHelpFromResource(c_sHelpFromResource, HKEY_CURRENT_USER);
+	l_regHelpFromResource = m_bHelpFromResource;
+
+	RRegTString l_regHelpUrl(c_sHelpUrl, HKEY_CURRENT_USER);
+	l_regHelpUrl = m_sHelpUrl;
 }
 
 

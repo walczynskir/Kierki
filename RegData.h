@@ -74,6 +74,8 @@ public:
 		tstring m_sFancyFont;
 		int m_iGameFontSize;
 		int m_dyHelpPanel;
+		bool m_bHelpFromResource;	// help not taken from URL, only default one, compiled into program
+		tstring m_sHelpUrl;
 
 
 	};

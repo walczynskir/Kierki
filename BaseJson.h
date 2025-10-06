@@ -8,7 +8,7 @@ class CBaseJson
 {
 public:
     // Load JSON from GitHub URL, fallback to resource
-    bool load(const tstring& a_sUrl, int a_idResource, HINSTANCE a_hInstance);
+    bool load(const tstring& a_sUrl, int a_idResource, HINSTANCE a_hInstance, bool a_bOnlyResource = false);
 
      // Accessors (UTF-8 and UNICODE)
     std::optional<std::string> getA(const std::string& path) const;

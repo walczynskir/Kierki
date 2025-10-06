@@ -17,7 +17,7 @@ class CHelpJson :
     CHelpJson() = default;
     ~CHelpJson() = default;
 
-    bool load(const LanguageManager& a_lang);
+    bool load(const LanguageManager& a_lang, bool a_bOnlyResource, const tstring& a_sUrl);
 
 
     std::vector<std::pair<std::string, tstring>> getSectionTitles() const;
@@ -27,6 +27,6 @@ class CHelpJson :
     std::vector<std::wstring> getInstructionsW(const std::string& a_sSection);
 
 private:
-    static tstring GetInstructionFileNameFromLangID(const LanguageManager& a_lang);
+    static tstring GetInstructionFileNameFromLangID(const LanguageManager& a_lang, const tstring& a_sUrl);
 };
 

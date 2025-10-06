@@ -10,18 +10,24 @@
 #pragma todo("Consider using WinHTTP instead of WinINet for better performance and security.")
 #pragma todo("Improve formatting .")
 // Load JSON from GitHub or resource
-bool CBaseJson::load(const tstring& a_sUrl, int a_idResource, HINSTANCE a_hInstance)
+bool CBaseJson::load(const tstring& a_sUrl, int a_idResource, HINSTANCE a_hInstance, bool a_bOnlyResource)
 {
 
     // Try GitHub
  	std::string l_sJsonData;    //utf-8 data!
 
-    // TODO add to parameters whether load only from resources
-#ifndef _DEBUG
-    if (!LoadFromUrl(a_sUrl, l_sJsonData))
-#endif // _DEBUG
+    if (a_bOnlyResource)
+    {
         if (!LoadFromResource(a_idResource, a_hInstance, l_sJsonData))
             return false;
+    }
+    else
+    {
+        if (!LoadFromUrl(a_sUrl, l_sJsonData) &&
+            !LoadFromResource(a_idResource, a_hInstance, l_sJsonData))
+            return false;
+    }
+
     return (m_parser.parse(l_sJsonData, false));
 }
 

@@ -114,7 +114,7 @@ HWND HelpWnd_Create( DWORD a_dwStyle, HWND a_hWndParent, const LanguageManager& 
 	}
 
 	l_pData->m_pRegData = a_pRegData;
-	l_pData->m_jsonHelp.load(a_lang);
+	l_pData->m_jsonHelp.load(a_lang, l_pData->m_pRegData->m_regHidden.m_bHelpFromResource, l_pData->m_pRegData->m_regHidden.m_sHelpUrl);
 	l_pData->m_hWndPanel = ::CreateDialogParam(::GetModuleHandle(nullptr),
 		MAKEINTRESOURCEW(IDD_HELP), l_hWndHelp, SafeDialogProc<Panel_DlgProc>, reinterpret_cast<LPARAM>(l_pData));
 	if (l_pData->m_hWndPanel == nullptr)

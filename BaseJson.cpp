@@ -15,7 +15,11 @@ bool CBaseJson::load(const tstring& a_sUrl, int a_idResource, HINSTANCE a_hInsta
 
     // Try GitHub
  	std::string l_sJsonData;    //utf-8 data!
+
+    // TODO add to parameters whether load only from resources
+#ifndef _DEBUG
     if (!LoadFromUrl(a_sUrl, l_sJsonData))
+#endif // _DEBUG
         if (!LoadFromResource(a_idResource, a_hInstance, l_sJsonData))
             return false;
     return (m_parser.parse(l_sJsonData, false));
@@ -219,33 +223,6 @@ bool CBaseJson::LoadFromUrl(const tstring& a_sUrl, std::string& a_sContent)
     return true;
 }
 
-
-/*
-* Load resource via temporary file
-bool JsonHelper::loadFromResource(int resourceId, HINSTANCE hInstance, const tstring& a_sPathLocal)
-{
-    HRSRC hRes = FindResourceW(hInstance, MAKEINTRESOURCEW(resourceId), L"JSON");
-    if (!hRes) return false;
-
-    HGLOBAL hData = LoadResource(hInstance, hRes);
-    if (!hData) return false;
-
-    DWORD size = SizeofResource(hInstance, hRes);
-    void* pData = LockResource(hData);
-    if (!pData || size == 0) return false;
-
-    HANDLE hFile = CreateFileW(a_sPathLocal.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
-    if (hFile == INVALID_HANDLE_VALUE) return false;
-
-    DWORD written = 0;
-    WriteFile(hFile, pData, size, &written, nullptr);
-    CloseHandle(hFile);
-
-    return (written == size);
-}
-*/
-
-//if (loadFromResource(a_idResource, a_hInstance, c_sTempJsonFile) && m_parser.parse(c_sTempJsonFile))
 
 bool CBaseJson::LoadFromResource(int a_idResource, HINSTANCE a_hInstance, std::string& a_sContent)
 {

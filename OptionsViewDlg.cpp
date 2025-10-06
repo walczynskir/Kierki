@@ -10,6 +10,7 @@
 #include <RCards/resource.h>
 #include <rcommon/RSystemExc.h>
 #include <rcommon/ROwnExc.h>
+#include <rcommon/SafeWndProc.hpp>
 
 
 
@@ -46,7 +47,7 @@ inline static void OnCommand(HWND a_hDlg, UINT a_idCtrl, UINT a_idCmd);
 
 inline static void OnNcDestroy(HWND a_hDlg);
 
-static INT_PTR CALLBACK OptionsViewDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
+static INT_PTR OptionsViewDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
 inline static void SetCtrlValues(HWND a_hDlg);
 
 
@@ -62,47 +63,30 @@ HWND CreateOptViewDlg(HWND a_hParent, CRegData::RBaseRegData* a_pData, LPVOID a_
 	RSelectBitmap_RegisterClass(::GetModuleHandle(NULL));
 
 	return ::CreateDialogParam(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_OPT_VIEW), 
-		a_hParent, OptionsViewDlgProc, reinterpret_cast<LPARAM>(l_pViewData));
+		a_hParent, SafeDialogProc<OptionsViewDlgProc>, reinterpret_cast<LPARAM>(l_pViewData));
 }
 
 
-static INT_PTR CALLBACK OptionsViewDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
+static INT_PTR OptionsViewDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
 {
-	try
+	switch (a_iMsg)
 	{
-		switch (a_iMsg)
-		{
-		case WM_INITDIALOG:
-			OnInitDialog(a_hDlg, reinterpret_cast<ROptionsViewData*>(a_lParam));
-			return TRUE;
+	case WM_INITDIALOG:
+		OnInitDialog(a_hDlg, reinterpret_cast<ROptionsViewData*>(a_lParam));
+		return TRUE;
 
-		case WM_GETVALUES:
-			GetCtrlValues(a_hDlg);
-			::SetWindowLong(a_hDlg, DWL_MSGRESULT, TRUE);
-			return TRUE; // must be TRUE too return proper LRESULT
+	case WM_GETVALUES:
+		GetCtrlValues(a_hDlg);
+		::SetWindowLong(a_hDlg, DWL_MSGRESULT, TRUE);
+		return TRUE; // must be TRUE too return proper LRESULT
 
-		case WM_COMMAND:
-			OnCommand(a_hDlg, LOWORD(a_wParam), HIWORD(a_wParam));
-			break;
+	case WM_COMMAND:
+		OnCommand(a_hDlg, LOWORD(a_wParam), HIWORD(a_wParam));
+		break;
 
-		case WM_NCDESTROY:
-			OnNcDestroy(a_hDlg);
-			return TRUE;
-		}
-	}
-	catch (const RSystemExc& l_exc)
-	{
-		TRACE1("%s\n", l_exc.GetFormattedMsg().c_str());
-		return FALSE; // abort safely
-	}
-	catch (const ROwnExc& l_exc)
-	{
-		TRACE1("%s\n", l_exc.GetFormattedMsg().c_str());
-		return FALSE;
-	}
-	catch (...)
-	{
-		TRACE0("Unknown exception\n");
+	case WM_NCDESTROY:
+		OnNcDestroy(a_hDlg);
+		return TRUE;
 	}
 	return FALSE;
 }
@@ -180,7 +164,7 @@ static void GetCtrlValues(HWND a_hDlg)
 	l_pRegData->m_bFancyStyle = (::SendMessage(::GetDlgItem(a_hDlg, IDC_VIEW_FANCYSTYLE), BM_GETCHECK, 0, 0L) == BST_CHECKED);
 
 
-#pragma todo("Brakuje sprawdzenia b³êdu")
+// TODO "Brakuje sprawdzenia b³êdu"
 	l_pRegData->m_idCover = SelectBitmap_GetSelected(l_pData->m_hCover);
 }
 

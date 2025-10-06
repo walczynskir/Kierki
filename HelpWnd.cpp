@@ -7,6 +7,7 @@
 #include <rcommon/ROwnExc.h>
 #include <rcommon/RMemDC.h>
 #include <rcommon/drawutl.h>
+#include <rcommon/SafeWndProc.hpp>
 #include <richedit.h>
 #include <algorithm>
 #include <CommCtrl.h>
@@ -45,8 +46,8 @@ public:
 };
 
 
-static LRESULT CALLBACK	HelpWnd_WndProc(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK Panel_WndProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
+static LRESULT HelpWnd_WndProc(HWND, UINT, WPARAM, LPARAM);
+INT_PTR Panel_DlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
 
 inline static LRESULT OnNCCreate(HWND a_hWnd, LPCREATESTRUCT a_pCreateStruct);
 inline static LRESULT OnCreate(HWND a_hWnd);
@@ -64,7 +65,7 @@ static BOOL OnInitDialog(HWND a_hDlg, HelpWndData* a_pData);
 
 static std::string GetSelectedSection(HWND a_hWnd);
 
-static void LoadInstructions(HWND a_hWndHelp , const std::string& a_sSection);
+static void LoadInstructionsToRichEdit(HWND a_hWndHelp , const std::string& a_sSection);
 void LoadInstructionsAndRedraw(HWND a_hWndHelp, const std::string& a_sSection);
 BOOL SetSection(HWND a_hWnd, const std::string& a_sSection);
 static void NextSection(HWND a_hWnd, bool a_bNext);
@@ -80,6 +81,8 @@ void SetFont(HWND a_hWnd);
 
 bool IsRtfText(const tstring& a_sText);
 void SetRichEditText(HWND a_hWnd, const tstring& a_sText);
+void StreamRichEditText(HWND a_hWnd, const std::string& a_sText);
+
 void SetRichEditFont(HWND a_hWndRich, HFONT a_hFont);
 CHARFORMAT2 CharFormatFromFont(HFONT a_hFont);
 
@@ -92,7 +95,7 @@ BOOL HelpWnd_Register(HINSTANCE a_hInst)
 	WNDCLASSEX l_wcex {};
 
 	l_wcex.cbSize = sizeof(WNDCLASSEX);
-	l_wcex.lpfnWndProc = HelpWnd_WndProc;
+	l_wcex.lpfnWndProc = SafeWndProc<HelpWnd_WndProc>;
 	l_wcex.hInstance = a_hInst;
 	l_wcex.lpszClassName = cc_sWindowClass;
 	return ::RegisterClassEx(&l_wcex);
@@ -113,7 +116,9 @@ HWND HelpWnd_Create( DWORD a_dwStyle, HWND a_hWndParent, const LanguageManager& 
 	l_pData->m_pRegData = a_pRegData;
 	l_pData->m_jsonHelp.load(a_lang);
 	l_pData->m_hWndPanel = ::CreateDialogParam(::GetModuleHandle(nullptr),
-		MAKEINTRESOURCEW(IDD_HELP), l_hWndHelp, Panel_WndProc, reinterpret_cast<LPARAM>(l_pData));
+		MAKEINTRESOURCEW(IDD_HELP), l_hWndHelp, SafeDialogProc<Panel_DlgProc>, reinterpret_cast<LPARAM>(l_pData));
+	if (l_pData->m_hWndPanel == nullptr)
+		throw RSystemExc(_T("LOAD_PANEL_HELP"));
 
 	l_pData->m_hWndRich = ::CreateWindowEx(WS_EX_TRANSPARENT | WS_EX_CLIENTEDGE, MSFTEDIT_CLASS, _T(""),
 		a_dwStyle | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL | WS_VISIBLE ,
@@ -121,13 +126,9 @@ HWND HelpWnd_Create( DWORD a_dwStyle, HWND a_hWndParent, const LanguageManager& 
 	if (l_pData->m_hWndRich == NULL)
 		throw RSystemExc(_T("CREATE_HWNDHELP_RICHEDIT"));
 
-
-	l_pData->m_hBmpBackground = (HBITMAP)::LoadImage(
-		::GetModuleHandle(nullptr),
-		MAKEINTRESOURCE(IDB_PAPER), // Use full path or resource ID
-		IMAGE_BITMAP,
-		0, 0, LR_CREATEDIBSECTION
-	);
+	l_pData->m_hBmpBackground = reinterpret_cast<HBITMAP>(::LoadImage(
+		::GetModuleHandle(nullptr),	MAKEINTRESOURCE(IDB_PAPER), IMAGE_BITMAP,
+		0, 0, LR_CREATEDIBSECTION));
 	if (l_pData->m_hBmpBackground == nullptr)
 		throw RSystemExc(_T("LOAD_BACKGROUND_HELP"));
 
@@ -137,66 +138,52 @@ HWND HelpWnd_Create( DWORD a_dwStyle, HWND a_hWndParent, const LanguageManager& 
 }
 
 
-LRESULT CALLBACK HelpWnd_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
+LRESULT HelpWnd_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
 {
-	try
+	switch (a_iMsg)
 	{
-		switch (a_iMsg)
-		{
-		case WM_NCCREATE:
-			return OnNCCreate(a_hWnd, reinterpret_cast<LPCREATESTRUCT>(a_lParam));
+	case WM_NCCREATE:
+		return OnNCCreate(a_hWnd, reinterpret_cast<LPCREATESTRUCT>(a_lParam));
 
-		case WM_CREATE:
-			return OnCreate(a_hWnd);
+	case WM_CREATE:
+		return OnCreate(a_hWnd);
 
-		case WM_SIZE:
-			OnSize(a_hWnd, LOWORD(a_lParam), HIWORD(a_lParam));
-			break;
+	case WM_SIZE:
+		OnSize(a_hWnd, LOWORD(a_lParam), HIWORD(a_lParam));
+		break;
 
-		case WM_NCDESTROY:
-			OnNcDestroy(a_hWnd);
-			break;
+	case WM_NCDESTROY:
+		OnNcDestroy(a_hWnd);
+		break;
 
-		case WM_COMMAND:
-			OnCommand(a_hWnd, a_wParam, a_lParam);
-			break;
+	case WM_COMMAND:
+		OnCommand(a_hWnd, a_wParam, a_lParam);
+		break;
 
-		case WM_PAINT:
-			OnPaint(a_hWnd);
-			break;
+	case WM_PAINT:
+		OnPaint(a_hWnd);
+		break;
 
-		case WM_APP_REFRESH:
-			OnAppRefresh(a_hWnd);
-			break;
+	case WM_APP_REFRESH:
+		OnAppRefresh(a_hWnd);
+		break;
 
-		case WM_APP_SETBRIGHTNESS:
-			OnSetBrightness(a_hWnd, static_cast<BYTE>(a_wParam));
-			break;
+	case WM_APP_SETBRIGHTNESS:
+		OnSetBrightness(a_hWnd, static_cast<BYTE>(a_wParam));
+		break;
 
-		case WM_APP_GETBRIGHTNESS:
-			return OnGetBrightness(a_hWnd, reinterpret_cast<BOOL*>(a_lParam));
+	case WM_APP_GETBRIGHTNESS:
+		return OnGetBrightness(a_hWnd, reinterpret_cast<BOOL*>(a_lParam));
 
-		default:
-			return ::DefWindowProc(a_hWnd, a_iMsg, a_wParam, a_lParam);
-		}
-	}
-	catch (const RSystemExc& l_exc) 
-	{
-		return 0; // abort safely
-	}
-	catch (const ROwnExc& l_exc) 
-	{
-		return 0;
-	}
-	catch (...)
-	{
+	default:
+		return ::DefWindowProc(a_hWnd, a_iMsg, a_wParam, a_lParam);
 	}
 
 	return 0;
 }
 
 
-INT_PTR CALLBACK Panel_WndProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
+INT_PTR Panel_DlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
 {
 	switch (a_iMsg)
 	{
@@ -229,7 +216,7 @@ LRESULT OnNCCreate(HWND a_hWnd, LPCREATESTRUCT a_pCreateStruct)
 
 
 //
-// load instructions from GitHub repository or resources
+// 
 //
 LRESULT OnCreate(HWND a_hWnd)
 {
@@ -260,16 +247,16 @@ void OnSize(HWND a_hWnd, int a_dxWidth, int a_dyHeight)
 
 	HDWP l_hdwp = ::BeginDeferWindowPos(2);
 
-	if (l_hdwp == NULL)
+	if (l_hdwp == nullptr)
 		throw RSystemExc(_T("HELPWND:BEGIN_DEFER_WINDOW_POS"));
 	
 	int l_dyPanelHeight = l_pData->m_pRegData->m_regHidden.m_dyHelpPanel;
 	l_hdwp = ::DeferWindowPos(l_hdwp, l_pData->m_hWndPanel, NULL, 0, 0, a_dxWidth, l_dyPanelHeight, SWP_NOZORDER);
-	if (l_hdwp == NULL)
+	if (l_hdwp == nullptr)
 		throw RSystemExc(_T("HELPWND:DEFER_WINDOW_POS_DIALOG"));
 
 	l_hdwp = ::DeferWindowPos(l_hdwp, l_pData->m_hWndRich, NULL, 0, l_dyPanelHeight, a_dxWidth, a_dyHeight - l_dyPanelHeight, SWP_NOZORDER);
-	if (l_hdwp == NULL)
+	if (l_hdwp == nullptr)
 		throw RSystemExc(_T("HELPWND:DEFER_WINDOW_POS_RICHEDIT"));
 
 	if (!::EndDeferWindowPos(l_hdwp))
@@ -501,8 +488,6 @@ void SetFont(HWND a_hWnd)
 	HelpWndData* l_pData = HelpWndData::GetData(a_hWnd);
 	HFONT l_hFont = CFontFactory::Instance().GetFont(a_hWnd);
 
-	SetRichEditFont(l_pData->m_hWndRich, l_hFont);
-
 	::SendMessage(l_pData->m_hWndPanel, WM_SETFONT, reinterpret_cast<WPARAM>(l_hFont), TRUE);
 	HWND l_hWndChild = ::GetWindow(l_pData->m_hWndPanel, GW_CHILD);
 	while (l_hWndChild)
@@ -512,19 +497,19 @@ void SetFont(HWND a_hWnd)
 	}
 
 	AlignPanelControls(a_hWnd);
-	LoadInstructions(a_hWnd, GetSelectedSection(a_hWnd));
-	
+	LoadInstructionsToRichEdit(a_hWnd, GetSelectedSection(a_hWnd));
+	SetRichEditFont(l_pData->m_hWndRich, l_hFont);
 }
 
 
 void SetRichEditFont(HWND a_hWndRich, HFONT a_hFont)
 {
-	::SendMessage(a_hWndRich, WM_SETFONT, reinterpret_cast<WPARAM>(a_hFont), TRUE);
-
 	CHARFORMAT2 l_cf = CharFormatFromFont(a_hFont);
 	::SendMessage(a_hWndRich, EM_SETSEL, 0, -1); // Select all
-	::SendMessage(a_hWndRich, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(& l_cf));
+	::SendMessage(a_hWndRich, EM_SETCHARFORMAT, SCF_ALL, reinterpret_cast<LPARAM>(&l_cf));
 }
+
+
 
 void HelpWnd_LoadInstructions(HWND a_hWndHelp, const std::string& a_sSection)
 {
@@ -536,22 +521,54 @@ void HelpWnd_LoadInstructions(HWND a_hWndHelp, const std::string& a_sSection)
 
 void LoadInstructionsAndRedraw(HWND a_hWndHelp, const std::string& a_sSection)
 {
-	LoadInstructions(a_hWndHelp, a_sSection);
+	LoadInstructionsToRichEdit(a_hWndHelp, a_sSection);
 	HelpWndData* l_pData = HelpWndData::GetData(a_hWndHelp);
-	::RedrawWindow(l_pData->m_hWndRich, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+	SetRichEditFont(l_pData->m_hWndRich, CFontFactory::Instance().GetFont(a_hWndHelp));
+	::RedrawWindow(a_hWndHelp, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);		// needed to redraw background
 }
 
 
-void LoadInstructions(HWND a_hWndHelp, const std::string& a_sSection)
+// 
+// sets text to RichEdit, without redrawing
+// takes care if text is RTF or plain text
+// if no text, then clears the RichEdit
+//
+void LoadInstructionsToRichEdit(HWND a_hWndHelp, const std::string& a_sSection)
 {
 	HelpWndData* l_pData = HelpWndData::GetData(a_hWndHelp);
-	auto l_vect = l_pData->m_jsonHelp.getInstructions(a_sSection);
-	tstring l_sInstructions;
+	auto l_vect = l_pData->m_jsonHelp.getInstructions(a_sSection);		// get instructions in currently selected language
 
-	for (const auto& l_sLine : l_vect)
-		l_sInstructions += l_sLine + _T('\n');
+	// check if we have RTF text
+	if (l_vect.empty())
+	{
+		::SetWindowText(l_pData->m_hWndRich, _T(""));
+		return;
+	}
 
-	SetRichEditText(a_hWndHelp, l_sInstructions);
+
+
+	// if text is RTF, then it is in UTF-8 format
+	bool l_bIsRtf = IsRtfText(l_vect[0]);
+	if (l_bIsRtf)
+	{
+		auto l_vectA = l_pData->m_jsonHelp.getInstructionsA(a_sSection);
+		std::string l_sInstructions;
+		for (const auto& l_sLine : l_vectA)
+			l_sInstructions += l_sLine + "\r\n";
+		StreamRichEditText(a_hWndHelp, l_sInstructions);
+		// we need to set correct font to the RTF text, as it may contain different fonts (I do not allow changing fonts in RTF text, but user may paste it from Word or other editor)
+
+	}
+	else
+	{
+		tstring l_sInstructions;
+		for (const auto& l_sLine : l_vect)
+		{
+			l_sInstructions += l_sLine + _T("\r\n");
+		}
+		SetRichEditText(a_hWndHelp, l_sInstructions);
+	}
+	
 }
 
 
@@ -595,6 +612,8 @@ static void ShowHelpChanged(HWND a_hWnd)
 	if (l_bChecked)
 	{
 		l_pData->m_pRegData->m_regRules.m_bHelpVisible = false;
+		// not very good idea, as it also means that all other rules are saved!
+		// TODO: change it to save only this setting - move to regAuto? But it also measns more complex logic with Miscellaneous settings dialog
 		l_pData->m_pRegData->m_regRules.Serialize();
 	}
 
@@ -619,37 +638,40 @@ bool IsRtfText(const tstring& a_sText)
 	return a_sText.substr(0, 5) == _T("{\\rtf");
 }
 
-
 void SetRichEditText(HWND a_hWnd, const tstring& a_sText)
 {
 	HelpWndData* l_pData = HelpWndData::GetData(a_hWnd);
-	if (!IsRtfText(a_sText))
-	{
-		SetWindowText(l_pData->m_hWndRich, a_sText.c_str());
-		return;
-	}
+	::SetWindowText(l_pData->m_hWndRich, a_sText.c_str());
+}
 
+
+void StreamRichEditText(HWND a_hWnd, const std::string& a_sText)
+{
+	HelpWndData* l_pData = HelpWndData::GetData(a_hWnd);
+
+	// EM_STREAMIN alwayas expects UTF-8 text 
 	EDITSTREAM l_es = {};
 	l_es.dwCookie = reinterpret_cast<DWORD_PTR>(&a_sText);
-	l_es.pfnCallback = [](DWORD_PTR dwCookie, LPBYTE pbBuff, LONG cb, LONG* pcb) -> DWORD {
-		tstring* pText = reinterpret_cast<tstring*>(dwCookie);
+	l_es.pfnCallback = [](DWORD_PTR a_dwCookie, LPBYTE a_pbBuff, LONG a_iBytesRequested, LONG* a_pBytesCopied) -> DWORD 
+		{
+		std::string* l_psText = reinterpret_cast<std::string*>(a_dwCookie);
 
-		// Defensive: if cb < 0, treat as 0
-		size_t requested = (cb > 0) ? static_cast<size_t>(cb) : 0;
-		size_t available = pText->size() * sizeof(TCHAR);
+		// Defensive: if a_iBytesRequested < 0, treat as 0
+		size_t l_iBytesRequested = (a_iBytesRequested > 0) ? static_cast<size_t>(a_iBytesRequested) : 0;
+		size_t l_iBytesAvailable = l_psText->size() * sizeof(char);
 
-		size_t bytesToCopy = std::min(requested, available);
+		size_t l_iBytesToCopy = std::min(l_iBytesRequested, l_iBytesAvailable);
 
-		if (bytesToCopy > 0) {
-			memcpy(pbBuff, pText->c_str(), bytesToCopy);
-			pText->erase(0, bytesToCopy / sizeof(TCHAR));
+		if (l_iBytesToCopy > 0) {
+			::memcpy(a_pbBuff, l_psText->c_str(), l_iBytesToCopy);
+			l_psText->erase(0, l_iBytesToCopy / sizeof(char));
 		}
 
-		*pcb = static_cast<LONG>(bytesToCopy);
+		*a_pBytesCopied = static_cast<LONG>(l_iBytesToCopy);
 		return 0;
 		};
-	SendMessage(l_pData->m_hWndRich, EM_STREAMIN, SF_RTF, reinterpret_cast<LPARAM>(&l_es));
 
+	::SendMessage(l_pData->m_hWndRich, EM_STREAMIN, SF_RTF, reinterpret_cast<LPARAM>(&l_es));
 }
 
 
@@ -675,7 +697,7 @@ int GetControlTextWidth(HWND a_hWndCtrl)
 }
 
 
-
+// returns as UTF-8 string
 std::string GetSelectedSection(HWND a_hWnd)
 {
 	HelpWndData* l_pData = HelpWndData::GetData(a_hWnd);

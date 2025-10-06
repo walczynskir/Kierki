@@ -5,10 +5,11 @@
 #include "OptionsDlg.h"
 #include "OptionsTimeDlg.h"
 #include <rcommon/RColorWnd.h>
+#include <rcommon/SafeWndProc.hpp>
 #include <commctrl.h>
 
 inline static void OnInitDialog(HWND a_hDlg, CRegData::RTimeRegData* a_pData);
-static INT_PTR CALLBACK OptionsTimeDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
+static INT_PTR OptionsTimeDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
 inline static void SetCtrlValues(HWND a_hDlg);
 static CRegData::RTimeRegData* GetRData(HWND a_hDlg);
 inline static void GetCtrlValues(HWND a_hDlg);
@@ -17,15 +18,13 @@ inline static void GetCtrlValues(HWND a_hDlg);
 HWND CreateOptTimeDlg(HWND a_hParent, CRegData::RBaseRegData* a_pData, LPVOID a_pObj)
 {
 	return ::CreateDialogParam(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_OPT_TIME), 
-		a_hParent, OptionsTimeDlgProc, reinterpret_cast<LPARAM>(a_pData));
+		a_hParent, SafeDialogProc<OptionsTimeDlgProc>, reinterpret_cast<LPARAM>(a_pData));
 }
 
 
 static void OnInitDialog(HWND a_hDlg, CRegData::RTimeRegData* a_pData)
 {
-#pragma warning(disable: 4244)
 	::SetWindowLongPtr(a_hDlg, GWL_USERDATA, reinterpret_cast<LONG_PTR>(a_pData));
-#pragma warning(default: 4244)
 	::SendMessage(::GetDlgItem(a_hDlg, IDS_AFTERCARD), UDM_SETRANGE32, 0, 32000);
 	::SendMessage(::GetDlgItem(a_hDlg, IDS_AFTERTRICK), UDM_SETRANGE32, 0, 32000);
 	::SendMessage(::GetDlgItem(a_hDlg, IDS_AFTERPASS), UDM_SETRANGE32, 0, 32000);
@@ -40,7 +39,7 @@ static void OnInitDialog(HWND a_hDlg, CRegData::RTimeRegData* a_pData)
 }
 
 
-static INT_PTR CALLBACK OptionsTimeDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
+static INT_PTR OptionsTimeDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
 {
 	switch (a_iMsg)
 	{

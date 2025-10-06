@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "LogonDlg.h"
 #include "resource.h"
+#include <rcommon/SafeWndProc.hpp>
 
 
 class RLogonDlgData
@@ -18,7 +19,7 @@ public:
 };
 
 
-static INT_PTR CALLBACK LogonDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
+static INT_PTR LogonDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
 inline static void OnInitDialog(HWND a_hDlg, RLogonDlgData* a_pData);
 inline static bool OnCommand(HWND a_hDlg, UINT a_idCtrl);
 static RLogonDlgData* GetRData(HWND a_hDlg);
@@ -29,7 +30,7 @@ inline static bool OnOk(HWND a_hDlg);
 bool LogonDlg_DoModal(HWND a_hWndParent, tstring* a_psName, LanguageManager* a_pLangMan, bool* a_pLogonDlg)
 {
 	RLogonDlgData l_data(*a_psName, a_pLangMan, a_pLogonDlg);
-	INT_PTR l_iRes = ::DialogBoxParam(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_LOGON), a_hWndParent, LogonDlgProc, reinterpret_cast<LPARAM>(&l_data));
+	INT_PTR l_iRes = ::DialogBoxParam(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_LOGON), a_hWndParent, SafeDialogProc<LogonDlgProc>, reinterpret_cast<LPARAM>(&l_data));
 	if (l_iRes == IDOK)
 	{
 		*a_psName = l_data.m_sName;
@@ -46,7 +47,7 @@ RLogonDlgData* GetData(HWND a_hDlg)
 }
 
 
-static INT_PTR CALLBACK LogonDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
+static INT_PTR LogonDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
 {
 	switch (a_iMsg)
 	{

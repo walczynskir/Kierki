@@ -25,10 +25,13 @@
 #include <rcommon/DrawUtl.h>
 #include <rcommon/RMemDC.h>
 #include <rcommon/RMessageBox.h>
+#include <rcommon/SafeWndProc.hpp>
 
 // for better drawing
 #pragma comment(lib, "gdiplus.lib")
 #pragma comment(lib, "wininet.lib")
+#pragma comment(lib, "version.lib")
+
 
 
 // TODO implement help for every game
@@ -38,10 +41,10 @@
 // TODO change fonts also for tooltips for fancy style
 // TODO handle nlohmann json library in a proper way - downloading from repository
 // TODO some card edges not painted correctly - it seems something wrong after drawing at least one card form player's cards
+// TODO add log messaging to exception handling (maybe even with log levels and no messagebox)
 // TODO test possibility of adding formatted text to help (in rtf format)
 // TODO sometimes trump color is not displayed in the window title
 // TODO replace SetCapture with TrackMouseEvent in GameWnd
-// TODO improve / refactor exception handling
 // TODO allow selecting different table blanket
 // TODO add more languages
 // TODO Move main window functionalities such as own toolbar and status bar to separate class
@@ -77,8 +80,7 @@ inline static ATOM RegisterKierki(HINSTANCE a_hInst);
 inline static int RunApp(HINSTANCE a_hInst, HINSTANCE a_hPrevInstance, LPTSTR a_lpCmdLine, int a_nCmdShow);
 inline static int RunAppThrow(HINSTANCE a_hInst, HINSTANCE a_hPrevInstance, LPTSTR a_lpCmdLine, int a_nCmdShow);
 inline static HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow);
-LRESULT CALLBACK Kierki_SafeWndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
-static LRESULT CALLBACK	Kierki_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
+static LRESULT Kierki_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);	// internal use, as throws exceptions
 
 static inline void ConfigureOwnToolbar(HWND a_hWnd);
 static void AddTab(HWND a_hWnd, HWND a_hTabItemWnd, LPTSTR a_sTabName);
@@ -284,7 +286,7 @@ ATOM RegisterKierki(HINSTANCE a_hInst)
 
 	l_wcex.cbSize			= sizeof(WNDCLASSEX); 
 	l_wcex.style			= CS_HREDRAW | CS_VREDRAW;
-	l_wcex.lpfnWndProc		= Kierki_SafeWndProc;
+	l_wcex.lpfnWndProc		= SafeWndProc<Kierki_WndProc>;
 	l_wcex.cbClsExtra		= 0;
 	l_wcex.cbWndExtra		= 0;
 	l_wcex.hInstance		= a_hInst;
@@ -411,32 +413,7 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 }
 
 
-LRESULT CALLBACK Kierki_SafeWndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
-{
-	LRESULT l_result = 0;
-	try 
-	{
-		l_result = Kierki_WndProc(a_hWnd, a_iMsg, a_wParam, a_lParam);
-	}
-	catch (const RSystemExc& l_exc)
-	{
-		ExceptionMessageBox(a_hWnd, l_exc.GetFormattedMsg().c_str());
-		return 0; // abort safely
-	}
-	catch (const ROwnExc& l_exc)
-	{
-		ExceptionMessageBox(a_hWnd, l_exc.GetFormattedMsg().c_str());
-		return 0; // abort safely
-	}
-	catch (...)
-	{
-		ExceptionMessageBox(a_hWnd, _T(""));
-	}
-	return l_result;
-}
-
-
-LRESULT CALLBACK Kierki_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
+LRESULT Kierki_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
 {
 	switch (a_iMsg) 
 	{
@@ -925,11 +902,10 @@ HWND GetCurrentTab(HWND a_hWnd)
 
 bool DecisionBox(HWND a_hWnd, UINT a_idPrompt)
 {
-	TCHAR l_sTitle[128];
 	TCHAR l_sPrompt[128];
-	::LoadString(::GetModuleHandle(NULL), IDS_DECISION, l_sTitle, ArraySize(l_sTitle));
 	::LoadString(::GetModuleHandle(NULL), a_idPrompt, l_sPrompt, ArraySize(l_sPrompt));
-	return RCenteredMessageBox::DecisionBox2(a_hWnd, l_sPrompt);
+
+	return DecisionMessageBox(a_hWnd, l_sPrompt);
 }
 
 

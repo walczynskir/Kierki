@@ -58,8 +58,6 @@ HFONT CFontFactory::GetFont(HWND a_hWnd, int a_iSize, int a_iWeight) {
         CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
         l_sFace.c_str());
 
-    TRACE2("Font %ls Sizes: %d\n", l_sFace.c_str(), l_dy);
-
     m_fontCache[l_sKey] = l_hFont;
     return l_hFont;
 }

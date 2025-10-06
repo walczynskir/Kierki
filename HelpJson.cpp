@@ -29,21 +29,23 @@ std::vector<std::pair<std::string, tstring>> CHelpJson::getSectionTitles() const
 }
 
 
-std::vector<tstring> CHelpJson::getHowToPlay() const
-{
-    return getArray(c_sJsonSect_HowToPlay + c_sJson_Separator + std::string(c_sJsonSect_Instructions));
-}
-
-std::vector<tstring> CHelpJson::getHowToUseApp() const
-{
-	return getArray(c_sJsonSect_HowToUseApp + c_sJson_Separator + std::string(c_sJsonSect_Instructions));
-}
-
-
 std::vector<tstring> CHelpJson::getInstructions(const std::string& a_sSection)
 {
 	return getArray(a_sSection + c_sJson_Separator + c_sJsonSect_Instructions);
 }
+
+
+std::vector<std::string> CHelpJson::getInstructionsA(const std::string& a_sSection)
+{
+	return getArrayA(a_sSection + c_sJson_Separator + c_sJsonSect_Instructions);
+}
+
+
+std::vector<std::wstring> CHelpJson::getInstructionsW(const std::string& a_sSection)
+{
+	return getArrayW(a_sSection + c_sJson_Separator + c_sJsonSect_Instructions);
+}
+
 
 
 bool CHelpJson::load(const LanguageManager& a_lang)

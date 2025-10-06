@@ -10,6 +10,7 @@
 #include <rcommon/drawutl.h>
 #include <rcommon/RBtnWnd.h>
 #include <rcommon/RSystemExc.h>
+#include <rcommon/SafeWndProc.hpp>
 #include <RCards/resource.h>
 #include <commctrl.h>
 #include "layout.h"
@@ -18,7 +19,7 @@
 static const TCHAR cc_sWindowClass[] = _T("GAMEWND");	// game window class name
 static GameWndData* GetData(HWND a_hWnd);
 
-static LRESULT CALLBACK	GameWnd_WndProc(HWND, UINT, WPARAM, LPARAM);
+static LRESULT GameWnd_WndProc(HWND, UINT, WPARAM, LPARAM);
 
 inline static LRESULT OnCreate(HWND a_hWnd, LPCREATESTRUCT a_pCreateStruct);
 inline static void OnNcDestroy(HWND a_hWnd);
@@ -134,7 +135,7 @@ ATOM GameWnd_Register(HINSTANCE a_hInst)
 
 	l_wcex.cbSize			= sizeof(WNDCLASSEX); 
 	l_wcex.style			= CS_HREDRAW | CS_VREDRAW;
-	l_wcex.lpfnWndProc		= GameWnd_WndProc;
+	l_wcex.lpfnWndProc		= SafeWndProc<GameWnd_WndProc>;
 	l_wcex.cbClsExtra		= 0;
 	l_wcex.cbWndExtra		= sizeof(GameWndData*);
 	l_wcex.hInstance		= a_hInst;
@@ -185,7 +186,7 @@ GameWndData* GetData(HWND a_hWnd)
 //
 //  FUNCTION: GameWnd_WndProc(HWND, unsigned, WORD, LONG)
 //
-LRESULT CALLBACK GameWnd_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
+LRESULT GameWnd_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
 {
 	switch (a_iMsg) 
 	{

@@ -8,6 +8,7 @@
 #include <commctrl.h>
 #include <rcommon/LanguageManager.h>
 #include <rcommon/RSystemExc.h>
+#include <rcommon/SafeWndProc.hpp>
 
 
 typedef struct S_OPTRULESDATA
@@ -17,7 +18,7 @@ typedef struct S_OPTRULESDATA
 } TOptRulesData, *LPOptRulesData;
 
 inline static void OnInitDialog(HWND a_hDlg, LPOptRulesData a_pData);
-static INT_PTR CALLBACK OptionsRulesDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
+static INT_PTR OptionsRulesDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
 inline static void SetCtrlValues(HWND a_hDlg);
 static LPOptRulesData GetRData(HWND a_hDlg);
 inline static void GetCtrlValues(HWND a_hDlg);
@@ -30,7 +31,7 @@ HWND CreateOptRulesDlg(HWND a_hParent, CRegData::RBaseRegData* a_pData, LPVOID a
 	l_pData->m_pLangManager = static_cast<LanguageManager*>(a_pObj);
 
 	HWND l_hDlg = ::CreateDialogParam(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_OPT_RULES), 
-		a_hParent, OptionsRulesDlgProc, reinterpret_cast<LPARAM>(l_pData));
+		a_hParent, SafeDialogProc<OptionsRulesDlgProc>, reinterpret_cast<LPARAM>(l_pData));
 
 	if (l_hDlg == NULL)
 	{
@@ -62,7 +63,7 @@ static inline void OnDestroy(HWND a_hDlg)
 
 
 
-static INT_PTR CALLBACK OptionsRulesDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
+static INT_PTR OptionsRulesDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
 {
 	switch (a_iMsg)
 	{

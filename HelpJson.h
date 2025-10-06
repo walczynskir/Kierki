@@ -21,12 +21,10 @@ class CHelpJson :
 
 
     std::vector<std::pair<std::string, tstring>> getSectionTitles() const;
-    std::vector<tstring> getHowToPlay() const;
-    std::vector<tstring> getHowToUseApp() const;
     std::vector<tstring> getInstructions(const std::string& a_sSection);
 
-
-
+    std::vector<std::string> getInstructionsA(const std::string& a_sSection);
+    std::vector<std::wstring> getInstructionsW(const std::string& a_sSection);
 
 private:
     static tstring GetInstructionFileNameFromLangID(const LanguageManager& a_lang);

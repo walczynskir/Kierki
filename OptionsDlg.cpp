@@ -10,10 +10,7 @@
 #include <RCards/resource.h>
 #include <rcommon/RSystemExc.h>
 #include "HeartsData.h"
-
-#pragma message("automatic link to VERSION.LIB")
-#pragma comment(lib, "version.lib")
-
+#include <rcommon/SafeWndProc.hpp>
 
 #pragma todo("TAB key behaviour")
 
@@ -56,12 +53,12 @@ public:
 		CRegData::RBaseRegData* m_pRegData;
 		LPVOID  m_pObj;
 	};
-	RTabData	m_ahDlg[4];
+	RTabData	m_ahDlg[4]{};
 };
 
 
 
-static INT_PTR CALLBACK OptionsDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
+static INT_PTR OptionsDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
 inline static bool GetCtrlValues(HWND a_hDlg);
 inline static void OnInitDialog(HWND a_hDlg, LPOptData a_pData);
 inline static void OnNotify(HWND a_hDlg, int a_idCtrl, LPNMHDR a_pNmHdr);
@@ -81,7 +78,7 @@ UINT OptionsDlg_DoModal(HWND a_hWndParent, CRegData* a_pData, CHeartsData* a_pHe
 	l_optData.m_pData = a_pData;
 	l_optData.m_pHeartsData = a_pHeartsData;
 	RHyperlinkWnd_RegisterClass();
-	INT_PTR l_iRes = ::DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_OPTIONS), a_hWndParent, OptionsDlgProc, reinterpret_cast<LPARAM>(&l_optData));
+	INT_PTR l_iRes = ::DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_OPTIONS), a_hWndParent, SafeDialogProc<OptionsDlgProc>, reinterpret_cast<LPARAM>(&l_optData));
 	return static_cast<UINT>(l_iRes);
 }
 
@@ -95,7 +92,7 @@ ROptionsData* GetRData(HWND a_hDlg)
 }
 
 
-static INT_PTR CALLBACK OptionsDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
+static INT_PTR OptionsDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
 {
 	switch (a_iMsg)
 	{

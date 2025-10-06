@@ -5,10 +5,11 @@
 #include "OptionsDlg.h"
 #include "OptionsPlayerDlg.h"
 #include <rcommon/RColorWnd.h>
+#include <rcommon/SafeWndProc.hpp>
 #include <commctrl.h>
 
 inline static void OnInitDialog(HWND a_hDlg, CRegData::RPlayersRegData* a_pData);
-static INT_PTR CALLBACK OptionsPlayerDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
+static INT_PTR OptionsPlayerDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam);
 inline static void SetCtrlValues(HWND a_hDlg);
 static CRegData::RPlayersRegData* GetRData(HWND a_hDlg);
 inline static void GetCtrlValues(HWND a_hDlg);
@@ -19,7 +20,7 @@ inline static void GetCtrlValues(HWND a_hDlg);
 HWND CreateOptPlayerDlg(HWND a_hParent, CRegData::RBaseRegData* a_pData, LPVOID a_pObj)
 {
 	return ::CreateDialogParam(::GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_OPT_PLAYERS), 
-		a_hParent, OptionsPlayerDlgProc, reinterpret_cast<LPARAM>(a_pData));
+		a_hParent, SafeDialogProc<OptionsPlayerDlgProc>, reinterpret_cast<LPARAM>(a_pData));
 }
 
 
@@ -37,7 +38,7 @@ static void OnInitDialog(HWND a_hDlg, CRegData::RPlayersRegData* a_pData)
 }
 
 
-static INT_PTR CALLBACK OptionsPlayerDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
+static INT_PTR OptionsPlayerDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lParam)
 {
 	switch (a_iMsg)
 	{

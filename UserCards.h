@@ -2,16 +2,11 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_USERCARDS_H__23D3C1A4_61ED_11D3_B413_A87510C10000__INCLUDED_)
-#define AFX_USERCARDS_H__23D3C1A4_61ED_11D3_B413_A87510C10000__INCLUDED_
+#pragma once
 
 #include "Card.h"	// Added by ClassView
-#if _MSC_VER >= 1000
-#pragma once
-#endif // _MSC_VER >= 1000
 #include "Trick.h"
 #include "PuzzleRows.h"	
-//#include "Karty.h"	// Added by ClassView
 
 class CTakenTricks;
 
@@ -22,11 +17,14 @@ public:
 	CUserCards();
 	virtual ~CUserCards();
 
+	const CCard& operator[](short a_iAt) const;
+
 	const CCard& GetCard(short a_nCard) const;
 	BOOL IsUsed(short a_nCardNr) const;
 	void SetUsed(short a_nCard, BOOL a_bUsed);
 
 	void Sort(short a_nStart = 0, short a_nEnd = 12);
+	void SortSTL(short a_nStart = 0, short a_nEnd = 12);
 	void SetCard(short a_iAt, short a_iCardNr, T_PLAYER a_enOwner, BOOL a_bUsed = FALSE);
 
 	short CardsLeft() const;
@@ -71,7 +69,6 @@ public:
 	const CCard* FirstInColorCard(T_COLOR a_enColor)	const;
 	short LastInColor(T_COLOR a_enColor) const;
 	short LessOrBiggestInColor(const CTrick& a_pTrick)	const;
-	const CCard& operator[](short a_iAt) const;
 
 	BOOL HasLeastInColor(T_COLOR a_enColor, const CTakenTricks* a_pTricks) const;
 
@@ -80,4 +77,4 @@ private:
 
 };
 
-#endif // !defined(AFX_USERCARDS_H__23D3C1A4_61ED_11D3_B413_A87510C10000__INCLUDED_)
+

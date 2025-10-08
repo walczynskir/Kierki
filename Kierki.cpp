@@ -32,42 +32,40 @@
 #pragma comment(lib, "wininet.lib")
 #pragma comment(lib, "version.lib")
 
-
-
-// TODO implement help for every game
-// TODO clean up / refactor fancy style (the same font and size for fancy and regular styles)
-// TODO check saving and loading the game - it behaves strangely, starts from incorrect directory
-// TODO improve settings - move some items to different position and allow to set other items currently hidden
-// TODO change fonts also for tooltips for fancy style
-// TODO handle nlohmann json library in a proper way - downloading from repository
-// TODO some card edges not painted correctly - it seems something wrong after drawing at least one card form player's cards
-// TODO add log messaging to exception handling (maybe even with log levels and no messagebox)
-// TODO test possibility of adding formatted text to help (in rtf format)
-// TODO sometimes trump color is not displayed in the window title
-// TODO replace SetCapture with TrackMouseEvent in GameWnd
-// TODO allow selecting different table blanket
-// TODO add more languages
-// TODO Move main window functionalities such as own toolbar and status bar to separate class
-// TODO OwnToolbar - add AdjustRect function
-// TODO Rethink OwnToolbar architecture, add to library of components
-// TODO check behaviour of cover, when app used for the first time
-// TODO implement DPI awareness, replace AdjustWindowRectEx with AdjustWindowRectExForDpi
-// TODO instead of a few structures in GameWndData regarding positions, prepare one structure for all positions regarding players
-// TODO ask about saving after pushing exit button
-// TODO disabling items in own toolbar, as previously with menu items: check and remove function OnEnterMenuLoop
-// TODO About system button doesn't work
-// TODO remove unused resources
-// TODO check all resources for unicode
-// TODO remove unused code	
-// TODO bad rendering of covers (background)
-// TODO during recover if I selected card very quickly it has a problem with inverting card - maybe replacing SetCapture is correct approach
-// TODO refactor of cover selecting
-// TODO add option to load other cards decks and/or graphics
-// TODO refactor of all graphics
-// TODO TRACE family of macros doesn't work correctly with wstring
-// TODO Instead of using bitmap as a background for the results I can use function to draw notebook, and then draw table on the right side of the vertical red line ;-)
-// TODO refactor to get rid of TCHAR (just use w_char)
-// TODO get rid of use of RListCtrl in ResultWnd - would be much easier, flexible and effective to just draw it by ourselves
+// TODO (bug) Asks for saving just after saving a game
+// TODO (bug) sometimes trump color is not displayed in the window title
+// TODO (bug) some card edges not painted correctly - it seems something wrong after drawing at least one card form player's cards
+// TODO (bug) - force correct directory (Games) - check saving and loading the game - it behaves strangely, starts from incorrect directory
+// TODO (bug?) check behaviour of cover, when app used for the first time
+// TODO (bug) About system button doesn't work
+// TODO (bug) bad rendering of covers (background)
+// TODO (bug) during recover if I selected card very quickly it has a problem with inverting card - maybe replacing SetCapture is correct approach
+// TODO (improvement) implement help for every game
+// TODO (improvement) TAB key behaviour in dialogs
+// TODO (improvement) add log messaging to exception handling (maybe even with log levels and no messagebox)
+// TODO (improvement) refactor StatusBar - cc_btSliderMax and similar should be part of StatusBar class - as it is specialized class for this app, not general class
+// TODO (improvement) change fonts also for tooltips for fancy style
+// TODO (improvement) Move main window functionalities such as own toolbar and status bar to separate class
+// TODO (improvement) replace SetCapture with TrackMouseEvent in GameWnd
+// TODO (improvement) implement DPI awareness, replace AdjustWindowRectEx with AdjustWindowRectExForDpi
+// TODO (improvement) disabling items in own toolbar, as previously with menu items: check and remove function OnEnterMenuLoop
+// TODO (improvement) clean up / refactor fancy style (the same font and size for fancy and regular styles)
+// TODO (improvement) put static for selecting covers in rcommon library
+// TODO (improvement) restore possibility of taking bitmap from other resources
+// TODO (improvement) should be a part of RCards module, to be refactored
+// TODO (improvement) improve settings - move some items to different position and allow to set other items currently hidden
+// TODO (improvement) handle nlohmann json library in a proper way - downloading from repository
+// TODO (improvement) allow selecting different table blanket
+// TODO (improvement) add more languages
+// TODO (improvement) OwnToolbar - add AdjustRect function
+// TODO (improvement) Rethink OwnToolbar architecture, add to library of components
+// TODO (improvement) instead of a few structures in GameWndData regarding positions, prepare one structure for all positions regarding players
+// TODO (improvement) remove unused resources
+// TODO (improvement) check all resources for unicode
+// TODO (improvement) remove unused code	
+// TODO (improvement) add option to load other cards decks and/or graphics
+// TODO (improvement) Instead of using bitmap as a background for the results I can use function to draw notebook, and then draw table on the right side of the vertical red line ;-)
+// TODO (improvement) get rid of use of RListCtrl in ResultWnd - would be much easier, flexible and effective to just draw it by ourselves
 
 
 
@@ -163,9 +161,6 @@ constexpr int cc_iSliderWidth = static_cast<int>((cc_btSliderMax - cc_btSliderMi
 
 
 
-#ifdef _DEBUG
-#define NOSAVE
-#endif
 
 
 int APIENTRY _tWinMain(_In_ HINSTANCE a_hInst,
@@ -212,8 +207,6 @@ int RunAppThrow(HINSTANCE a_hInst,
                      LPTSTR    a_lpCmdLine,
                      int       a_nCmdShow)
 {
-#pragma todo ("DPI awareness")
-
 	// SetProcessDPIAware(); // For classic DPI awareness
 	RegisterKierki(a_hInst);
 	INITCOMMONCONTROLSEX l_icc;
@@ -881,7 +874,6 @@ BOOL OnTabSelChange(HWND a_hWnd)
 		}
 		l_enSerie = static_cast<T_SERIE>(l_nTabCount);
 
-
 	}
 	SetActiveTab(a_hWnd, l_hWndInnerTab, l_enSerie);
 	return FALSE;
@@ -1174,6 +1166,12 @@ void SetActiveTab(HWND a_hWnd, HWND a_hWndInnerTab, T_SERIE a_enSerie)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
 
+	HWND l_hWndResult = l_pData->GetResultsWnd();
+	if ((a_hWndInnerTab == l_hWndResult) && (a_enSerie != E_SR_NULL))
+	{
+		ResultWnd_SetSerie(l_hWndResult, static_cast<T_SERIE>(a_enSerie));
+	}
+
 	for (const auto& l_pair : l_pData->m_mapTabs) 
 	{
 		HWND l_hWnd = l_pair.second;
@@ -1189,10 +1187,6 @@ void SetActiveTab(HWND a_hWnd, HWND a_hWndInnerTab, T_SERIE a_enSerie)
 		}
 
 	}
-
-	HWND l_hWndResult = l_pData->GetResultsWnd();
-	if ((a_hWndInnerTab == l_hWndResult) && (a_enSerie != E_SR_NULL))
-		ResultWnd_SetSerie(l_hWndResult, static_cast<T_SERIE>(a_enSerie));
 
 	RECT l_rect;
 	::GetWindowRect(a_hWnd, &l_rect);

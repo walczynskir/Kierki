@@ -70,6 +70,9 @@ static const TCHAR c_sHelpPanelHeight[] = _T("Software\\Medea\\Kierki\\HELPPANEL
 constexpr TCHAR c_sHelpFromResource[] = _T("Software\\Medea\\Kierki\\HELPFROMRESOURCE");
 constexpr TCHAR c_sHelpUrl[] = _T("Software\\Medea\\Kierki\\HELPURL");
 
+constexpr TCHAR c_sShowAllCards[] = _T("Software\\Medea\\Kierki\\SHOWALLCARDS");
+
+
 
 #define DARK_GREEN_COLOR RGB(0, 128, 0)
 #define LIME_GREEN_COLOR RGB(50, 205, 50)
@@ -227,6 +230,8 @@ CRegData::RHiddenRegData::RHiddenRegData(void)
 	m_dyHelpPanel = RRegIntDef(c_sHelpPanelHeight, HKEY_CURRENT_USER, cc_iHelpPanelHeightDefault);
 	m_bHelpFromResource = RRegBoolDef(c_sHelpFromResource, HKEY_CURRENT_USER, false);
 	m_sHelpUrl = RRegTStringDef(c_sHelpUrl, HKEY_CURRENT_USER, cc_sHelpUrlDefault);
+
+	m_bShowAllCards = RRegBoolDef(c_sShowAllCards, HKEY_CURRENT_USER, false);
 }
 
 
@@ -261,6 +266,9 @@ void CRegData::RHiddenRegData::Serialize(void)
 
 	RRegTString l_regHelpUrl(c_sHelpUrl, HKEY_CURRENT_USER);
 	l_regHelpUrl = m_sHelpUrl;
+
+	RRegBool l_regShowAllCards(c_sShowAllCards, HKEY_CURRENT_USER);
+	l_regShowAllCards = m_bShowAllCards;
 }
 
 

@@ -23,7 +23,7 @@ CPlayer::CPlayer()
 {
 	m_pDecider = NULL;
 	m_playerMe = E_DL_NULL;
-#pragma todo("nie zaimplementowane zapamietanie wskaŸnika na imiê z m_pRegData")
+// TODO nie zaimplementowane zapamietanie wskaŸnika na imiê z m_pRegData
 }
 
 

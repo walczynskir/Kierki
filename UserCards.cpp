@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "UserCards.h"
 #include "TakenTricks.h"
-
+#include <algorithm>
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -138,6 +138,20 @@ CUserCards::Sort(
 			m_cards[l_nAt].SetCardNr(l_nMin) ; 
 		}
 	}
+}
+
+void CUserCards::SortSTL(short a_nStart, short a_nEnd)
+{
+	if (a_nStart < 0 || a_nEnd >= 13 || a_nStart > a_nEnd)
+		return; // bounds check
+
+	std::sort(
+		m_cards + a_nStart,
+		m_cards + a_nEnd + 1,
+		[](const CCard& lhs, const CCard& rhs) {
+			return lhs.GetNr() < rhs.GetNr();
+		}
+	);
 }
 
 

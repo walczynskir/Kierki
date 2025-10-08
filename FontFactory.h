@@ -1,7 +1,8 @@
 #pragma once
 #include <windows.h>
+#include <tchar.h>
 #include <map>
-#include <rcommon/rstring.h> // Assuming tstring is defined here
+#include <rcommon/rstring.h> 
 
 
 enum class FontStyle {
@@ -27,6 +28,20 @@ public:
     HFONT GetFont(HWND a_hWnd, int a_iSize = 9, int a_iWeight = FW_NORMAL);
     void ClearCache();
     bool Initialized() const;
+
+#ifdef TESTING_BUILD
+    tstring GetFaceNameForTest() const { return GetFaceName(); }
+    tstring MakeKeyForTest(int a_dpi, int a_iSize, int a_iWeight) const 
+    {
+        return MakeKey(a_dpi, a_iSize, a_iWeight);
+    };
+    int GetDpiForWindowSafeForTest(HWND a_hWnd) const
+    {
+		return GetDpiForWindowSafe(a_hWnd);
+    };
+
+#endif
+
 
 private:
     CFontFactory() = default;

@@ -14,9 +14,6 @@
 
 
 
-#pragma todo ("put static for selecting covers in rcommon library")
-#pragma todo("restore possibility of taking bitmap from other resources")
-#pragma todo ("should be a part of RCards module, to be refactored") 
 
 
 

@@ -12,7 +12,6 @@
 #include "HeartsData.h"
 #include <rcommon/SafeWndProc.hpp>
 
-#pragma todo("TAB key behaviour")
 
 typedef struct S_OPTDATA
 {

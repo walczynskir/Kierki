@@ -76,6 +76,7 @@ public:
 		int m_dyHelpPanel;
 		bool m_bHelpFromResource;	// help not taken from URL, only default one, compiled into program
 		tstring m_sHelpUrl;
+		bool m_bShowAllCards; // show help at startup
 
 
 	};

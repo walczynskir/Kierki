@@ -103,7 +103,7 @@ static bool CanPlayFirstCard(HWND a_hWnd, const CCard& a_card, T_PLAYER a_enPlay
 
 
 
-#pragma todo("consider using resource.h for IDB_... definitions")
+// TODO consider using resource.h for IDB_... definitions
 #define IDB_NOTRUMP  1001
 
 // TODO add this to registry
@@ -949,14 +949,15 @@ DrawCardsHorz(
 	HDC a_hDC,					//IN device context
 	const CUserCards& a_pCards, //IN user cards
 	LONG  a_y,					//IN position y
-	bool a_bReverse,			//IN reverse
+	bool a_bReverse,			//IN show cover
 	short a_nStart,				//IN start card (from 0)
 	bool a_bHighlight			//IN highlight card 
 	)
 {
-#ifdef DEBUG_SHOWCARD
-	a_bReverse = FALSE;
-#endif
+
+	const CRegData& l_reg = GetData(a_hWnd)->m_pGameData->m_regData;
+	if (l_reg.m_regHidden.m_bShowAllCards)
+		a_bReverse = false;
 
 	short l_nAt ;
 	short l_x = CP_XH + (a_nStart + 1) * c_dxCardGap;
@@ -1045,9 +1046,9 @@ DrawCardsVert(
 	short a_nStart				//IN start card (from 0)
 	)	
 {
-#ifdef DEBUG_SHOWCARD
-	a_bReverse = FALSE;
-#endif
+	const CRegData& l_reg = GetData(a_hWnd)->m_pGameData->m_regData;
+	if (l_reg.m_regHidden.m_bShowAllCards)
+		a_bReverse = false;
 
 	short l_iAt;
 	short l_y = CP_YV + (a_nStart + 1) * c_dxCardGap;
@@ -1493,7 +1494,7 @@ bool CanPlayFirstCard(HWND a_hWnd, const CCard& a_card, T_PLAYER a_enPlayer)
 void OnLButtonDown(HWND a_hWnd, int a_x, int a_y)
 {
 	GameWndData* l_pData = GetData(a_hWnd);
-#pragma message (HERE "to co poni¿ej powinno byæ uruchamiane tylko gdy czas na klikniêcie przez E_DL_1")
+// TODO to co poni¿ej powinno byæ uruchamiane tylko gdy czas na klikniêcie przez E_DL_1
 	if (!l_pData->m_bConfirmTrick && l_pData->m_pGameData->IsDealed() && l_pData->m_pGameData->GetThrower() == E_DL_1)
 	{
 		Capture(a_hWnd, true);

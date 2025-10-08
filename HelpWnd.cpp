@@ -262,7 +262,7 @@ void OnSize(HWND a_hWnd, int a_dxWidth, int a_dyHeight)
 	if (!::EndDeferWindowPos(l_hdwp))
 		throw RSystemExc(_T("HELPWND:END_DEFER_WINDOW_POS"));
 
-#pragma todo("Check how to do it in Defer batch above ")
+// TODO Check how to do it in Defer batch above 
 	AlignPanelControls(a_hWnd);
 }
 

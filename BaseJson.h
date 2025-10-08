@@ -11,14 +11,14 @@ public:
     bool load(const tstring& a_sUrl, int a_idResource, HINSTANCE a_hInstance, bool a_bOnlyResource = false);
 
      // Accessors (UTF-8 and UNICODE)
-    std::optional<std::string> getA(const std::string& path) const;
-    std::optional<std::wstring> getW(const std::string& path) const;
-    std::optional<tstring> get(const std::string& path) const;
+    std::optional<std::string> getA(const std::string& a_sPath) const;
+    std::optional<std::wstring> getW(const std::string& a_sPath) const;
+    std::optional<tstring> get(const std::string& a_sPath) const;
 
     // Return array (UTF-8 and UNICODE)
-    std::vector<std::string> getArrayA(const std::string& path) const;
-    std::vector<std::wstring> getArrayW(const std::string& path) const;
-    std::vector<tstring> getArray(const std::string& path) const;
+    std::vector<std::string> getArrayA(const std::string& a_sPath) const;
+    std::vector<std::wstring> getArrayW(const std::string& a_sPath) const;
+    std::vector<tstring> getArray(const std::string& a_sPath) const;
 
     // Return seciotn names (UTF-8 and UNICODE)
     std::vector<std::string> getSectionNamesA() const;
@@ -29,6 +29,11 @@ public:
     std::vector<std::string> getAllSectionPathsA() const;
     std::vector<std::wstring> getAllSectionPathsW() const;
     std::vector<tstring> getAllSectionPaths() const;
+
+#ifdef TESTING_BUILD        // for test suite only
+public:
+    bool parseDirect(const std::string& a_jsonUtf8);
+#endif
 
 
 private:

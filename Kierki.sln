@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.10.35122.118
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.11018.127
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kierki", "Kierki.vcxproj", "{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -15,10 +15,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RCards", "..\RCards\RCards.
 		{32C963D3-DCD6-4A26-9ED7-2C5BC5F463B1} = {32C963D3-DCD6-4A26-9ED7-2C5BC5F463B1}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KierkiTests", "KierkiTests\KierkiTests.vcxproj", "{6B5E3364-44B9-39FE-60F8-E087F6F8A7B4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		DebugDll|x86 = DebugDll|x86
 		DebugLib|x86 = DebugLib|x86
+		KierkiTestDebug|x86 = KierkiTestDebug|x86
 		ReleaseDll|x86 = ReleaseDll|x86
 		ReleaseLib|x86 = ReleaseLib|x86
 	EndGlobalSection
@@ -27,6 +30,8 @@ Global
 		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.DebugDll|x86.Build.0 = DebugDll|Win32
 		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.DebugLib|x86.ActiveCfg = DebugLib|Win32
 		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.DebugLib|x86.Build.0 = DebugLib|Win32
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.KierkiTestDebug|x86.ActiveCfg = KierkiTestDebug|Win32
+		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.KierkiTestDebug|x86.Build.0 = KierkiTestDebug|Win32
 		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.ReleaseDll|x86.ActiveCfg = ReleaseDll|Win32
 		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.ReleaseDll|x86.Build.0 = ReleaseDll|Win32
 		{C718ACB8-9B2F-4713-BFAD-7FE3F227E52E}.ReleaseLib|x86.ActiveCfg = ReleaseLib|Win32
@@ -35,6 +40,8 @@ Global
 		{32C963D3-DCD6-4A26-9ED7-2C5BC5F463B1}.DebugDll|x86.Build.0 = DebugDll|Win32
 		{32C963D3-DCD6-4A26-9ED7-2C5BC5F463B1}.DebugLib|x86.ActiveCfg = DebugLib|Win32
 		{32C963D3-DCD6-4A26-9ED7-2C5BC5F463B1}.DebugLib|x86.Build.0 = DebugLib|Win32
+		{32C963D3-DCD6-4A26-9ED7-2C5BC5F463B1}.KierkiTestDebug|x86.ActiveCfg = DebugLib|Win32
+		{32C963D3-DCD6-4A26-9ED7-2C5BC5F463B1}.KierkiTestDebug|x86.Build.0 = DebugLib|Win32
 		{32C963D3-DCD6-4A26-9ED7-2C5BC5F463B1}.ReleaseDll|x86.ActiveCfg = ReleaseDll|Win32
 		{32C963D3-DCD6-4A26-9ED7-2C5BC5F463B1}.ReleaseDll|x86.Build.0 = ReleaseDll|Win32
 		{32C963D3-DCD6-4A26-9ED7-2C5BC5F463B1}.ReleaseLib|x86.ActiveCfg = ReleaseLib|Win32
@@ -43,10 +50,18 @@ Global
 		{B4120C0C-D641-4B53-9E48-66182F87DFB6}.DebugDll|x86.Build.0 = DebugDll|Win32
 		{B4120C0C-D641-4B53-9E48-66182F87DFB6}.DebugLib|x86.ActiveCfg = DebugLib|Win32
 		{B4120C0C-D641-4B53-9E48-66182F87DFB6}.DebugLib|x86.Build.0 = DebugLib|Win32
+		{B4120C0C-D641-4B53-9E48-66182F87DFB6}.KierkiTestDebug|x86.ActiveCfg = DebugLib|Win32
+		{B4120C0C-D641-4B53-9E48-66182F87DFB6}.KierkiTestDebug|x86.Build.0 = DebugLib|Win32
 		{B4120C0C-D641-4B53-9E48-66182F87DFB6}.ReleaseDll|x86.ActiveCfg = ReleaseDll|Win32
 		{B4120C0C-D641-4B53-9E48-66182F87DFB6}.ReleaseDll|x86.Build.0 = ReleaseDll|Win32
 		{B4120C0C-D641-4B53-9E48-66182F87DFB6}.ReleaseLib|x86.ActiveCfg = ReleaseLib|Win32
 		{B4120C0C-D641-4B53-9E48-66182F87DFB6}.ReleaseLib|x86.Build.0 = ReleaseLib|Win32
+		{6B5E3364-44B9-39FE-60F8-E087F6F8A7B4}.DebugDll|x86.ActiveCfg = KierkiTestDebug|Win32
+		{6B5E3364-44B9-39FE-60F8-E087F6F8A7B4}.DebugLib|x86.ActiveCfg = KierkiTestDebug|Win32
+		{6B5E3364-44B9-39FE-60F8-E087F6F8A7B4}.KierkiTestDebug|x86.ActiveCfg = KierkiTestDebug|Win32
+		{6B5E3364-44B9-39FE-60F8-E087F6F8A7B4}.KierkiTestDebug|x86.Build.0 = KierkiTestDebug|Win32
+		{6B5E3364-44B9-39FE-60F8-E087F6F8A7B4}.ReleaseDll|x86.ActiveCfg = KierkiTestDebug|Win32
+		{6B5E3364-44B9-39FE-60F8-E087F6F8A7B4}.ReleaseLib|x86.ActiveCfg = KierkiTestDebug|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

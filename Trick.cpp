@@ -86,7 +86,7 @@ CTrick::Biggest(
 	T_COLOR a_enTrumps	//WE ewent. kolor atutuowy
 	)	const
 {
-#pragma message(HERE "Czy faktycznie musz¹ byæ przechowywane wskaŸniki a nie referencje?")
+// TODO Czy faktycznie musz¹ byæ przechowywane wskaŸniki a nie referencje?
 	const CCard* l_pCard ;
 	short l_nCard ;
 

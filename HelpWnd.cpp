@@ -31,7 +31,7 @@ class HelpWndData
 public:
 
 	// Constructor that initializes m_lang
-	HelpWndData(const LanguageManager& langManager) : m_lang(langManager) {};
+	HelpWndData(const LanguageManager& langManager, CRegData& a_regData) : m_lang(langManager), m_regData(a_regData) {};
 
 	static HelpWndData* GetData(HWND a_hWnd) { return reinterpret_cast<HelpWndData*>(::GetWindowLongPtr(a_hWnd, GWLP_USERDATA)); };
 	static void SetData(HWND a_hWnd, HelpWndData* a_pData) { ::SetWindowLongPtr(a_hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(a_pData)); };
@@ -40,7 +40,7 @@ public:
 	HWND m_hWndPanel = nullptr;
 	const LanguageManager& m_lang;
 	CHelpJson	m_jsonHelp;
-	CRegData* m_pRegData = nullptr;	
+	CRegData& m_regData;	
 	HBITMAP m_hBmpBackground{};
 
 };
@@ -101,9 +101,9 @@ BOOL HelpWnd_Register(HINSTANCE a_hInst)
 	return ::RegisterClassEx(&l_wcex);
 }
 
-HWND HelpWnd_Create( DWORD a_dwStyle, HWND a_hWndParent, const LanguageManager& a_lang, CRegData* a_pRegData)
+HWND HelpWnd_Create( DWORD a_dwStyle, HWND a_hWndParent, const LanguageManager& a_lang, CRegData& a_regData)
 {
-	HelpWndData* l_pData = new HelpWndData(a_lang);
+	HelpWndData* l_pData = new HelpWndData(a_lang, a_regData);
 	HWND l_hWndHelp = ::CreateWindowEx(0, cc_sWindowClass, NULL, WS_CHILD | WS_CLIPSIBLINGS,
 			0, 0, 0, 0, a_hWndParent, NULL, NULL, reinterpret_cast<LPVOID>(l_pData));
 
@@ -113,8 +113,7 @@ HWND HelpWnd_Create( DWORD a_dwStyle, HWND a_hWndParent, const LanguageManager& 
 		throw RSystemExc(_T("CREATE_HELPWND"));
 	}
 
-	l_pData->m_pRegData = a_pRegData;
-	l_pData->m_jsonHelp.load(a_lang, l_pData->m_pRegData->m_regHidden.m_bHelpFromResource, l_pData->m_pRegData->m_regHidden.m_sHelpUrl);
+	l_pData->m_jsonHelp.load(a_lang, a_regData.m_regHidden.m_bHelpFromResource, a_regData.m_regHidden.m_sHelpUrl);
 	l_pData->m_hWndPanel = ::CreateDialogParam(::GetModuleHandle(nullptr),
 		MAKEINTRESOURCEW(IDD_HELP), l_hWndHelp, SafeDialogProc<Panel_DlgProc>, reinterpret_cast<LPARAM>(l_pData));
 	if (l_pData->m_hWndPanel == nullptr)
@@ -250,7 +249,7 @@ void OnSize(HWND a_hWnd, int a_dxWidth, int a_dyHeight)
 	if (l_hdwp == nullptr)
 		throw RSystemExc(_T("HELPWND:BEGIN_DEFER_WINDOW_POS"));
 	
-	int l_dyPanelHeight = l_pData->m_pRegData->m_regHidden.m_dyHelpPanel;
+	int l_dyPanelHeight = l_pData->m_regData.m_regHidden.m_dyHelpPanel;
 	l_hdwp = ::DeferWindowPos(l_hdwp, l_pData->m_hWndPanel, NULL, 0, 0, a_dxWidth, l_dyPanelHeight, SWP_NOZORDER);
 	if (l_hdwp == nullptr)
 		throw RSystemExc(_T("HELPWND:DEFER_WINDOW_POS_DIALOG"));
@@ -304,7 +303,7 @@ void OnAppRefresh(HWND a_hWnd)
 void OnSetBrightness(HWND a_hWnd, BYTE a_btBrightness)
 {
 	HelpWndData* l_pData = HelpWndData::GetData(a_hWnd);
-	l_pData->m_pRegData->m_regAuto.m_btAlphaHelpBackground = a_btBrightness;
+	l_pData->m_regData.m_regAuto.m_btAlphaHelpBackground = a_btBrightness;
 	::RedrawWindow(a_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 }
 
@@ -315,7 +314,7 @@ BYTE OnGetBrightness(HWND a_hWnd, BOOL* a_pSet)
 	if (l_pData == nullptr)
 		return 0;
 	*a_pSet = TRUE;
-	return l_pData->m_pRegData->m_regAuto.m_btAlphaHelpBackground;
+	return l_pData->m_regData.m_regAuto.m_btAlphaHelpBackground;
 
 }
 
@@ -342,7 +341,7 @@ void Draw(HWND a_hWnd, HDC a_hDC)
 		::DeleteDC(l_hdcMem);
 	}
 
-	RDraw::BlendOverlay(a_hDC, l_rect, l_pData->m_pRegData->m_regHidden.m_clrTintHelpBackground, l_pData->m_pRegData->m_regAuto.m_btAlphaHelpBackground);
+	RDraw::BlendOverlay(a_hDC, l_rect, l_pData->m_regData.m_regHidden.m_clrTintHelpBackground, l_pData->m_regData.m_regAuto.m_btAlphaHelpBackground);
 
 }
 
@@ -611,10 +610,10 @@ static void ShowHelpChanged(HWND a_hWnd)
 	BOOL l_bChecked = (::SendMessage(l_hWndShowHelp, BM_GETCHECK, 0, 0) == BST_CHECKED);
 	if (l_bChecked)
 	{
-		l_pData->m_pRegData->m_regRules.m_bHelpVisible = false;
+		l_pData->m_regData.m_regRules.m_bHelpVisible = false;
 		// not very good idea, as it also means that all other rules are saved!
 		// TODO: change it to save only this setting - move to regAuto? But it also measns more complex logic with Miscellaneous settings dialog
-		l_pData->m_pRegData->m_regRules.Serialize();
+		l_pData->m_regData.m_regRules.Serialize();
 	}
 
 }

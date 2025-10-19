@@ -11,13 +11,14 @@
 #include <rcommon/RBtnWnd.h>
 #include <rcommon/RSystemExc.h>
 #include <rcommon/SafeWndProc.hpp>
+#include <rcommon/ROwnExc.h>
+#include <rcommon/ROwnExc.h>
 #include <RCards/resource.h>
 #include <commctrl.h>
 #include "layout.h"
 
 
 static const TCHAR cc_sWindowClass[] = _T("GAMEWND");	// game window class name
-static GameWndData* GetData(HWND a_hWnd);
 
 static LRESULT GameWnd_WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -30,6 +31,10 @@ inline static void OnLButtonUp(HWND a_hWnd, int a_x, int a_y) ;
 inline static void OnMouseMove(HWND a_hWnd, UINT a_nFlags, int a_x, int a_y);
 inline static void OnCaptureChanged(HWND a_hWnd);
 inline static void OnNotify(HWND a_hWnd, LPNMHDR a_pNmHdr);
+
+inline static void OnHumanMove(HWND a_hWnd, T_PLAYER a_enPlayer);
+inline static void OnTimer(HWND a_hWnd, UINT_PTR a_idTimer);
+
 
 inline static void OnSetBrightness(HWND a_hWnd, BYTE a_btBrightness);
 inline static BYTE OnGetBrightness(HWND a_hWnd, BOOL* a_pSet);
@@ -45,18 +50,18 @@ static void InvalidateCardVert(HWND	a_hWnd, short a_iCard, T_PLAYER	a_enPlayer);
 static void InvalidatePuzzleCard(HWND a_hWnd, const CCard& a_card);
 static void InvalidateTableCards(HWND a_hWnd, BOOL a_bAll, T_PLAYER a_enPlayer);
 static void InvalidateAllPuzzleRows(HWND a_hWnd);
-static void InvalidatePuzzleRow(HWND a_hWnd, T_COLOR a_enColor);
+static void InvalidatePuzzleRow(HWND a_hWnd, T_SUIT a_enColor);
 static void InvalidateAllPlayersCards(HWND a_hWnd);
 static void InvalidatePlayerCards(HWND a_hWnd, T_PLAYER a_enPlayer);
 static void InvalidateResult(HWND a_hWnd, bool a_bAll, T_PLAYER a_enPlayer);
 static void InvalidateAfterTrumpsChoice(HWND a_hWnd);
 
 // positions
-static int LeftCardEdgePuzzle(T_COLOR a_enColor);
+static int LeftCardEdgePuzzle(T_SUIT a_enColor);
 static int TopCardEdgePuzzle(const CCard& a_card);
 
 // bitmaps
-static bool LoadBitmaps(HWND a_hWnd);
+static void LoadBitmaps(HWND a_hWnd);
 
 // drawing
 static void Draw(HWND a_hWnd, HDC a_hDC);
@@ -68,7 +73,7 @@ static void DrawCardsVert(HWND a_hWnd, HDC a_hDC, const CUserCards& a_pCards, LO
 static void DrawTableCards(HWND a_hWnd,	HDC a_hDC);
 static void DrawTableCard(HDC a_hDC, short a_iCardNr, LONG a_x, LONG a_y);
 static void DrawPuzzle(HWND a_hWnd,	HDC a_hDC);
-static void DrawPuzzleColor(HWND a_hWnd, HDC a_hDC,	T_COLOR a_enColor);
+static void DrawPuzzleColor(HWND a_hWnd, HDC a_hDC,	T_SUIT a_enColor);
 
 // mouse 
 static void Capture(HWND a_hWnd, bool a_bGet);
@@ -81,7 +86,7 @@ static short GetClickedTrumps(HWND a_hWnd, const POINT& a_point);
 static void ClickOnCardsTrumps(HWND a_hWnd, const POINT& a_point);
 static void ClickOnCards(HWND a_hWnd, const POINT& a_point);
 static void ClickConfirmTrick(HWND a_hWnd, const POINT& a_pt);
-static void TrumpsChosen(HWND a_hWnd, T_COLOR a_enColor);
+static void TrumpsChosen(HWND a_hWnd, T_SUIT a_enColor);
 
 static void NewDeal(HWND a_hWnd, BOOL a_bNextGame, BOOL a_bOpen);
 static void ThrowCardPuzzle(HWND a_hWnd, short a_nInHand, T_PLAYER a_enPlayer);
@@ -100,30 +105,28 @@ static bool CanPlayCard(HWND a_hWnd, short a_nCard, T_PLAYER a_enPlayer);
 static bool CanPlayFirstCard(HWND a_hWnd, const CCard& a_card, T_PLAYER a_enPlayer);
 
 
+// new approach to game functions
+void ClickOnCards2(HWND a_hWnd, const POINT& a_point);
 
 
 
-// TODO consider using resource.h for IDB_... definitions
-#define IDB_NOTRUMP  1001
-
-// TODO add this to registry
-// only for debug purposes
-#ifdef _DEBUG
-//#define DEBUG_SHOWCARD
-#endif
 
 
 typedef struct SCreateData
 {
-	HWND m_hWndApp;
-	GameData* m_pGameData;
+	HWND		m_hWndApp;
+	HeartsGame*	m_pGameData;
+	CRegData&	m_regData;
 } RCreateData;
 
 
+
 HWND GameWnd_Create(DWORD a_dwStyleEx, DWORD a_dwStyle, int a_x, int a_y,
-	int a_dx, int a_dy, HWND a_hWndParent, HINSTANCE a_hInst, HWND a_hWndApp, GameData* a_pGameData)
+	int a_dx, int a_dy, HWND a_hWndParent, HINSTANCE a_hInst, HWND a_hWndApp, HeartsGame* a_pGameData, CRegData& a_regData)
 {
-	RCreateData l_data = { a_hWndApp, a_pGameData };
+	ASSERT(a_pGameData != nullptr);
+
+	RCreateData l_data = { a_hWndApp, a_pGameData, a_regData };
 	return ::CreateWindowEx(a_dwStyleEx, cc_sWindowClass, _T(""), a_dwStyle, a_x, a_y, 
 		a_dx, a_dy, a_hWndParent, NULL, a_hInst, &l_data);
 }
@@ -137,7 +140,7 @@ ATOM GameWnd_Register(HINSTANCE a_hInst)
 	l_wcex.style			= CS_HREDRAW | CS_VREDRAW;
 	l_wcex.lpfnWndProc		= SafeWndProc<GameWnd_WndProc>;
 	l_wcex.cbClsExtra		= 0;
-	l_wcex.cbWndExtra		= sizeof(GameWndData*);
+	l_wcex.cbWndExtra		= 0;
 	l_wcex.hInstance		= a_hInst;
 	l_wcex.hIcon			= NULL;
 	l_wcex.hCursor			= ::LoadCursor(NULL, IDC_ARROW);
@@ -149,9 +152,19 @@ ATOM GameWnd_Register(HINSTANCE a_hInst)
 }
 
 
+void GameWnd_NewDeal2(HWND a_hWnd)
+{
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
+	HeartsGame* l_pGameData = l_pData->m_pGameData;
+
+	l_pGameData->Play();
+	::RedrawWindow(a_hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ERASENOW | RDW_UPDATENOW);
+
+}
+
 void GameWnd_NewDeal(HWND a_hWnd, bool a_bOpen)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	l_pData->m_bConfirmTrick = false;
 	l_pData->m_enPassPlayer = E_DL_NULL;
 	::RedrawWindow(a_hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ERASENOW | RDW_UPDATENOW);
@@ -170,17 +183,9 @@ void GameWnd_NewDeal(HWND a_hWnd, bool a_bOpen)
 
 void GameWnd_Refresh(HWND a_hWnd)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
-
-	if (!LoadBitmaps(a_hWnd))
-		throw RSystemExc(_T("LOAD_BITMAP_FAILED"));
+	LoadBitmaps(a_hWnd);
 }
 
-
-GameWndData* GetData(HWND a_hWnd)
-{
-	return reinterpret_cast<GameWndData*>(::GetWindowLongPtr(a_hWnd, GWLP_USERDATA));
-}
 
 
 //
@@ -225,6 +230,14 @@ LRESULT GameWnd_WndProc(HWND a_hWnd, UINT a_iMsg, WPARAM a_wParam, LPARAM a_lPar
 		OnNotify(a_hWnd, reinterpret_cast<LPNMHDR>(a_lParam));
 		break;
 
+	case WM_APP_HUMANMOVE:
+		OnHumanMove(a_hWnd, static_cast<T_PLAYER>(a_wParam));
+		break;
+
+	case WM_TIMER:
+		OnTimer(a_hWnd, static_cast<UINT_PTR>(a_wParam));
+		break;
+
 	case WM_APP_SETBRIGHTNESS:
 		OnSetBrightness(a_hWnd, static_cast<BYTE>(a_wParam));
 		break;
@@ -249,17 +262,32 @@ OnCreate(
 {
 	RCreateData* l_pCreateData = 
 		reinterpret_cast<RCreateData*>(a_pCreateStruct->lpCreateParams);
-	GameWndData* l_pData = new GameWndData(l_pCreateData->m_hWndApp, l_pCreateData->m_pGameData);
+	GameWndData* l_pData = new GameWndData(l_pCreateData->m_hWndApp, l_pCreateData->m_pGameData, l_pCreateData->m_regData);
 	if (l_pData == NULL)
 	{
 		return -1;
 	}
-	::SetWindowLongPtr(a_hWnd, GWLP_USERDATA, (LONG_PTR)l_pData);
 
-	if (!LoadBitmaps(a_hWnd))
-	{
-		return -1;
-	}
+
+	GameWndData::SetData(a_hWnd, l_pData);
+
+	// thic can throw exception - will be caught above (but return will be 0) - hopefully user will close the program
+	LoadBitmaps(a_hWnd);
+
+	// for handling callbacks from HeartsGame
+
+	l_pData->SetUIGameWnd(a_hWnd);
+	l_pData->m_pGameData->OnCardPlayed = [l_pData](Player a_player, short a_nCard) {
+		l_pData->GetUI().OnCardPlayed(a_player, a_nCard);
+	};
+	l_pData->m_pGameData->OnWaitForUser = [l_pData](Player a_player) {
+		l_pData->GetUI().OnWaitForUser(a_player);
+		};
+	l_pData->m_pGameData->OnTrickTaken = [l_pData](bool* a_pbPlayed) {
+		l_pData->GetUI().OnTrickTaken(a_pbPlayed);
+		};
+
+	
 
 	return 0;
 }
@@ -267,7 +295,7 @@ OnCreate(
 
 void OnNcDestroy(HWND a_hWnd)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	delete l_pData;
 }
 
@@ -309,7 +337,7 @@ void OnPaint(
 //
 void CalculatePositions(HWND a_hWnd)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 
 	// calculate positions of users cards
 	for (short l_iAt = 0; l_iAt < 13; l_iAt++)
@@ -385,8 +413,8 @@ Draw(
 	 HDC a_hDC		//IN device context
 	 )
 {
-	GameWndData* l_pData = GetData(a_hWnd);
-	GameData* l_pGameData = l_pData->m_pGameData;
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
+	HeartsGame* l_pGameData = l_pData->m_pGameData;
 
 	DrawFelt(a_hWnd, a_hDC);
 
@@ -432,7 +460,7 @@ Draw(
 
 static void DrawFelt(HWND a_hWnd, HDC a_hDC)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 
 	// Create compatible DC and select bitmap
 	HDC l_hdcMem = ::CreateCompatibleDC(a_hDC);
@@ -452,7 +480,7 @@ static void DrawFelt(HWND a_hWnd, HDC a_hDC)
 	::SelectObject(l_hdcMem, l_hBmpOld);
 	::DeleteDC(l_hdcMem);
 
-	RDraw::BlendOverlay(a_hDC, l_rect, l_pData->m_pGameData->m_regData.m_regHidden.m_clrTintGameBackground, l_pData->m_pGameData->m_regData.m_regAuto.m_btAlphaGameBackground);
+	RDraw::BlendOverlay(a_hDC, l_rect, l_pData->m_regData.m_regHidden.m_clrTintGameBackground, l_pData->m_regData.m_regAuto.m_btAlphaGameBackground);
 }
 
 // ---------------------------------------------------------
@@ -537,7 +565,7 @@ void InvalidateCards(HWND a_hWnd, short a_iInHand, T_PLAYER a_enPlayer,	BOOL a_b
 	}
 	if (a_bPuzzle)
 	{
-		const CCard& l_card = GetData(a_hWnd)->m_pGameData->GetPlayerCard(a_enPlayer, a_iInHand);
+		const CCard& l_card = GameWndData::GetData(a_hWnd)->m_pGameData->GetPlayerCard(a_enPlayer, a_iInHand);
 		InvalidatePuzzleCard(a_hWnd, l_card);
 	}
 	else
@@ -552,7 +580,7 @@ void InvalidateCards(HWND a_hWnd, short a_iInHand, T_PLAYER a_enPlayer,	BOOL a_b
 //
 void TrumpsChoice(HWND a_hWnd)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	::SendMessage(l_pData->m_hWndApp, WM_APP_CHOOSETRUMPS, 0, 0);
 	if (l_pData->m_hWndNoTrump == NULL)
 	{
@@ -567,7 +595,7 @@ void TrumpsChoice(HWND a_hWnd)
 		RBtnWnd_RegisterClass();
 		l_pData->m_hWndNoTrump = RBtnWnd_CreateEx(WS_VISIBLE | WS_CHILD, 0, _T(""),
 			l_x, CP_YB + c_dyCard / 2 - 15, l_bmp.bmWidth / 3, l_bmp.bmHeight, a_hWnd, 
-			IDB_NOTRUMP);
+			IDB_GAMEWND_NOTRUMP);
 		TSetBitmap l_setbmp;
 		l_setbmp.hInst = ::GetModuleHandle(NULL);
 		l_setbmp.idBmp = IDB_NOTRUMPS;
@@ -611,7 +639,7 @@ InvalidateCardHorz(
 
 	l_rectInv.bottom = l_rectInv.top + c_dyCard;
 
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	if (a_iCard == 12 || a_bAllCard)
 	{
 		l_rectInv.left = l_pData->m_arrHorzPos[a_iCard].m_iLeft ;
@@ -675,7 +703,7 @@ InvalidateCardVert(
 
 	l_rectInv.right = l_rectInv.left + c_dxCard ;
 
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	if (a_iCard == 12)
 	{
 		l_rectInv.top = l_pData->m_arrVertPos[a_iCard].m_iTop ;
@@ -720,7 +748,7 @@ InvalidateTableCards(
 	T_PLAYER a_enPlayer	//WE for player
 	)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	if (a_bAll)
 	{
 		::InvalidateRect(a_hWnd, &(l_pData->m_rectLaidCards), TRUE);
@@ -758,7 +786,7 @@ InvalidatePuzzleCard(
 //
 int		//IN left edge
 LeftCardEdgePuzzle(
-	T_COLOR a_enColor	//WE dla koloru
+	T_SUIT a_enColor	//WE dla koloru
 	)
 {
 	int l_dxStart = C_VIEW_WIDTH / 2 + c_dxPuzzleGap / 2 - 
@@ -776,7 +804,7 @@ TopCardEdgePuzzle(
 	const CCard& a_card	//WE karta
 	)
 {
-	T_CARDVAL l_val = a_card.CardValue();
+	T_RANK l_val = a_card.CardValue();
 
 	// po³o¿enie E_CV_8
 	int l_y8 = (C_VIEW_HEIGHT - c_dyCard) / 2;
@@ -820,7 +848,7 @@ InvalidateAllPuzzleRows(
 void 
 InvalidatePuzzleRow(
 	HWND a_hWnd,		//IN game wnd
-	T_COLOR a_enColor	//IN color
+	T_SUIT a_enColor	//IN color
 	)
 {
 	RECT l_rect;
@@ -852,7 +880,7 @@ InvalidateAllPlayersCards(
 // Does not redraw window you must call UpdateWindow()
 void InvalidatePlayerCards(HWND a_hWnd, T_PLAYER a_enPlayer)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	RECT l_rect;
 	switch (a_enPlayer)
 	{
@@ -913,7 +941,7 @@ DrawNames(
 	bool a_bTakenTricksCount //IN draw taken tricks count
 	)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	tstring l_sDrawText;
 
 	// all players
@@ -921,8 +949,7 @@ DrawNames(
 	for (short l_iAt = E_DL_1; l_iAt <= E_DL_4; l_iAt++)
 	{
 		tstring l_sDrawText;
-		const CRegData& l_regData = l_pData->m_pGameData->m_regData;
-		const tstring& l_sPlayerName = l_regData.GetPlayerName(static_cast<T_PLAYER>(l_iAt));
+		const tstring& l_sPlayerName = l_pData->m_regData.GetPlayerName(static_cast<T_PLAYER>(l_iAt));
 		if (a_bTakenTricksCount)
 		{
 			l_sDrawText = FormatTextT("{} ({})", l_sPlayerName, l_pData->m_pGameData->GetPlayerTricksCnt(static_cast<T_PLAYER>(l_iAt)));
@@ -932,7 +959,7 @@ DrawNames(
 			l_sDrawText = l_sPlayerName;
 		}
 
-		HFONT l_hFont = CFontFactory::Instance().GetFont(a_hWnd, l_regData.m_regHidden.m_iGameFontSize);
+		HFONT l_hFont = CFontFactory::Instance().GetFont(a_hWnd, l_pData->m_regData.m_regHidden.m_iGameFontSize);
 		RDraw::DrawSmartText(a_hDC, l_hFont, l_pData->m_rectsNames[l_iAt], l_sDrawText.c_str());
 	
 	}
@@ -955,7 +982,7 @@ DrawCardsHorz(
 	)
 {
 
-	const CRegData& l_reg = GetData(a_hWnd)->m_pGameData->m_regData;
+	const CRegData& l_reg = GameWndData::GetData(a_hWnd)->m_regData;
 	if (l_reg.m_regHidden.m_bShowAllCards)
 		a_bReverse = false;
 
@@ -1017,7 +1044,7 @@ DrawCardsHorz(
 		l_iCardNr = a_pCards[l_nAt].GetNr();
 		if (a_bReverse)
 		{
-			l_bOk = ::Cards_DrawCover(a_hDC, GetData(a_hWnd)->GetBmpCover(), 
+			l_bOk = ::Cards_DrawCover(a_hDC, GameWndData::GetData(a_hWnd)->GetBmpCover(),
 				l_x, a_y, l_dxWidth, c_dyCard, c_dxCard, c_dyCard);
 		}
 		else
@@ -1046,7 +1073,7 @@ DrawCardsVert(
 	short a_nStart				//IN start card (from 0)
 	)	
 {
-	const CRegData& l_reg = GetData(a_hWnd)->m_pGameData->m_regData;
+	const CRegData& l_reg = GameWndData::GetData(a_hWnd)->m_regData;
 	if (l_reg.m_regHidden.m_bShowAllCards)
 		a_bReverse = false;
 
@@ -1074,7 +1101,7 @@ DrawCardsVert(
 
 		if (a_bReverse)
 		{
-			l_bOk = ::Cards_DrawCover(a_hDC, GetData(a_hWnd)->GetBmpCover(), 
+			l_bOk = ::Cards_DrawCover(a_hDC, GameWndData::GetData(a_hWnd)->GetBmpCover(),
 			  a_x, l_y, c_dxCard, l_dyHeight, c_dxCard, c_dyCard);
 		}
 		else
@@ -1098,7 +1125,7 @@ DrawTableCards(
 	HDC  a_hDC		//IN device context
 	)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	// last trick
 	ASSERT(l_pData->m_pGameData->GetTricksCnt() <= 13) ;
 	ASSERT(l_pData->m_pGameData->GetTricksCnt() >= 1) ;
@@ -1143,7 +1170,8 @@ DrawPuzzle(
 	HDC  a_hDC		//IN device context
 	)
 {
-	ASSERT(GetData(a_hWnd)->m_pGameData->GetGame() == E_GM_PUZZLE);
+	if (GameWndData::GetData(a_hWnd)->m_pGameData->GetGame() != E_GM_PUZZLE)
+		throw ROwnExc(_T("DrawPuzzle: not a puzzle game"));
 	DrawPuzzleColor(a_hWnd, a_hDC, E_CC_HEART);
 	DrawPuzzleColor(a_hWnd, a_hDC, E_CC_DIAMOND);
 	DrawPuzzleColor(a_hWnd, a_hDC, E_CC_SPADE);
@@ -1158,11 +1186,12 @@ void
 DrawPuzzleColor(
 	HWND a_hWnd,		//IN game wnd
 	HDC  a_hDC,			//IN device context
-	T_COLOR a_enColor	//IN color
+	T_SUIT a_enColor	//IN color
 	)
 {
-	ASSERT(GetData(a_hWnd)->m_pGameData->GetGame() == E_GM_PUZZLE);
-	const CPuzzleRows& l_PuzzleRows = GetData(a_hWnd)->m_pGameData->GetPuzzleRows();
+	if (GameWndData::GetData(a_hWnd)->m_pGameData->GetGame() != E_GM_PUZZLE)
+		throw ROwnExc(_T("DrawPuzzleColor: not a puzzle game"));
+	const CPuzzleRows& l_PuzzleRows = GameWndData::GetData(a_hWnd)->m_pGameData->GetPuzzleRows();
 	const CCard* l_pCardTop = l_PuzzleRows.GetTopCard(a_enColor);
 	// jeszcze nie ma ¿adnej karty w tym kolorze
 	if (l_pCardTop == NULL) 
@@ -1194,7 +1223,7 @@ DrawPuzzleColor(
 		int l_iVal;
 		for (l_iVal = E_CV_9; l_iVal <= l_pCardTop->CardValue(); l_iVal++)
 		{
-			CCard l_cardTop(a_enColor, (T_CARDVAL)l_iVal);
+			CCard l_cardTop(a_enColor, (T_RANK)l_iVal);
 			l_dyStart = TopCardEdgePuzzle(l_cardTop);
 			VERIFY(::Cards_DrawCard(a_hDC, l_cardTop.GetNr() - 1,
 				l_dxStart, l_dyStart, c_dxCard, c_dyCard, c_dxCard, c_dyCard, FALSE));
@@ -1208,7 +1237,7 @@ DrawPuzzleColor(
 		int l_iVal;
 		for (l_iVal = E_CV_7; l_iVal >= l_pCardBottom->CardValue(); l_iVal--)
 		{
-			CCard l_cardBottom(a_enColor, (T_CARDVAL)l_iVal);
+			CCard l_cardBottom(a_enColor, (T_RANK)l_iVal);
 			l_dyStart = TopCardEdgePuzzle(l_cardBottom);
 			VERIFY(::Cards_DrawCard(a_hDC, l_cardBottom.GetNr() - 1,
 				l_dxStart, l_dyStart, c_dxCard, c_dyCard, c_dxCard, c_dyCard, FALSE));
@@ -1222,7 +1251,7 @@ DrawPuzzleColor(
 //
 void InvalidateResult(HWND a_hWnd, bool a_bAll,	T_PLAYER a_enPlayer)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	if (a_bAll)
 	{
 		::InvalidateRect(a_hWnd, &(l_pData->m_rectsNames[E_DL_1]), TRUE);
@@ -1237,25 +1266,25 @@ void InvalidateResult(HWND a_hWnd, bool a_bAll,	T_PLAYER a_enPlayer)
 }
 
 
+
 // ---------------------------------------------------------
 // Load bitmaps - felt and cover
 //
-bool LoadBitmaps(HWND a_hWnd)
+void LoadBitmaps(HWND a_hWnd)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 
 	l_pData->SetBmpCover(reinterpret_cast<HBITMAP>(::LoadBitmap(RCards_GetInstance(),
-		MAKEINTRESOURCE(l_pData->m_pGameData->m_regData.m_regView.m_idCover))));
+		MAKEINTRESOURCE(l_pData->m_regData.m_regView.m_idCover))));
 	if (l_pData->GetBmpCover() == nullptr)
-		return false;
+		THROW_RSYSTEM_EXC(_T("LoadBitmaps:Cover"));
 
 	l_pData->SetBmpFelt(reinterpret_cast<HBITMAP>(::LoadImage(RCards_GetInstance(),
 		MAKEINTRESOURCE(IDB_FELT_DEFAULT), IMAGE_BITMAP, 0, 0, LR_CREATEDIBSECTION)));
 
 	if (l_pData->GetBmpFelt() == NULL)
-		return false;
+		THROW_RSYSTEM_EXC(_T("LoadBitmaps:Felt"));
 
-	return true;
 }
 
 
@@ -1287,7 +1316,7 @@ short GetHighlighted(HWND a_hWnd, BOOL a_bHighlight)
 //
 short GetClicked(HWND a_hWnd, const POINT& a_point)
 {
-	GameData* l_pData = GetData(a_hWnd)->m_pGameData;
+	HeartsGame* l_pData = GameWndData::GetData(a_hWnd)->m_pGameData;
 	short l_iAt;
 	if (l_pData->IsTrumpsChoice())
 	{
@@ -1330,7 +1359,7 @@ short GetClicked(HWND a_hWnd, const POINT& a_point)
 //
 short GetCardFromPoint(HWND a_hWnd, const POINT& a_point, short a_nStartCard)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	short l_iAt;
 	const CUserCards& l_usercards = l_pData->m_pGameData->GetPlayerCards(E_DL_1);
 	for (l_iAt = a_nStartCard; l_iAt >= 0; l_iAt--)
@@ -1355,9 +1384,10 @@ short GetCardFromPoint(HWND a_hWnd, const POINT& a_point, short a_nStartCard)
 //
 bool CanPlayCardPuzzle(HWND a_hWnd, short a_nCard, T_PLAYER a_enPlayer)
 {
-	GameData* l_pData = GetData(a_hWnd)->m_pGameData;
+#pragma todo("Prawdopodobnie powinno byæ w HeartsGame lub CPlayers")
+	HeartsGame* l_pData = GameWndData::GetData(a_hWnd)->m_pGameData;
 	const CCard& l_card = l_pData->GetPlayerCard(a_enPlayer, a_nCard);
-	return (l_pData->GetPuzzleRows().CanPutCard(l_card) == TRUE);
+	return l_pData->GetPuzzleRows().CanPutCard(l_card);
 }
 
 
@@ -1366,7 +1396,8 @@ bool CanPlayCardPuzzle(HWND a_hWnd, short a_nCard, T_PLAYER a_enPlayer)
 //
 bool CanPlayCard(HWND a_hWnd, short a_nCard, T_PLAYER a_enPlayer)
 {
-	GameData* l_pData = GetData(a_hWnd)->m_pGameData;
+#pragma todo("To musi byæ w HeartsGame lub CPlayers")
+	HeartsGame* l_pData = GameWndData::GetData(a_hWnd)->m_pGameData;
 	// first card
 	const CCard& l_card = l_pData->GetPlayerCard(a_enPlayer, a_nCard);
 	if (l_pData->CardsOnTable() == 0)
@@ -1407,7 +1438,7 @@ bool CanPlayCard(HWND a_hWnd, short a_nCard, T_PLAYER a_enPlayer)
 		case E_GM_RECOVER3:
 		case E_GM_RECOVER4:
 			{
-				T_COLOR l_enColor = l_trick.GetCardColor(0);
+				T_SUIT l_enColor = l_trick.GetCardColor(0);
 				// jeœli zagrana w atutowym
 				// i mamy atuty
 				// to znajd¿my najwy¿sz¹ kartê w tej lewie
@@ -1466,11 +1497,12 @@ bool CanPlayCard(HWND a_hWnd, short a_nCard, T_PLAYER a_enPlayer)
 
 
 // ---------------------------------------------------------
-// does carc can by played as first
+// does card can by played as first
 //
 bool CanPlayFirstCard(HWND a_hWnd, const CCard& a_card, T_PLAYER a_enPlayer)
 {
-	GameData* l_pData = GetData(a_hWnd)->m_pGameData;
+#pragma todo("To musi byæ w HeartsGame lub CPlayers")
+	HeartsGame* l_pData = GameWndData::GetData(a_hWnd)->m_pGameData;
 	switch (l_pData->GetGame())
 	{
 	case E_GM_NOHEARTS:
@@ -1493,7 +1525,7 @@ bool CanPlayFirstCard(HWND a_hWnd, const CCard& a_card, T_PLAYER a_enPlayer)
 //
 void OnLButtonDown(HWND a_hWnd, int a_x, int a_y)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 // TODO to co poni¿ej powinno byæ uruchamiane tylko gdy czas na klikniêcie przez E_DL_1
 	if (!l_pData->m_bConfirmTrick && l_pData->m_pGameData->IsDealed() && l_pData->m_pGameData->GetThrower() == E_DL_1)
 	{
@@ -1514,7 +1546,7 @@ void OnLButtonDown(HWND a_hWnd, int a_x, int a_y)
 //
 void OnLButtonUp(HWND a_hWnd, int a_x, int a_y) 
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	l_pData->m_nLastHighlighted = -1;
 	Capture(a_hWnd, false);
 	// jeœli to wybór atu
@@ -1529,7 +1561,7 @@ void OnLButtonUp(HWND a_hWnd, int a_x, int a_y)
 	}
 	else if (l_pData->m_pGameData->IsDealed() && (l_pData->m_pGameData->GetThrower() == E_DL_1))
 	{
-		ClickOnCards(a_hWnd, l_pt);
+		ClickOnCards2(a_hWnd, l_pt);
 	}
 }
 
@@ -1539,7 +1571,7 @@ void OnLButtonUp(HWND a_hWnd, int a_x, int a_y)
 //
 void OnMouseMove(HWND a_hWnd, UINT a_nFlags, int a_x, int a_y)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	// czy wciœniêty przycisk lewy myszy
 	if (l_pData->m_pGameData->IsDealed())
 	{
@@ -1577,28 +1609,45 @@ void OnCaptureChanged(HWND a_hWnd)
 
 void OnNotify(HWND a_hWnd, LPNMHDR a_pNmHdr)
 {
-	if ((a_pNmHdr->idFrom == IDB_NOTRUMP) && (a_pNmHdr->code == NM_CLICK))
+	if ((a_pNmHdr->idFrom == IDB_GAMEWND_NOTRUMP) && (a_pNmHdr->code == NM_CLICK))
 	{
 		TrumpsChosen(a_hWnd, E_CC_NOTRUMPS);
 	}
 }
 
 
+void OnTimer(HWND a_hWnd, UINT_PTR a_idTimer)
+{
+
+}
+
+
+void OnHumanMove(HWND a_hWnd, T_PLAYER a_enPlayer)
+{
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
+	HeartsGame* l_pGameData = l_pData->m_pGameData;
+	ASSERT(l_pGameData->GetThrowerPlayer().GetPlayerType() == CPlayer::PlayerType::Human);
+	// here we are waiting for click
+#pragma todo("Inform main window that human player needs to select card - set status bar text")
+}
+
+
+
 void OnSetBrightness(HWND a_hWnd, BYTE a_btBrightness)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
-	l_pData->m_pGameData->m_regData.m_regAuto.m_btAlphaGameBackground = a_btBrightness;
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
+	l_pData->m_regData.m_regAuto.m_btAlphaGameBackground = a_btBrightness;
 	::RedrawWindow(a_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 }
 
 
 BYTE OnGetBrightness(HWND a_hWnd, BOOL* a_pSet)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	if (l_pData == nullptr)
 		return 0;
 	*a_pSet = TRUE;
-	return l_pData->m_pGameData->m_regData.m_regAuto.m_btAlphaGameBackground;
+	return l_pData->m_regData.m_regAuto.m_btAlphaGameBackground;
 
 }
 
@@ -1614,7 +1663,7 @@ void Capture(HWND a_hWnd, bool a_bGet)
 	}
 	else
 	{
-		GetData(a_hWnd)->m_nLastHighlighted = -1;	
+		GameWndData::GetData(a_hWnd)->m_nLastHighlighted = -1;
 		::ReleaseCapture();
 	}
 }
@@ -1631,12 +1680,46 @@ void ClickOnCardsTrumps(HWND a_hWnd, const POINT& a_point)
 		return;
 	}
 
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	const CUserCards& l_usercards = l_pData->m_pGameData->GetPlayerCards(E_DL_1);
-	T_COLOR l_enColor = l_usercards[l_nCardNr].GetColor();
+	T_SUIT l_enColor = l_usercards[l_nCardNr].GetColor();
 
 	TrumpsChosen(a_hWnd, l_enColor);
 }
+
+
+
+// ---------------------------------------------------------
+//	click on card
+//
+void ClickOnCards2(HWND a_hWnd, const POINT& a_point)
+{
+	short l_iClicked = GetClicked(a_hWnd, a_point);
+
+	// nie klikniêto na ¿adnej widocznej
+	if (l_iClicked < 0)
+	{
+		::MessageBeep(1);
+		return;
+	}
+
+	if (l_iClicked >= 13)
+		ASSERT("Internal error returning GetClicked");
+
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
+	HeartsGame* l_pGameData = l_pData->m_pGameData;
+
+	T_PLAYER l_enThrower = l_pGameData->GetThrower();
+
+	l_pGameData->Play(l_iClicked);
+	if ((l_enThrower == E_DL_1) || (l_enThrower == E_DL_3))
+		InvalidateCardHorz(a_hWnd, l_iClicked, l_enThrower, TRUE);
+	else
+		InvalidateCardVert(a_hWnd, l_iClicked, l_enThrower);
+
+
+}
+
 
 
 // ---------------------------------------------------------
@@ -1652,10 +1735,14 @@ void ClickOnCards(HWND a_hWnd, const POINT& a_point)
 		::MessageBeep(1);
 		return ;
 	}
-	ASSERT((l_iClicked >= 0) && (l_iClicked < 13));
+
+
+	if ((l_iClicked < 0) || (l_iClicked >= 13))
+		throw ROwnExc(_T("ClickOnCards: invalid card value"));
+
 	InvalidateCardHorz(a_hWnd, l_iClicked, E_DL_1, TRUE) ;
 
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	if (l_pData->m_pGameData->GetGame() == E_GM_PUZZLE)
 	{
 		ThrowCardPuzzle(a_hWnd, l_iClicked, E_DL_1) ;
@@ -1697,7 +1784,7 @@ short GetClickedTrumps(HWND a_hWnd, const POINT& a_point)
 	}
 
 	short l_nAt;	// iterator kart
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	for (l_nAt = 6; l_nAt >= 0; l_nAt--)
 	{
 		if ((l_pData->m_arrHorzPos[l_nAt].m_iLeft < a_point.x) && (l_pData->m_arrHorzPos[l_nAt].m_iRight > a_point.x))
@@ -1715,9 +1802,9 @@ short GetClickedTrumps(HWND a_hWnd, const POINT& a_point)
 // ---------------------------------------------------------
 // After trumps were chosen
 //
-void TrumpsChosen(HWND a_hWnd, T_COLOR a_enColor)
+void TrumpsChosen(HWND a_hWnd, T_SUIT a_enColor)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	::ShowWindow(l_pData->m_hWndNoTrump, SW_HIDE);
 	l_pData->m_pGameData->EndTrumpsChoice(a_enColor);
 
@@ -1736,7 +1823,7 @@ void TrumpsChosen(HWND a_hWnd, T_COLOR a_enColor)
 //
 void ThrowCardPuzzle(HWND a_hWnd, short a_nInHand, T_PLAYER a_enPlayer)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	// pobranie numeru karty
 	if (a_nInHand == -1)
 	{
@@ -1749,8 +1836,9 @@ void ThrowCardPuzzle(HWND a_hWnd, short a_nInHand, T_PLAYER a_enPlayer)
 				ShowPass(a_hWnd, a_enPlayer);
 			}
 		}
+#pragma todo("Tutaj NextThrower?")
 		// tu musze ustawiæ nastêpnego graj¹cego (no bo gdzie indziej?)
-		l_pData->m_pGameData->SetNextPlayer();
+		l_pData->m_pGameData->SetNextThrower();
 		return;
 	}
 
@@ -1759,13 +1847,15 @@ void ThrowCardPuzzle(HWND a_hWnd, short a_nInHand, T_PLAYER a_enPlayer)
 
 	InvalidateCards(a_hWnd, a_nInHand, a_enPlayer, TRUE);
 	::UpdateWindow(a_hWnd);
+
+#pragma todo("get rid of these Sleeps!")
 	if (l_pData->m_pGameData->CardsOnTable() == 52)
 	{
-		Sleep(l_pData->m_pGameData->m_regData.m_regTime.m_iWaitGetTime);
+		Sleep(l_pData->m_regData.m_regTime.m_iWaitGetTime);
 	}
 	else
 	{
-		Sleep(l_pData->m_pGameData->m_regData.m_regTime.m_iWaitThrowTime);
+		Sleep(l_pData->m_regData.m_regTime.m_iWaitThrowTime);
 	}
 }
 
@@ -1775,29 +1865,30 @@ void ThrowCardPuzzle(HWND a_hWnd, short a_nInHand, T_PLAYER a_enPlayer)
 //
 void ThrowCard(HWND a_hWnd, short a_nInHand, T_PLAYER a_enPlayer)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
-	GameData* l_pGameData = l_pData->m_pGameData;
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
+	HeartsGame* l_pGameData = l_pData->m_pGameData;
 	l_pGameData->SetPlayerCard2Trick(a_enPlayer, a_nInHand);
 
 	InvalidateCards(a_hWnd, a_nInHand, a_enPlayer, FALSE);
 	::UpdateWindow(a_hWnd);
 	if (l_pGameData->CardsOnTable() == 4)
 	{
-		if (l_pGameData->m_regData.m_regRules.m_bConfirmTrick)
+		if (l_pData->m_regData.m_regRules.m_bConfirmTrick)
 		{
 			::SendMessage(l_pData->m_hWndApp, WM_APP_CONFIRMTRICK, 0, 0L);
 			l_pData->m_bConfirmTrick = true;
 		}
 		else
 		{
-			Sleep(l_pGameData->m_regData.m_regTime.m_iWaitGetTime);
+#pragma todo("get rid of these sleeps")
+			Sleep(l_pData->m_regData.m_regTime.m_iWaitGetTime);
 			TrickTaking(a_hWnd);
 			::UpdateWindow(a_hWnd);
 		}
 	}
 	else
 	{
-		Sleep(l_pGameData->m_regData.m_regTime.m_iWaitThrowTime);
+		Sleep(l_pData->m_regData.m_regTime.m_iWaitThrowTime);
 	}
 }
 
@@ -1807,8 +1898,8 @@ void ThrowCard(HWND a_hWnd, short a_nInHand, T_PLAYER a_enPlayer)
 //
 void PlayPuzzle(HWND a_hWnd)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
-	GameData* l_pGameData = l_pData->m_pGameData;
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
+	HeartsGame* l_pGameData = l_pData->m_pGameData;
 	if (!l_pGameData->IsDealed())
 	{
 		return ;
@@ -1881,8 +1972,8 @@ void PlayPuzzle(HWND a_hWnd)
 //
 void Play(HWND a_hWnd)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
-	GameData* l_pGameData = l_pData->m_pGameData;
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
+	HeartsGame* l_pGameData = l_pData->m_pGameData;
 	// jeœli nie rozdane to mo¿e wybór atu
 	if (!l_pGameData->IsDealed())
 	{
@@ -1897,6 +1988,7 @@ void Play(HWND a_hWnd)
 	short l_iInHand;
 	while (TRUE)
 	{
+			
 		if (l_pGameData->GetThrower() == E_DL_1)
 		{
 			::SendMessage(l_pData->m_hWndApp, WM_APP_PLAYCARD, 0, 0);
@@ -1942,7 +2034,7 @@ void Play(HWND a_hWnd)
 //
 void InvalidateAfterTrumpsChoice(HWND a_hWnd)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	RECT l_rect;
 	// gracz E_DL_1 - wszystkie karty
 	l_rect.left = l_pData->m_arrHorzPos[0].m_iLeft;
@@ -1976,12 +2068,14 @@ void InvalidateAfterTrumpsChoice(HWND a_hWnd)
 //
 void TrickTaking(HWND a_hWnd)
 {
-	GameData* l_pData = GetData(a_hWnd)->m_pGameData;
+	HeartsGame* l_pData = GameWndData::GetData(a_hWnd)->m_pGameData;
 	BOOL l_bContinue = l_pData->GetPlayedTrick();
 
 	// kontynuacja tej samej gry
 	if (l_bContinue)
 	{
+		l_pData->NextTrick();
+
 		InvalidateResult(a_hWnd, FALSE, l_pData->GetThrower());
 		InvalidateTableCards(a_hWnd, TRUE, E_DL_1);
 	}
@@ -1990,7 +2084,9 @@ void TrickTaking(HWND a_hWnd)
 	// przy wyborze atu czekamy jeszcze
 	else 
 	{
-		::SendMessage(GetData(a_hWnd)->m_hWndApp, WM_APP_SETTITLE, 0, 0);
+		l_pData->StartNextGame();
+
+		::SendMessage(GameWndData::GetData(a_hWnd)->m_hWndApp, WM_APP_SETTITLE, 0, 0);
 		if (!l_pData->IsTrumpsChoice())
 		{
 			if (l_pData->GetGame() == E_GM_PUZZLE)
@@ -2010,28 +2106,20 @@ void TrickTaking(HWND a_hWnd)
 
 bool AreCardsToPlayPuzzle(HWND a_hWnd)
 {
-	GameData* l_pData = GetData(a_hWnd)->m_pGameData;
-	if (l_pData->GetPlayerCards(E_DL_1).CardsLeft() > 0)
-		return true;
-	if (l_pData->GetPlayerCards(E_DL_2).CardsLeft() > 0)
-		return true;
-	if (l_pData->GetPlayerCards(E_DL_3).CardsLeft() > 0)
-		return true;
-	if (l_pData->GetPlayerCards(E_DL_4).CardsLeft() > 0)
-		return true;
-	return false;
+	HeartsGame* l_pGameData = GameWndData::GetData(a_hWnd)->m_pGameData;
+	return l_pGameData->AreCardsRemaining();
 }
 
 
 void ShowPass(HWND a_hWnd, T_PLAYER a_enPlayer)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
-	GameData* l_pGameData = l_pData->m_pGameData;
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
+	HeartsGame* l_pGameData = l_pData->m_pGameData;
 	if (l_pData->GetBmpPass() == NULL)
 	{
 		HBITMAP l_hBmpPass = RDraw::LoadImageFromResource(::GetModuleHandle(NULL), IDR_PNG_PASS, _T("PNG"));
 		if (l_hBmpPass == NULL)
-			throw RSystemExc(_T("Load pass resource"));
+			throw RSystemExc(_T("LOAD_PASS_RESOURCE"));
 		l_pData->SetBmpPass(l_hBmpPass);
 		BITMAP l_bmp;
 		VERIFY(::GetObject(l_pData->GetBmpPass(), sizeof(l_bmp), &l_bmp) != 0);
@@ -2047,7 +2135,8 @@ void ShowPass(HWND a_hWnd, T_PLAYER a_enPlayer)
 		l_pData->m_ptsPass[a_enPlayer].x + c_dxPass, l_pData->m_ptsPass[a_enPlayer].y + c_dyPass };
 	::InvalidateRect(a_hWnd, &l_rect, TRUE);
 	::UpdateWindow(a_hWnd);
-	::Sleep(l_pGameData->m_regData.m_regTime.m_iWaitPassTime);
+#pragma todo("get rid of this sleep")
+	::Sleep(l_pData->m_regData.m_regTime.m_iWaitPassTime);
 	l_pData->m_enPassPlayer = E_DL_NULL;
 	::InvalidateRect(a_hWnd, &l_rect, TRUE);
 	::UpdateWindow(a_hWnd);
@@ -2056,7 +2145,7 @@ void ShowPass(HWND a_hWnd, T_PLAYER a_enPlayer)
 
 void ClickConfirmTrick(HWND a_hWnd, const POINT& a_pt)
 {
-	GameWndData* l_pData = GetData(a_hWnd);
+	GameWndData* l_pData = GameWndData::GetData(a_hWnd);
 	ASSERT(l_pData->m_bConfirmTrick);
 	l_pData->m_bConfirmTrick = false;
 	TrickTaking(a_hWnd);
@@ -2071,8 +2160,41 @@ void ClickConfirmTrick(HWND a_hWnd, const POINT& a_pt)
 	}
 	else
 	{
-		Play(a_hWnd);
+		l_pData->m_pGameData->Play();
 	}
 }
 
 
+
+// events
+
+// OnCardPlayed handler
+void CUIHeartsGame::OnCardPlayed(Player a_player, short a_nCard)
+{
+	ASSERT(::IsWindow(m_hWnd));
+
+	InvalidateCards(m_hWnd, a_nCard, a_player, FALSE);
+	::UpdateWindow(m_hWnd);
+
+}
+
+
+void CUIHeartsGame::OnWaitForUser(Player a_player)
+{
+	::SendMessage(m_hWnd, WM_APP_HUMANMOVE, 0, 0);
+}
+
+
+// OnCardPlayed handler
+void CUIHeartsGame::OnTrickTaken(bool* a_pbPlayed)
+{
+	ASSERT(::IsWindow(m_hWnd));
+	GameWndData* l_pData = GameWndData::GetData(m_hWnd);
+	ASSERT(l_pData != nullptr);
+
+	if (l_pData->m_regData.m_regRules.m_bConfirmTrick)
+	{
+		::SendMessage(l_pData->m_hWndApp, WM_APP_CONFIRMTRICK, 0, 0L);
+		l_pData->m_bConfirmTrick = true;
+	}
+}

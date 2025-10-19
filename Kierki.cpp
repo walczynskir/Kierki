@@ -17,7 +17,7 @@
 #include "HelpJson.h"
 #include "LogonDlg.h"
 #include "OptionsDlg.h"
-#include "GameData.h"
+#include "HeartsGame.h"
 #include "layout.h"
 #include "FontFactory.h"
 #include <RCards/RCards.h>
@@ -32,9 +32,12 @@
 #pragma comment(lib, "wininet.lib")
 #pragma comment(lib, "version.lib")
 
+#pragma todo("Test next dealer comprehensively.")
+#pragma todo("Test saving game comprehensively, especially who is the next dealer.")
 // TODO (bug) Asks for saving just after saving a game
 // TODO (bug) sometimes trump color is not displayed in the window title
 // TODO (bug) some card edges not painted correctly - it seems something wrong after drawing at least one card form player's cards
+// TODO (bug / improvement) - m_regData can't be in HeartsGame
 // TODO (bug) - force correct directory (Games) - check saving and loading the game - it behaves strangely, starts from incorrect directory
 // TODO (bug?) check behaviour of cover, when app used for the first time
 // TODO (bug) About system button doesn't work
@@ -66,6 +69,7 @@
 // TODO (improvement) add option to load other cards decks and/or graphics
 // TODO (improvement) Instead of using bitmap as a background for the results I can use function to draw notebook, and then draw table on the right side of the vertical red line ;-)
 // TODO (improvement) get rid of use of RListCtrl in ResultWnd - would be much easier, flexible and effective to just draw it by ourselves
+// TODO (improvement) add all sizes from layout.h into registry
 
 
 
@@ -110,6 +114,8 @@ inline static LRESULT OnNotifySliderTooltip(HWND a_hWnd, LPNMHDR a_pNmHdr);
 inline static BOOL OnTabSelChange(HWND a_hWnd);
 
 inline static void OnGameNew(HWND a_hWnd);
+inline static void OnGameNew2(HWND a_hWnd);
+
 inline static void OnGameOptions(HWND a_hWnd);
 inline static void OnGameSave(HWND a_hWnd);
 inline static void OnGameSaveAs(HWND a_hWnd);
@@ -207,6 +213,11 @@ int RunAppThrow(HINSTANCE a_hInst,
                      LPTSTR    a_lpCmdLine,
                      int       a_nCmdShow)
 {
+
+	// for SetTimer();
+	BOOL l_bSuppress = FALSE;
+	::SetUserObjectInformationW(GetProcessWindowStation(), UOI_TIMERPROC_EXCEPTION_SUPPRESSION, &l_bSuppress, sizeof(l_bSuppress));
+
 	// SetProcessDPIAware(); // For classic DPI awareness
 	RegisterKierki(a_hInst);
 	INITCOMMONCONTROLSEX l_icc;
@@ -236,7 +247,7 @@ int RunAppThrow(HINSTANCE a_hInst,
 	}
 	catch (RException& l_exc)
 	{
-		TCHAR l_sTitle[1024];
+		TCHAR l_sTitle[MAX_PATH];
 		::LoadString(a_hInst, IDS_MSGBOXTITLE, l_sTitle, ArraySize(l_sTitle));
 		::MessageBox(NULL, l_exc.GetFormattedMsg().c_str(), l_sTitle, MB_OK | MB_ICONEXCLAMATION);
 		return 1;
@@ -309,13 +320,13 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 
 	// automatic language detection (languages available for use)
 	l_pData->m_langManager.DetectLanguages(IDS_LANG_NAME);
-	CRegData& l_reg = l_pData->m_gameData.m_regData;
+	CRegData& l_reg = l_pData->m_regData;
 	l_pData->m_langManager.SetLanguage(l_reg.m_regRules.m_idLanguage);
 
 	CFontFactory::SetFontNames(l_reg.m_regHidden.m_sNormalFont, l_reg.m_regHidden.m_sFancyFont);
 	CFontFactory::Instance().SetFontStyle(l_reg.m_regView.m_bFancyStyle ? FontStyle::Fancy : FontStyle::Normal);
 
-	tstring l_sName = l_pData->m_gameData.m_regData.GetPlayerName(E_DL_1);
+	tstring l_sName = l_reg.GetPlayerName(E_DL_1);
 	if (l_reg.m_regRules.m_bLogonDlg)
 	{
 		if (!LogonDlg_DoModal(l_hWndKierki, &l_sName, &(l_pData->m_langManager), &(l_reg.m_regRules.m_bLogonDlg)))
@@ -331,7 +342,6 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 		l_reg.Serialize();	// save settings
 	}
 
-
 	// create own toolbar setup
 	ConfigureOwnToolbar(l_hWndKierki);
 
@@ -346,7 +356,7 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 	if (!HelpWnd_Register(a_hInst))
 		throw RSystemExc(_T("REGISTER_HWNDHELP"));
 
-	l_pData->SetHelpWnd(HelpWnd_Create(WS_CHILD, l_pData->m_hWndTab, l_pData->m_langManager, &(l_pData->m_gameData.m_regData)));
+	l_pData->SetHelpWnd(HelpWnd_Create(WS_CHILD, l_pData->m_hWndTab, l_pData->m_langManager, l_reg));
 
 	if (l_pData->GetHelpWnd() == NULL)
 		throw RSystemExc(_T("HWNDHELP"));
@@ -354,7 +364,7 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 	HelpWnd_LoadInstructions(l_pData->GetHelpWnd(), c_sJsonSect_HowToUseApp);
 
 	TCHAR l_sTabTitle[128]{};
-	if (l_pData->m_gameData.m_regData.m_regRules.m_bHelpVisible)
+	if (l_reg.m_regRules.m_bHelpVisible)
 	{
 		::LoadString(::GetModuleHandle(NULL), IDS_HELPTITLE_GAME, l_sTabTitle, ArraySize(l_sTabTitle));
 		AddTab(l_hWndKierki, l_pData->GetHelpWnd(), l_sTabTitle);
@@ -365,7 +375,7 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 
 	l_pData->SetGameWnd(GameWnd_Create(0, WS_CHILD, 
 	   0, 0, CW_USEDEFAULT, CW_USEDEFAULT, 
-		l_pData->m_hWndTab, a_hInst, l_hWndKierki, &(l_pData->m_gameData)));
+		l_pData->m_hWndTab, a_hInst, l_hWndKierki, &(l_pData->GetGameData()), l_reg));
 
 	if (l_pData->GetGameWnd() == NULL)
 		throw RSystemExc(_T("CREATE_HWNDGAME"));
@@ -378,7 +388,7 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 
 	l_pData->SetResultsWnd(ResultWnd_Create(0, WS_CHILD, 
 	   0, 0, CW_USEDEFAULT, CW_USEDEFAULT, 
-		l_pData->m_hWndTab, a_hInst, E_SR_1, &(l_pData->m_gameData)));
+		l_pData->m_hWndTab, a_hInst, E_SR_1, &(l_pData->GetGameData()), l_reg));
 
 	if (l_pData->GetResultsWnd() == NULL)
 		throw RSystemExc(_T("CREATE_HWNDRESULTS"));
@@ -390,7 +400,7 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 	SetFont(l_hWndKierki);
 
 	// must be after all windows are created
-	if (l_pData->m_gameData.m_regData.m_regRules.m_bHelpVisible)
+	if (l_reg.m_regRules.m_bHelpVisible)
 		SetActiveTab(l_hWndKierki, l_pData->GetHelpWnd());
 	else
 		SetActiveTab(l_hWndKierki, l_pData->GetGameWnd());
@@ -399,8 +409,8 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 	::ShowWindow(l_hWndKierki, a_nCmdShow);
 	::UpdateWindow(l_hWndKierki);
 
-	l_pData->m_gameData.m_regData.SetPlayerName(E_DL_1, l_sName);
-	l_pData->m_gameData.m_regData.m_regPlayers.Serialize();
+	l_reg.SetPlayerName(E_DL_1, l_sName);
+	l_reg.m_regPlayers.Serialize();
 
 	return l_hWndKierki;
 }
@@ -532,6 +542,10 @@ LRESULT OnCreate(HWND a_hWnd)
 		return -1;
 	}
 	
+	const CRegData& l_reg = l_pData->m_regData;
+	l_pData->EmplaceGameData(
+		l_reg.GetPlayerName(E_DL_1), l_reg.GetPlayerName(E_DL_2),
+		l_reg.GetPlayerName(E_DL_3), l_reg.GetPlayerName(E_DL_4));
 	CHeartsData::SetData(a_hWnd, l_pData);
 
 	return 0;
@@ -541,13 +555,16 @@ LRESULT OnCreate(HWND a_hWnd)
 void OnClose(HWND a_hWnd)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	if (l_pData->m_gameData.GetGame() != E_GM_NOTHING)
-	{
-		if (DecisionBox(a_hWnd, IDS_SAVEGAMEQUESTION))
-		{
-			SaveGame(a_hWnd);
-		}
-	}
+	if (l_pData->GetGameData().GetGame() == E_GM_NULL)
+		return;
+
+	if (l_pData->GetGameData().IsGameSaved())
+		return;
+
+	if (!DecisionBox(a_hWnd, IDS_SAVEGAMEQUESTION))
+		return;
+
+	SaveGame(a_hWnd);
 }
 
 
@@ -769,7 +786,7 @@ void OnCommand(HWND a_hWnd, WPARAM a_wParam, LPARAM a_lParam)
 	{
 
 	case IDM_GAME_NEW:
-		OnGameNew(a_hWnd);
+		OnGameNew2(a_hWnd);
 		break;
 	case IDM_GAME_OPTIONS:
 		OnGameOptions(a_hWnd);
@@ -839,7 +856,7 @@ void OnToolbarLeave(HWND a_hWnd)
 void OnEnterMenuLoop(HWND a_hWnd)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	EnableSaveMenu(a_hWnd, l_pData->m_gameData.GetGame() != E_GM_NOTHING);
+	EnableSaveMenu(a_hWnd, l_pData->GetGameData().GetGame() != E_GM_NULL);
 }
 
 
@@ -921,7 +938,7 @@ void NextSerie(HWND a_hWnd)
 		}
 	}
 
-	for (short l_nSerie = E_SR_1; l_nSerie <= (l_pData->m_gameData.GetSerie()); l_nSerie++)
+	for (short l_nSerie = E_SR_1; l_nSerie <= (l_pData->GetGameData().GetSerie()); l_nSerie++)
 	{
 		AddResultTab(a_hWnd, static_cast<T_SERIE>(l_nSerie));
 	}
@@ -931,10 +948,18 @@ void NextSerie(HWND a_hWnd)
 }
 
 
+void OnGameNew2(HWND a_hWnd)
+{
+	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
+	SetGameTab(a_hWnd);
+	GameWnd_NewDeal2(l_pData->GetGameWnd());
+}
+
+
 void OnGameNew(HWND a_hWnd)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	if (l_pData->m_gameData.GetGame() != E_GM_NOTHING)
+	if (l_pData->GetGameData().GetGame() != E_GM_NULL)
 	{
 		if (!DecisionBox(a_hWnd, IDS_NEWGAME))
 		{
@@ -954,32 +979,35 @@ void OnGameSave(HWND a_hWnd)
 
 void OnGameSaveAs(HWND a_hWnd)
 {
-	TCHAR l_sFile[1024];
+	TCHAR l_sFile[MAX_PATH];
 	if (!GetOpenSaveFile(a_hWnd, false, l_sFile, ArraySize(l_sFile)))
 	{
 		return;
 	}
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	l_pData->m_gameData.Save(l_sFile);
+	l_pData->GetGameData().Save(l_sFile);
 }
 
 
 void OnGameOpen(HWND a_hWnd)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	if (l_pData->m_gameData.GetGame() != E_GM_NOTHING)
+	HeartsGame& l_gameData = l_pData->GetGameData();
+	if (l_gameData.GetGame() != E_GM_NULL && !l_gameData.IsGameSaved())
 	{
 		if (DecisionBox(a_hWnd, IDS_SAVEGAMEBEFOREOPENQUESTION))
 		{
 			SaveGame(a_hWnd);
 		}
 	}
-	TCHAR l_sFile[1024] = { 0 };
+
+
+	TCHAR l_sFile[MAX_PATH] = { 0 };
 	if (!GetOpenSaveFile(a_hWnd, true, l_sFile, ArraySize(l_sFile)))
 	{
 		return;
 	}
-	l_pData->m_gameData.Restore(l_sFile);
+	l_gameData.Restore(l_sFile);
 	StartGame(a_hWnd, true);
 }
 
@@ -988,8 +1016,8 @@ void OnGameOptions(HWND a_hWnd)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
 
-	CRegData& l_reg = l_pData->m_gameData.m_regData;
-	if (OptionsDlg_DoModal(a_hWnd, &l_reg, l_pData) == IDCANCEL)
+	CRegData& l_reg = l_pData->m_regData;
+	if (OptionsDlg_DoModal(a_hWnd, &l_reg, l_pData->m_langManager) == IDCANCEL)
 	{
 		return;
 	}
@@ -1023,7 +1051,7 @@ void OnAppGameOver(HWND a_hWnd)
 	if (DecisionBox(a_hWnd, IDS_PROMPT_NEWGAME))
 	{
 		CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-		l_pData->m_gameData.GameOver();
+		l_pData->GetGameData().GameOver();
 		StartGame(a_hWnd, false);
 	}
 }
@@ -1068,7 +1096,7 @@ void OnAppConfirmTrick(HWND a_hWnd)
 void SetTitle(HWND a_hWnd)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
-	::SetWindowText(a_hWnd, l_pData->m_gameData.CreateTitle().c_str());
+	::SetWindowText(a_hWnd, l_pData->GetGameData().CreateTitle().c_str());
 }
 
 
@@ -1266,6 +1294,7 @@ bool GetOpenSaveFile(HWND a_hWnd, bool a_bOpen, LPTSTR a_psFile, DWORD a_iSizeFi
 }
 
 
+// TODO currently not used - but could be useful if we want to disable save menu when no game is active
 void EnableSaveMenu(HWND a_hWnd, BOOL a_bEnable)
 {
 	HMENU l_hMenuMain = ::GetMenu(a_hWnd);
@@ -1292,9 +1321,9 @@ void SaveGame(HWND a_hWnd)
 {
 	CHeartsData* l_pData = CHeartsData::GetData(a_hWnd);
 	tstring l_sFile;
-	if (!l_pData->m_gameData.IsFile())
+	if (!l_pData->GetGameData().IsFile())
 	{
-		TCHAR l_sFileBuf[1024];
+		TCHAR l_sFileBuf[MAX_PATH];
 		if (!GetOpenSaveFile(a_hWnd, false, l_sFileBuf, ArraySize(l_sFileBuf)))
 		{
 			return;
@@ -1303,12 +1332,10 @@ void SaveGame(HWND a_hWnd)
 	}
 	else
 	{
-		l_sFile = l_pData->m_gameData.GetFile();
+		l_sFile = l_pData->GetGameData().GetFile();
 	}
-	l_pData->m_gameData.Save(l_sFile.c_str());
+	l_pData->GetGameData().Save(l_sFile.c_str());
 }
-
-
 
 
 void StartGame(HWND a_hWnd, bool a_bOpen)
@@ -1317,11 +1344,11 @@ void StartGame(HWND a_hWnd, bool a_bOpen)
 	SetGameTab(a_hWnd);
 	if (a_bOpen)
 	{
-		l_pData->m_gameData.NextGame(FALSE);
+		l_pData->GetGameData().NextGame(FALSE);
 	}
 	else
 	{
-		l_pData->m_gameData.NewGame();
+		l_pData->GetGameData().NewGame();
 	}
 	NextSerie(a_hWnd);
 	GameWnd_NewDeal(l_pData->GetGameWnd(), a_bOpen);

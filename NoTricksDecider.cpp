@@ -74,7 +74,7 @@ CNoTricksDecider::FirstCard(
 	short l_nRank;
 	for (l_nRank = 1; l_nRank <= c_app_btPlayersCnt; l_nRank++)
 	{
-		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
+		T_SUIT l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
 		if (m_pCards->ColorCnt(l_enColor) == 0)
 		{
 			continue;
@@ -108,7 +108,7 @@ CNoTricksDecider::NextCard(
 	) const
 {
 	const CTrick& l_trickCurrent = (*m_pTricks)[a_nTrick - 1] ;
-	T_COLOR l_enColor = l_trickCurrent.GetCardColor(0);
+	Suit l_enColor = l_trickCurrent.GetCardColor(0);
 
 	if (!m_pCards->HasColor(l_enColor))
 	{
@@ -145,10 +145,10 @@ CNoTricksDecider::NextCard(
 
 	// próbujemy znaleŸæ kartê o iloœæ graczy przed nami wy¿sz¹
 	// od najwy¿szej w lewie
-	l_cardLowest = CCard(l_enColor, std::min((T_CARDVAL)(l_pCard->CardValue() + 1), E_CV_A));
+	l_cardLowest = CCard(l_enColor, std::min((T_RANK)(l_pCard->CardValue() + 1), E_CV_A));
 	l_cardBiggest = 
 		CCard(l_enColor, 
-			std::min((T_CARDVAL)(l_pCard->CardValue() + c_app_btPlayersCnt - l_nCards), E_CV_A));
+			std::min((T_RANK)(l_pCard->CardValue() + c_app_btPlayersCnt - l_nCards), E_CV_A));
 	if (m_pCards->CardsBetween(l_cardLowest, l_cardBiggest) > 0)
 	{
 		return m_pCards->LessOrFirstBiggerInColor(l_pCard);
@@ -171,7 +171,7 @@ CNoTricksDecider::DecideOtherColor(
 	short l_nRank;
 	for (l_nRank = 1; l_nRank <= c_app_btPlayersCnt; l_nRank++)
 	{
-		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
+		T_SUIT l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
 		if (!m_pCards->HasColor(l_enColor))
 		{
 			continue;
@@ -186,7 +186,7 @@ CNoTricksDecider::DecideOtherColor(
 	// second
 	for (l_nRank = 1; l_nRank <= c_app_btPlayersCnt; l_nRank++)
 	{
-		T_COLOR l_enColor = m_pCards->GetBiggestFirstCardColorRank(1);
+		T_SUIT l_enColor = m_pCards->GetBiggestFirstCardColorRank(1);
 		if (!m_pCards->HasColor(l_enColor))
 		{
 			continue;

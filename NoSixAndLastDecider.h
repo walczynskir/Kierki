@@ -22,9 +22,9 @@ private:
 	short FirstCard(short a_iTrick) const;
 	short NextCard(short a_iTrick) const;
 	short Next6Card(short a_iTrick) const;
-	T_COLOR DecideColor(short a_iTrick) const;
-	T_COLOR Decide6Color(short a_iTrick) const;
-	T_COLOR Decide5Color(short a_iTrick) const;
+	T_SUIT DecideColor(short a_iTrick) const;
+	T_SUIT Decide6Color(short a_iTrick) const;
+	T_SUIT Decide5Color(short a_iTrick) const;
 };
 
 #endif // !defined(AFX_NOSIXANDLASTDECIDER_H__8C292621_B41B_11D3_A79A_9C7610C10000__INCLUDED_)

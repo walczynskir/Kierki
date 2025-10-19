@@ -16,27 +16,8 @@ namespace KierkiTests
     {
     public:
 
-        TEST_METHOD(SortManualMatchesSTL_FullRange)
-        {
-            RunSortTest(0, 12);
-        }
 
-        TEST_METHOD(SortManualMatchesSTL_PartialRange)
-        {
-            RunSortTest(3, 9);
-        }
-
-        TEST_METHOD(SortManualMatchesSTL_SingleElement)
-        {
-            RunSortTest(5, 5);
-        }
-
-        TEST_METHOD(SortManualMatchesSTL_TailSlice)
-        {
-            RunSortTest(10, 12);
-        }
-
-        TEST_METHOD(SortSTLProducesSortedRange)
+        TEST_METHOD(SortProducesSortedRange)
         {
             std::array<short, 13> values = GenerateUniqueCardValues();
 
@@ -47,7 +28,7 @@ namespace KierkiTests
 
             short start = 2;
             short end = 10;
-            deck.SortSTL(start, end);
+            deck.Sort(start, end);
 
             for (short i = start + 1; i <= end; ++i)
             {
@@ -64,30 +45,8 @@ namespace KierkiTests
             }
         }
 
-    private:
 
-        void RunSortTest(short start, short end)
-        {
-            std::array<short, 13> values = GenerateUniqueCardValues();
-
-            CUserCards manualDeck, stlDeck;
-            for (int i = 0; i < 13; ++i) {
-                manualDeck.SetCard(i, values[i], E_DL_1);
-                stlDeck.SetCard(i, values[i], E_DL_1);
-            }
-
-            manualDeck.Sort(start, end);
-            stlDeck.SortSTL(start, end);
-
-            for (short i = start; i <= end; ++i)
-            {
-                Assert::AreEqual(
-                    manualDeck.GetCard(i).GetNr(),
-                    stlDeck.GetCard(i).GetNr(),
-                    L"Mismatch at index"
-                );
-            }
-        }
+   private:
 
         std::array<short, 13> GenerateUniqueCardValues()
         {

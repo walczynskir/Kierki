@@ -10,7 +10,7 @@
 #endif // _MSC_VER >= 1000
 #include "TypeDefs.h"
 
-class CScore  
+class CScore : private S_SCORE
 {
 public:
 	CScore();
@@ -29,11 +29,9 @@ public:
 	void Clear();
 	short operator[](T_GAMES a_enGame) const { return m_arScore[a_enGame] ; };
 
-	void SaveState(LPSCORE a_pScore) const;
-	void RestoreState(const LPSCORE a_pScore);
+	void FillScore(SCORE& a_score) const;
+	void RestoreScore(const SCORE& a_score);
 
-private:
-	short m_arScore[12] ;
 };
 
 #endif // !defined(AFX_SCORE_H__6DCA56C1_80FB_11D3_B413_E87410C10000__INCLUDED_)

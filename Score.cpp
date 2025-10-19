@@ -5,7 +5,8 @@
 #include "stdafx.h"
 #include "Kierki.h"
 #include "Score.h"
-
+#include <algorithm> // for std::fill
+#include <ranges>    // optional, for std::ranges::fill
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -35,7 +36,7 @@ CScore::~CScore()
 void 
 CScore::Clear()
 {
-	memset(m_arScore, 0, sizeof(m_arScore)) ;
+	std::ranges::fill(m_arScore, 0); // if you prefer ranges
 }
 
 
@@ -147,22 +148,18 @@ CScore::SumAll() const
 //	---------------------------------------------------------
 //	Saves object to archive
 //
-void CScore::SaveState(LPSCORE a_pScore) const
+void CScore::FillScore(SCORE& a_score) const
 {
-	for (short l_nAt = 0; l_nAt < ArraySize(m_arScore); l_nAt++)
-	{
-		a_pScore->m_nPoints[l_nAt] = m_arScore[l_nAt];
-	}
+	for (int l_iGame = 0; l_iGame < ArraySize(m_arScore); l_iGame++)
+		a_score.m_arScore[l_iGame] = m_arScore[l_iGame];
 }
 
 
 //	---------------------------------------------------------
 //	Loads object from archive
 //
-void CScore::RestoreState(const LPSCORE a_pScore)
+void CScore::RestoreScore(const SCORE& a_score)
 {
-	for (short l_nAt = 0; l_nAt < ArraySize(m_arScore); l_nAt++)
-	{
-		m_arScore[l_nAt] = a_pScore->m_nPoints[l_nAt];
-	}
+	for (int l_iGame = 0; l_iGame < ArraySize(m_arScore); l_iGame++)
+		m_arScore[l_iGame] = a_score.m_arScore[l_iGame];
 }

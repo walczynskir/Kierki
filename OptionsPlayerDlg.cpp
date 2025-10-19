@@ -4,6 +4,7 @@
 #include "resource.h"
 #include "OptionsDlg.h"
 #include "OptionsPlayerDlg.h"
+#include "Kierki.h"
 #include <rcommon/RColorWnd.h>
 #include <rcommon/SafeWndProc.hpp>
 #include <commctrl.h>
@@ -46,7 +47,7 @@ static INT_PTR OptionsPlayerDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, L
 		OnInitDialog(a_hDlg, reinterpret_cast<CRegData::RPlayersRegData*>(a_lParam));
 		return TRUE;
 
-	case WM_GETVALUES:
+	case WM_APP_GETVALUES:
 		GetCtrlValues(a_hDlg);
 		::SetWindowLong(a_hDlg, DWL_MSGRESULT, TRUE);
 		return TRUE; // must be TRUE too return proper LRESULT

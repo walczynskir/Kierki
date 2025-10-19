@@ -4,7 +4,7 @@
 #include "RegData.h"
 
 
-HWND HelpWnd_Create(DWORD a_dwStyle, HWND a_hWndParent, const LanguageManager& a_lang, CRegData* a_pRegData);
+HWND HelpWnd_Create(DWORD a_dwStyle, HWND a_hWndParent, const LanguageManager& a_lang, CRegData& a_regData);
 BOOL HelpWnd_Register(HINSTANCE a_hInst);
 void HelpWnd_LoadInstructions(HWND a_hWndHelp, const std::string& a_sSection);
 

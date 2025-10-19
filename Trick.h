@@ -1,13 +1,7 @@
 // Trick.h: interface for the CTrick class.
 //
 //////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_TRICK_H__CE1667E5_5EDB_11D3_B413_A87510C10000__INCLUDED_)
-#define AFX_TRICK_H__CE1667E5_5EDB_11D3_B413_A87510C10000__INCLUDED_
-
-#if _MSC_VER >= 1000
 #pragma once
-#endif // _MSC_VER >= 1000
 
 #include "Card.h"
 
@@ -23,10 +17,10 @@ public:
 	short GetCardsCnt() const;
 
 	short AllPointsCnt() const;
-	short CntInColor(T_COLOR a_enColor)	const;
-	const CCard* Biggest(T_COLOR a_enTrumps = E_CC_NOTHING)	const;
+	short CntInColor(T_SUIT a_enColor)	const;
+	const CCard* Biggest(T_SUIT a_enTrumps = E_CC_NULL)	const;
 
-	T_PLAYER SetTrickOwner(T_COLOR a_enTrumps);
+	T_PLAYER SetTrickOwner(T_SUIT a_enTrumps);
 	T_PLAYER GetTrickOwner() const;
 
 	short GetHeartsCnt() const;
@@ -35,12 +29,12 @@ public:
 
 	BOOL IsKingOfHeart() const;
 	BOOL IsCard(short a_nCardNr) const;
-	BOOL IsColor(T_COLOR a_enColor) const;
+	BOOL IsColor(T_SUIT a_enColor) const;
 	BOOL InOneColor() const;
 
 	T_PLAYER GetCardOwner(short a_nCard) const;
 	short GetCardNr(short a_nCard) const;
-	T_COLOR GetCardColor(short a_nCard) const;
+	T_SUIT GetCardColor(short a_nCard) const;
 	void Clear();
 
 private:
@@ -48,5 +42,3 @@ private:
 	const CCard* (m_tcCard[4]) ;
 	T_PLAYER m_enOwner;
 };
-
-#endif // !defined(AFX_TRICK_H__CE1667E5_5EDB_11D3_B413_A87510C10000__INCLUDED_)

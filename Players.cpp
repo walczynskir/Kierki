@@ -4,20 +4,27 @@
 
 #include "stdafx.h"
 #include "Players.h"
+#include <rcommon/ROwnExc.h>
+#include <random>
 
 
 // ---------------------------------------------------------
 //	Konstruktor obiektu
 //
-CPlayers::CPlayers(
-	T_PLAYER a_enFirstDealer	//WE pierwszy rozdawaj¹cy
-	)
+CPlayers::CPlayers()
 {
-	m_enFirstDealer = a_enFirstDealer;
-	m_arPlayers[E_DL_1].SetMe(E_DL_1);
-	m_arPlayers[E_DL_2].SetMe(E_DL_2);
-	m_arPlayers[E_DL_3].SetMe(E_DL_3);
-	m_arPlayers[E_DL_4].SetMe(E_DL_4);
+	m_enDealer = DrawRandomDealer();
+	m_arPlayers[E_DL_1].SetMe(E_DL_1, CPlayer::PlayerType::Human);
+	m_arPlayers[E_DL_2].SetMe(E_DL_2, CPlayer::PlayerType::Computer);
+	m_arPlayers[E_DL_3].SetMe(E_DL_3, CPlayer::PlayerType::Computer);
+	m_arPlayers[E_DL_4].SetMe(E_DL_4, CPlayer::PlayerType::Computer);
+}
+
+
+T_PLAYER CPlayers::DrawRandomDealer()
+{
+	static std::uniform_int_distribution<> l_dist(E_DL_1, E_DL_4);
+	return static_cast<T_PLAYER>(l_dist(m_gen));
 }
 
 
@@ -42,34 +49,11 @@ CPlayers::GetPlayer(
 }
 
 
-// ---------------------------------------------------------
-//	Zwraca nastêpnego gracza po podanym
-//
-T_PLAYER	//WY nastêpny gracz
-CPlayers::NextPlayer(
-	T_PLAYER a_enCurrentPlayer	//WE obecny gracz
-	)
-{
-	T_PLAYER l_enNextPlayer ;
-	if (a_enCurrentPlayer == E_DL_4)
-		 l_enNextPlayer = E_DL_1 ;
-	else
-	{
-		short l_iPlayer = (short)a_enCurrentPlayer ;
-		l_enNextPlayer = (T_PLAYER)(l_iPlayer + 1);
-	}
-	return l_enNextPlayer ;
-}
 
-
-// ---------------------------------------------------------
-//	Przestawia pierwszego rozdawacza na nastêpnego
-//
-void 
-CPlayers::SetNextFirstDealer()
+//	returns next player (circular)
+T_PLAYER CPlayers::NextPlayer(T_PLAYER a_enCurrent)
 {
-// TODO first dealer w dwu miejscach - przenieœæ do RegData, a tu tylko wskazanie
-	m_enFirstDealer = NextPlayer(m_enFirstDealer);
+	return PlayerCycle::Next(a_enCurrent);
 }
 
 
@@ -110,9 +94,9 @@ CPlayers::SortAll(
 	)
 {
 	short l_nPlayer;
-	for	(l_nPlayer = 0; l_nPlayer <= 3; l_nPlayer++)
+	for	(l_nPlayer = E_DL_1; l_nPlayer <= E_DL_4; ++l_nPlayer)
 	{
-		Sort((T_PLAYER)l_nPlayer, a_nStart, a_nEnd);
+		Sort(static_cast<T_PLAYER>(l_nPlayer), a_nStart, a_nEnd);
 	}
 }
 
@@ -126,14 +110,12 @@ CPlayers::DistributeCards(
 	const CSortCards& a_sortcards	//WE karty potasowane
 	)
 {
-	short l_nAt;
-		// przypisanie 52 numerów kart do m_cards*
-	for (l_nAt = 0; l_nAt < 13; l_nAt++)
+	for (short l_iHand = 0; l_iHand < 13; ++l_iHand)
 	{
-		m_arPlayers[E_DL_1].SetCard(l_nAt, a_sortcards.GetCardNr(l_nAt * 4));
-		m_arPlayers[E_DL_2].SetCard(l_nAt, a_sortcards.GetCardNr(l_nAt * 4 + 1));
-		m_arPlayers[E_DL_3].SetCard(l_nAt, a_sortcards.GetCardNr(l_nAt * 4 + 2));
-		m_arPlayers[E_DL_4].SetCard(l_nAt, a_sortcards.GetCardNr(l_nAt * 4 + 3)) ;
+		for (short l_iPlayer = E_DL_1; l_iPlayer <= E_DL_4; ++l_iPlayer)
+		{
+			m_arPlayers[static_cast<T_PLAYER>(l_iPlayer)].SetCard(l_iHand, a_sortcards.GetCardNr(l_iHand * 4 + l_iPlayer));
+		}
 	}
 
 }
@@ -142,12 +124,10 @@ CPlayers::DistributeCards(
 // ---------------------------------------------------------
 //	Wybór atu
 //
-T_COLOR		//WY wybrany kolor
-CPlayers::ChooseTrumps(
-	T_PLAYER a_player	//WE gracz wybieraj¹cy
-	) const
+T_SUIT		//WY wybrany kolor
+CPlayers::ChooseTrumps() const
 {
-	return m_arPlayers[a_player].ChooseTrumps();
+	return m_arPlayers[m_enDealer].ChooseTrumps();
 }
 
 
@@ -158,10 +138,11 @@ void
 CPlayers::CreateDeciders(
 	T_GAMES				a_enGame,		//WE gra
 	const CTakenTricks* a_pTricks,		//WE lewe
-	T_COLOR				a_colorTrumps	//WE ew. kolor atutowy
+	T_SUIT				a_colorTrumps	//WE ew. kolor atutowy
 	)
 {
-	m_arPlayers[E_DL_2].CreateDecider(a_enGame, a_pTricks, a_colorTrumps);	
+	m_arPlayers[E_DL_1].CreateDecider(a_enGame, a_pTricks, a_colorTrumps);
+	m_arPlayers[E_DL_2].CreateDecider(a_enGame, a_pTricks, a_colorTrumps);
 	m_arPlayers[E_DL_3].CreateDecider(a_enGame, a_pTricks, a_colorTrumps);	
 	m_arPlayers[E_DL_4].CreateDecider(a_enGame, a_pTricks, a_colorTrumps);	
 }
@@ -334,28 +315,41 @@ CPlayers::SumPlayerAllScore(
 }
 
 
-//	---------------------------------------------------------
-//	Saves players data to file (serialization)
-//
-void CPlayers::SaveState(LPSAVERESTORE a_pSaveRestore) const
+bool CPlayers::HaveCardsToPlay() const
 {
-	a_pSaveRestore->m_enFirstDealer = m_enFirstDealer;
-	for (UINT l_iAt = 0; l_iAt < ArraySize(m_arPlayers); l_iAt++)
+	for (short l_iPlayer = E_DL_1; l_iPlayer <= E_DL_4; ++l_iPlayer)
 	{
-		m_arPlayers[l_iAt].SaveState(&(a_pSaveRestore->m_playerscore[l_iAt]));
+		if (GetPlayerCards(static_cast<Player>(l_iPlayer)).CardsLeft() > 0)
+			return true;
+	}
+	return false;
+}
+
+
+
+//	---------------------------------------------------------
+//	Players data to structure (serialization)
+//
+void CPlayers::FillScore(SAVERESTORE& a_save)
+{
+	for (int l_iPlayer = 0; l_iPlayer < ArraySize(m_arPlayers); l_iPlayer++)
+	{
+		m_arPlayers[l_iPlayer].FillScore(a_save.m_playerscore[l_iPlayer]);
 	}
 
 }
 
 
 //	---------------------------------------------------------
-//	Loads players data from file (serialization)
+//	Loads players data from structure (serialization) const 
 //
-void CPlayers::RestoreState(const LPSAVERESTORE a_pSaveRestore)
+void CPlayers::RestoreScore(const SAVERESTORE& a_restore)
 {
-	m_enFirstDealer = a_pSaveRestore->m_enFirstDealer;
 	for (UINT l_iAt = 0; l_iAt < ArraySize(m_arPlayers); l_iAt++)
 	{
-		m_arPlayers[l_iAt].RestoreState(&(a_pSaveRestore->m_playerscore[l_iAt]));
+		m_arPlayers[l_iAt].RestoreScore(a_restore.m_playerscore[l_iAt]);
 	}
 }
+
+
+

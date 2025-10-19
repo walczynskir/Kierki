@@ -73,12 +73,12 @@ CPuzzleDecider::GetCardNr(
 //
 short	// WY	numer karty w rêce
 CPuzzleDecider::GetCardInColor(
-	T_COLOR a_enColor,  //WE kolor karty
+	T_SUIT a_enColor,  //WE kolor karty
 	BOOL a_bTop			//WE karta powy¿ej 8 czy poni¿ej 
 	) const
 {
 	const CCard* l_pCard;
-	T_CARDVAL l_val;
+	T_RANK l_val;
 	if (a_bTop)
 	{
 		l_pCard = m_pPuzzleRows->m_arPuzzleRow[a_enColor - 1].m_pCardTop;
@@ -89,7 +89,7 @@ CPuzzleDecider::GetCardInColor(
 			l_val = l_pCard->CardValue();
 			if (l_val == E_CV_A)
 				return - 1;
-			l_val = (T_CARDVAL)(l_val + 1);
+			l_val = (T_RANK)(l_val + 1);
 		}
 	}
 	else
@@ -102,7 +102,7 @@ CPuzzleDecider::GetCardInColor(
 			l_val = l_pCard->CardValue();
 			if (l_val == E_CV_2)
 				return - 1;
-			l_val = (T_CARDVAL)(l_val - 1);
+			l_val = (T_RANK)(l_val - 1);
 		}
 	}
 	return m_pCards->FindCard(a_enColor, l_val);
@@ -553,14 +553,14 @@ CPuzzleDecider::FindForNoOne(
 
 		if (l_card.CardValue() >= E_CV_8)
 		{
-			if (m_pCards->FindCard(l_card.GetColor(), (T_CARDVAL)(l_card.CardValue() + 1), TRUE) >= 0)
+			if (m_pCards->FindCard(l_card.GetColor(), (T_RANK)(l_card.CardValue() + 1), TRUE) >= 0)
 			{
 				return a_pAllowedCards->GetCard(l_nAt);
 			}
 		}
 		else
 		{
-			if (m_pCards->FindCard(l_card.GetColor(), (T_CARDVAL)(l_card.CardValue() - 1), TRUE) >= 0)
+			if (m_pCards->FindCard(l_card.GetColor(), (T_RANK)(l_card.CardValue() - 1), TRUE) >= 0)
 			{
 				return a_pAllowedCards->GetCard(l_nAt);
 			}

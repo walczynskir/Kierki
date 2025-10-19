@@ -157,7 +157,7 @@ CRobberDecider::FirstCardBefore6(
 	short l_nCardNr;
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
-		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
+		T_SUIT l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
 		if (l_enColor == E_CC_HEART)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
@@ -176,7 +176,7 @@ CRobberDecider::FirstCardBefore6(
 	// ma³o to prawdopodobne, ale jesli tu dotrzemy 
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
-		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
+		T_SUIT l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
 		if (l_enColor == E_CC_HEART)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
@@ -204,7 +204,7 @@ CRobberDecider::FirstCard6(
 	short l_nRank;
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
-		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
+		T_SUIT l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
 		if (l_enColor == E_CC_HEART)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
@@ -226,7 +226,7 @@ CRobberDecider::FirstCard6(
 	// rezygnujemy z warunku, ¿e to karta poni¿ej pi¹tki
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
-		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
+		T_SUIT l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
 		if (l_enColor == E_CC_HEART)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
@@ -245,7 +245,7 @@ CRobberDecider::FirstCard6(
 	// rezygnujemy z warunku, ¿e s¹ wy¿sze w kolorze
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
-		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
+		T_SUIT l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
 		if (l_enColor == E_CC_HEART)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
@@ -260,7 +260,7 @@ CRobberDecider::FirstCard6(
 	// rezygnujemy z warunku, ¿e s¹ w kolorze
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
-		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
+		T_SUIT l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
 		if (l_enColor == E_CC_HEART)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
@@ -290,7 +290,7 @@ CRobberDecider::FirstCardAfter6(
 	short l_nCardNr;
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
-		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
+		T_SUIT l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
 		if (l_enColor == E_CC_HEART)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
@@ -322,7 +322,7 @@ CRobberDecider::FirstCardAfter6(
 	// ale znajdŸmy jeszcze coœ
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
-		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
+		T_SUIT l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
 		if (l_enColor == E_CC_HEART)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
@@ -341,7 +341,7 @@ CRobberDecider::FirstCardAfter6(
 	// ale znajdŸmy jeszcze coœ
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
-		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
+		T_SUIT l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
 		if (l_enColor == E_CC_HEART)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
@@ -357,7 +357,7 @@ CRobberDecider::FirstCardAfter6(
 	// zagrajmy co mamy
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
-		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
+		T_SUIT l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
 		if (l_enColor == E_CC_HEART)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
@@ -382,7 +382,7 @@ CRobberDecider::NextCardBefore6(
 	) const
 {
 	const CTrick& l_trickCurrent = (*m_pTricks)[a_iTrick - 1] ;
-	T_COLOR l_enColor = l_trickCurrent.GetCardColor(0);
+	T_SUIT l_enColor = l_trickCurrent.GetCardColor(0);
 	const CCard* l_pCardBiggest = l_trickCurrent.Biggest();
 	short l_nCardNr;
 	
@@ -496,7 +496,7 @@ CRobberDecider::DecideOtherCard() const
 	short l_nRank;
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
-		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
+		T_SUIT l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
 		if (!m_pCards->HasColor(l_enColor))
 			continue;
 		// jeœli inni nie maj¹ tego koloru to po co wyrzucaæ
@@ -521,7 +521,7 @@ CRobberDecider::DecideOtherCard() const
 	// wyrzuæ w najkrótszym posiadanym
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
-		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
+		T_SUIT l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
 		if (!m_pCards->HasColor(l_enColor))
 			continue;
 		return m_pCards->Biggest(l_enColor);

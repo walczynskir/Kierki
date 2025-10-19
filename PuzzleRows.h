@@ -20,8 +20,8 @@ public:
 	BOOL CanPutCard(const CCard& a_card)	const;
 	void PutCard(const CCard* a_pCard);
 	void Clear();
-	const CCard* GetTopCard(T_COLOR a_enColor) const;
-	const CCard* GetBottomCard(T_COLOR a_enColor) const;
+	const CCard* GetTopCard(T_SUIT a_enColor) const;
+	const CCard* GetBottomCard(T_SUIT a_enColor) const;
 
 	class CPuzzleRow
 	{

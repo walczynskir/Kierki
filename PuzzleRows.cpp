@@ -43,7 +43,7 @@ CPuzzleRows::PutCard(
 	const CCard* a_pCard	//WE k³adziona karta
 	)
 {
-	T_CARDVAL l_val = a_pCard->CardValue();
+	T_RANK l_val = a_pCard->CardValue();
 	if (l_val == E_CV_8)
 	{
 		ASSERT(m_arPuzzleRow[a_pCard->GetColor() - 1].m_pCardTop == NULL);
@@ -99,7 +99,7 @@ CPuzzleRows::CPuzzleRow::CanPutCard(
 	const CCard& a_card	//WE sprawdzana karta
 	) const
 {
-	T_CARDVAL l_val = a_card.CardValue();
+	T_RANK l_val = a_card.CardValue();
 
 	if ((m_pCardTop == NULL) && (m_pCardBottom == NULL))
 		return (l_val == E_CV_8);
@@ -118,7 +118,7 @@ CPuzzleRows::CPuzzleRow::CanPutCard(
 //
 const CCard*	//WE najwy¿sza po³o¿ona karta
 CPuzzleRows::GetTopCard(
-	T_COLOR a_enColor	//WE kolor
+	T_SUIT a_enColor	//WE kolor
 	) const
 {
 	return m_arPuzzleRow[a_enColor - 1].m_pCardTop;
@@ -130,7 +130,7 @@ CPuzzleRows::GetTopCard(
 //
 const CCard*	//WE najni¿sza po³o¿ona karta
 CPuzzleRows::GetBottomCard(
-	T_COLOR a_enColor	//WE kolor
+	T_SUIT a_enColor	//WE kolor
 	) const
 {
 	return m_arPuzzleRow[a_enColor - 1].m_pCardBottom;

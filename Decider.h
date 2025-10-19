@@ -19,8 +19,8 @@ public:
 	virtual ~CDecider();
 	virtual short GetCardNr(short a_iTrick) const = 0 ;
 
-	T_COLOR LeftInColorOthersRank(short a_nRank)	const;
-	short LeftInColorOthers(T_COLOR a_enColor)	const;
+	T_SUIT LeftInColorOthersRank(short a_nRank)	const;
+	short LeftInColorOthers(T_SUIT a_enColor)	const;
 
 protected:
 	T_PLAYER m_enPlayer;

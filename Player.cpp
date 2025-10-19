@@ -21,8 +21,6 @@
 //
 CPlayer::CPlayer()
 {
-	m_pDecider = NULL;
-	m_playerMe = E_DL_NULL;
 // TODO nie zaimplementowane zapamietanie wskaŸnika na imiê z m_pRegData
 }
 
@@ -234,19 +232,17 @@ CPlayer::SetCard(
 // ---------------------------------------------------------
 //	Ustawienie kim jest
 //
-void 
-CPlayer::SetMe(
-	T_PLAYER a_playerMe	//WE ktróym graczem jestem
-	)
+void CPlayer::SetMe(T_PLAYER a_playerMe, PlayerType a_typePlayer)
 {
 	m_playerMe = a_playerMe;
+	m_typePlayer = a_typePlayer;
 }
 
 
 // ---------------------------------------------------------
 //	Wybór atu
 //
-T_COLOR		//WY wybrany kolor
+T_SUIT		//WY wybrany kolor
 CPlayer::ChooseTrumps() const
 {
 	struct S_TRUMPS
@@ -279,7 +275,7 @@ CPlayer::ChooseTrumps() const
 			l_nPosBest = l_iAt;
 		}
 	}
-	return (T_COLOR)(l_nPosBest + 1);	
+	return (T_SUIT)(l_nPosBest + 1);	
 }
 
 
@@ -290,7 +286,7 @@ void
 CPlayer::CreateDecider(
 	T_GAMES			    a_enGame,		//WE gra
 	const CTakenTricks* a_pTricks,		//WE wskaŸnik na wziête lewy
-	T_COLOR				a_colorTrumps	//WE atu kolor
+	T_SUIT				a_colorTrumps	//WE atu kolor
 	)
 {
 	RemoveDecider();
@@ -367,6 +363,7 @@ CPlayer::DecideCardNr(
 	short a_iTrick	//WE która lewa
 	)
 {
+	ASSERT(m_pDecider != nullptr);
 	return m_pDecider->GetCardNr(a_iTrick);
 }
 
@@ -434,15 +431,14 @@ CPlayer::SumAllScore(
 
 
 //	---------------------------------------------------------
-//	Saves player data to archive
+//	fill PLEYERSCORE structure for serialization
 //
-void 
-CPlayer::SaveState(LPPLAYERSCORE a_pPlayerScore) const
+void CPlayer::FillScore(PLAYERSCORE& a_scorePlayer) const
 {
-	for (UINT l_iAt = 0; l_iAt < ArraySize(m_score); l_iAt++)
+	for (UINT l_iSerie = 0; l_iSerie < ArraySize(m_score); l_iSerie++)
 	{
-		const CScore& l_score = m_score[l_iAt];
-		l_score.SaveState(&(a_pPlayerScore->m_score[l_iAt]));
+		const CScore& l_score = m_score[l_iSerie];
+		l_score.FillScore(a_scorePlayer.m_score[l_iSerie]);
 	}
 }
 
@@ -450,12 +446,12 @@ CPlayer::SaveState(LPPLAYERSCORE a_pPlayerScore) const
 //	---------------------------------------------------------
 //	Loads player data from archive
 //
-void CPlayer::RestoreState(const LPPLAYERSCORE a_pPlayerScore)
+void CPlayer::RestoreScore(const PLAYERSCORE& a_scorePlayer)
 {
-	for (UINT l_iAt = 0; l_iAt < ArraySize(m_score); l_iAt++)
+	for (int l_iSerie = 0; l_iSerie < ArraySize(m_score); l_iSerie++)
 	{
-		CScore& l_score = m_score[l_iAt];
-		l_score.RestoreState(&(a_pPlayerScore->m_score[l_iAt]));
+		CScore& l_score = m_score[l_iSerie];
+		l_score.RestoreScore(a_scorePlayer.m_score[l_iSerie]);
 	}
 }
 

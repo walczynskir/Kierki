@@ -1,53 +1,246 @@
-// GameData.cpp : implementation of the GameData class
+// HeartsGame.cpp : implementation of the HeartsGame class
 //
 
 #include "stdafx.h"
 #include "resource.h"
-#include "GameData.h"
+#include "HeartsGame.h"
+#include <fstream>
 
+
+
+#pragma todo("players name should be external to CHEartsGameLogic")
 
 
 /////////////////////////////////////////////////////////////////////////////
-// GameData
+// HeartsGame construction/destruction
 
-/////////////////////////////////////////////////////////////////////////////
-// GameData construction/destruction
+
+
 
 // ---------------------------------------------------------
 // Konstruktor
 //
-GameData::GameData()
+HeartsGame::HeartsGame(const tstring& a_sName1, const tstring& a_sName2, const tstring& a_sName3, const tstring& a_sName4)
 {
-	m_tricks.Clear();
-	CreatePlayers();
-	m_enGame = E_GM_NOTHING;
-	m_enSerie = E_SR_NULL;
-	m_bDealed = FALSE;
-	m_bTrumpsChoice = FALSE;
-	m_bPass = false;
+#pragma todo("get rid of names in CPlayer")
+	m_pPlayers = new CPlayers();
+	m_pPlayers->SetName(E_DL_1, &a_sName1);
+	m_pPlayers->SetName(E_DL_2, &a_sName2);
+	m_pPlayers->SetName(E_DL_3, &a_sName3);
+	m_pPlayers->SetName(E_DL_4, &a_sName4);
+
+	Clear();
 }
 
 
 // ---------------------------------------------------------
 // Destruktor
 //
-GameData::~GameData()
+HeartsGame::~HeartsGame()
 {
 	delete m_pPlayers;
 }
 
 
-// ---------------------------------------------------------
-//	Utworzenie graczy, nadanie im imion
-//
-void 
-GameData::CreatePlayers()
+
+// main game play method - recursive
+// usually it is called only once by UI before finishing entire game, all other control is done via the events
+// to pass the card played by human player, call PlayCard(short a_iCardNr) method
+void HeartsGame::Play()
 {
-	m_pPlayers = new CPlayers(m_regData.m_regAuto.m_enFirstDealer);
-	m_pPlayers->SetName(E_DL_1, &(m_regData.GetPlayerName(E_DL_1)));
-	m_pPlayers->SetName(E_DL_2, &(m_regData.GetPlayerName(E_DL_2)));
-	m_pPlayers->SetName(E_DL_3, &(m_regData.GetPlayerName(E_DL_3)));
-	m_pPlayers->SetName(E_DL_4, &(m_regData.GetPlayerName(E_DL_4)));
+	// where we are - entire game, serie, game, trick. This function can be called to continue the game from any point, and recursively 
+	if ((m_enSerie == Serie::E_SR_4) && (m_enGame == GameType::E_GM_PUZZLE) && !AreCardsRemaining())
+	{
+		// nothing to do - game over 
+		EndEntireGame();
+		return;
+	}
+
+	/*  
+	if (m_enGame == GameType::E_GM_PUZZLE && !AreCardsRemaining())
+		EndSerie();
+	else if (m_tricks.GetTricksCnt() == 13)
+		EndGame();
+	else if (m_tricks.GetCurrentTrick().GetCardsCnt() == 4)
+		EndTrick();*/
+	if (m_enGame == GameType::E_GM_NULL)
+	{
+		StartGame();	// StartGame will call Play again
+		return;
+	}
+
+	if (m_tricks.GetCurrentTrick().GetCardsCnt() == 4)
+	{
+		EndTrick();		// EndTrick will call Play again (or user will need to call Play())
+		return;
+
+	}
+	// continue
+	if (GetThrowerPlayer().GetPlayerType() == CPlayer::PlayerType::Human)
+	{
+		if (OnWaitForUser)
+			OnWaitForUser(GetThrower());
+		else
+			ASSERT(FALSE);	// should not happen - UI must set this callback
+	}
+	else
+	{
+		short l_iCardNr = DecideCardNr();
+
+		Play(l_iCardNr);
+	}
+
+}
+
+
+void HeartsGame::Play(short a_iCardNr)
+{
+	ASSERT(a_iCardNr >= 0);
+	ASSERT(a_iCardNr < 13);
+
+	Player l_playerThrower = GetThrower();
+
+	SetPlayerCard2Trick2(l_playerThrower, a_iCardNr);
+
+	// notify listeners
+	CardPlayedEvent(l_playerThrower, a_iCardNr);
+
+	SetNextThrower();
+	Play();
+}
+
+
+
+
+
+void HeartsGame::StartEntireGame(T_GAMES a_gameStart)
+{
+	m_enGame = a_gameStart;
+	EntireGameStartedEvent();
+	StartSerie();
+}
+
+
+void HeartsGame::EndEntireGame()
+{
+	EntireGameEndedEvent();
+	Clear();
+	m_pPlayers->ClearAllScores();
+}
+
+void HeartsGame::StartSerie()
+{
+	SerieStartedEvent();
+	StartGame();
+	EndSerie();
+}
+
+
+void HeartsGame::EndSerie()
+{
+	SerieEndedEvent();
+
+	if (m_enSerie == Serie::E_SR_4)
+	{
+		EndEntireGame();
+		return;
+	}
+	else
+	{
+		m_enSerie = SerieCycle::Next(m_enSerie);
+		StartSerie();
+	}
+}
+
+void HeartsGame::StartGame()
+{
+	if (OnPreStartGame)
+		OnPreStartGame();	// here UI can set up game parameters like starting game. 
+
+	if (m_enGame == GameType::E_GM_NULL)
+		m_enGame = GameCycle::Next(m_enGame);
+
+	m_sortcards.ShuffleDeck();
+	m_pPlayers->DistributeCards(m_sortcards);
+	m_pPlayers->SetThrowerFromDealer();
+
+#pragma todo("Not implemented choosing trump - should be before sort players cards")
+	m_pPlayers->SortAll();
+	m_bDealed = TRUE;
+	m_pPlayers->CreateDeciders(m_enGame, &m_tricks, m_colorTrumps);
+
+	GameStartedEvent();
+
+	StartTrick();
+
+}
+
+
+void HeartsGame::EndGame()
+{
+	GameEndedEvent();
+
+	m_tricks.Clear();
+	m_PuzzleRows.Clear();
+	m_pPlayers->RemoveDeciders();
+	m_pPlayers->SetNextDealer();
+
+	m_colorTrumps = Suit::E_CC_NULL;
+	m_bDealed = false;
+	m_bTrumpsChoice = false;
+	m_bPass = false;
+
+	if (m_enGame == GameType::E_GM_PUZZLE)
+	{
+		m_enGame = GameCycle::Next(m_enGame);
+		StartSerie();
+	}
+	else
+	{
+		m_enGame = GameCycle::Next(m_enGame);
+		StartGame();
+	}
+}
+
+
+void HeartsGame::StartTrick()
+{
+	ASSERT(IsDealed());
+	TrickStartedEvent();
+
+	NextTrick();
+	Play();
+}
+
+void HeartsGame::EndTrick()
+{
+	bool l_bPlayed = false;
+	TrickEndedEvent(&l_bPlayed);
+	if (!l_bPlayed)
+		Play();
+}
+
+
+
+
+
+
+
+void HeartsGame::Clear()
+{
+	m_tricks.Clear();
+	m_pPlayers->RemoveDeciders();
+	m_pPlayers->ClearAllScores();
+	m_PuzzleRows.Clear();
+	m_enGame = E_GM_NULL;
+	m_enSerie = E_SR_1;
+	m_colorTrumps = E_CC_NULL;
+
+	m_bDealed = false;
+	m_bTrumpsChoice = false;
+	m_bPass = false;
+#pragma todo("Remove filePath from here - should be in some GameSession or so")
+	m_filePath = std::filesystem::path();
 }
 
 
@@ -57,7 +250,7 @@ GameData::CreatePlayers()
 //	rozdaje karty
 //
 void	
-GameData::NextGame(
+HeartsGame::NextGame(
 	BOOL a_bNext	//IN change game
 	)
 {
@@ -71,14 +264,14 @@ GameData::NextGame(
 		{
 			ASSERT(m_enSerie != E_SR_4);
 			m_enGame = E_GM_NOTRICKS;
-			m_enSerie = T_SERIE(m_enSerie + 1);
+			m_enSerie = static_cast<T_SERIE>(m_enSerie + 1);
 		}
 		else
 		{
-			m_enGame = T_GAMES(m_enGame + 1);
+			m_enGame = static_cast<T_GAMES>(m_enGame + 1);
 		}
 	}
-	m_colorTrumps = E_CC_NOTHING;
+	m_colorTrumps = E_CC_NULL;
 
 	// w przypadku odgrywek trzeba w miêdzyczasie wybraæ atu.
 	switch (m_enGame)
@@ -95,6 +288,7 @@ GameData::NextGame(
 		DealStart();
 	}
 	DealEnd();
+	GameStartedEvent();
 }
 
 
@@ -103,7 +297,7 @@ GameData::NextGame(
 //	Zwraca czy nale¿y wybieraæ atu rêcznie
 //
 BOOL	//WY czy zwróciæ sterowanie do View w celu wybrania atu
-GameData::DealStart(
+HeartsGame::DealStart(
 	BOOL a_bTrumpsChoice	//WE TRUE: wybór atu
 	)
 {
@@ -124,7 +318,7 @@ GameData::DealStart(
 //	Zakoñczenie procesu rozdawania kart
 //
 void
-GameData::DealEnd()
+HeartsGame::DealEnd()
 {
 	// posortuj karty w ka¿dej z 4 paczek
 	m_pPlayers->SortAll();
@@ -133,7 +327,7 @@ GameData::DealEnd()
 	m_tricks.Clear();
 	m_bDealed = TRUE;	
 
-	// po rozdaniu kart dopiero mozna utworzyæ decydentów!
+	// deciders must be created after cards were dealt
 	if (m_enGame == E_GM_PUZZLE)
 	{
 		m_pPlayers->CreateDeciders(&m_PuzzleRows);
@@ -144,21 +338,24 @@ GameData::DealEnd()
 		m_pPlayers->CreateDeciders(m_enGame, &m_tricks, m_colorTrumps);
 	}
 
-	m_enThrower = m_enDealer;
-	m_enDealer = CPlayers::NextPlayer(m_enDealer);
+	// now we can set the next dealer
+	m_pPlayers->SetNextDealer();
+	// first thrower is the same as next dealer
+	m_pPlayers->SetThrower(m_pPlayers->GetDealer());
+
 	if (m_enGame != E_GM_PUZZLE)
 	{
 		NextTrick();
 	}
 }
 
-
+#pragma todo ("needs refactoring - and bug fix for not displaying sometimes chosen trump")
 // ---------------------------------------------------------
-//	Nadanie tytu³u oknu 
+// returns window title
 //
-tstring		//WY nazwa okna
-GameData::CreateTitle() const 
+tstring	HeartsGame::CreateTitle() const 
 {
+#pragma todo ("move logic to GamWend";)
 	tstring l_sTitle(_T(""));
 	tstring l_sAdd(_T(""));
 	tstring l_sGame(_T(""));
@@ -205,7 +402,7 @@ GameData::CreateTitle() const
 	}
 
 	ASSERT(l_idStr > 0);
-	TCHAR l_sStr[1024];
+	TCHAR l_sStr[128];
 	::LoadString(::GetModuleHandle(NULL), IDS_APP_TITLE, l_sStr, ArraySize(l_sStr));
 	l_sGame = l_sStr;
 	::LoadString(::GetModuleHandle(NULL), l_idStr, l_sStr, ArraySize(l_sStr));
@@ -216,20 +413,25 @@ GameData::CreateTitle() const
 }
 
 
+bool HeartsGame::AreCardsRemaining() const
+{
+	return m_pPlayers->HaveCardsToPlay();
+}
+
 // ---------------------------------------------------------
 //	Rozpoczêcie nowej gry.
 //
-void
-GameData::NewGame()
+void HeartsGame::NewGame()
 {
-	m_enDealer = GetFirstDealerAndSetNext();
+	// TODO put into "hidden" regisry variable
 #ifdef _DEBUG
-	m_enGame = E_GM_NOTHING;
+	m_enGame = E_GM_NULL;
 /*	m_enGame = E_GM_NOTRICKS;
 	m_enGame = E_GM_NOHEARTS;
 	m_enGame = E_GM_NOLADIES;
 	m_enGame = E_GM_ROBBER;
 	m_enGame = E_GM_RECOVER1;
+	m_enGame = E_GM_RECOVER2;
 	m_enGame = E_GM_RECOVER3;
 	m_enGame = E_GM_RECOVER4;
 	m_enGame = E_GM_NOTHING;
@@ -248,17 +450,17 @@ GameData::NewGame()
 //	Wybór atu (rêczny lub automatyczny)
 //
 BOOL	//WY czy przyst¹piæ do rozdania wszystkich kart
-GameData::ChooseTrumps()
+HeartsGame::ChooseTrumps()
 {
-	switch (m_enDealer)
+	switch (m_pPlayers->GetDealer())
 	{
-	case E_DL_1:
+	case E_DL_4:	// player chooses trumps, if dealer is E_DL_4
 		m_pPlayers->Sort(E_DL_1, 0, 6);
 		m_bTrumpsChoice = TRUE;
 		return FALSE;
 
 	default:
-		m_colorTrumps = m_pPlayers->ChooseTrumps(m_enDealer);
+		m_colorTrumps = m_pPlayers->ChooseTrumps();
 		return TRUE;
 	}
 	return TRUE;
@@ -267,7 +469,7 @@ GameData::ChooseTrumps()
 
 // ---------------------------------------------------------
 BOOL	//WY zwraca czy wybieramy atu
-GameData::IsTrumpsChoice() const
+HeartsGame::IsTrumpsChoice() const
 {
 	return m_bTrumpsChoice;
 }
@@ -277,8 +479,8 @@ GameData::IsTrumpsChoice() const
 //	Zakoñczenie procesu wyboru atu
 //
 void 
-GameData::EndTrumpsChoice(
-	T_COLOR a_enColor	//WE jaki kolor zosta³ wybrany
+HeartsGame::EndTrumpsChoice(
+	T_SUIT a_enColor	//WE jaki kolor zosta³ wybrany
 	)
 {
 	m_colorTrumps = a_enColor;
@@ -290,7 +492,7 @@ GameData::EndTrumpsChoice(
 //	Zakoñczenie procesu wyboru atu
 //
 short	//WY ilosæ kart na stole
-GameData::CardsOnTable() const
+HeartsGame::CardsOnTable() const
 {
 	if (m_enGame == E_GM_PUZZLE)
 	{
@@ -307,27 +509,18 @@ GameData::CardsOnTable() const
 // Aktualnie rzucajacy kartê na stó³
 //
 T_PLAYER	//WY gracz rzucaj¹cy kartê na stó³
-GameData::GetThrower() const
+HeartsGame::GetThrower() const
 {
-	return m_enThrower;
+	return m_pPlayers->GetThrower();
 }
 
-
-// ---------------------------------------------------------
-// Gracz który rozdawa³ karty
-//
-T_PLAYER	//WY rozdaj¹cy karty
-GameData::GetDealer() const
-{
-	return m_enDealer;
-}
 
 
 // ---------------------------------------------------------
 // Zwraca karty gracza
 //
 const CUserCards&  //WY karty gracza
-GameData::GetPlayerCards(
+HeartsGame::GetPlayerCards(
 	T_PLAYER a_enPlayer		//WE gracz
 	) const
 {
@@ -339,7 +532,7 @@ GameData::GetPlayerCards(
 // Iloœæ lew które ju¿ posz³y w grze
 //
 short	//WY iloœæ lew
-GameData::GetTricksCnt() const
+HeartsGame::GetTricksCnt() const
 {
 	return m_tricks.GetTricksCnt();
 }
@@ -349,29 +542,30 @@ GameData::GetTricksCnt() const
 // Czy karty s¹ rozdane
 //
 BOOL	//WY TRUE - karty rozdane
-GameData::IsDealed() const
+HeartsGame::IsDealed() const
 {
 	return m_bDealed;
 }
 
 
 // ---------------------------------------------------------
-// Czy karty s¹ rozdane
+// returns number of the card in hand to be played
 //
-short	//WY numer karty do rzucenia
-GameData::DecideCardNr()
+short HeartsGame::DecideCardNr()
 {
 	return m_pPlayers->DecideCardNr(GetThrower(), GetTricksCnt());
 }
+
 
 
 // ---------------------------------------------------------
 // Ustalenie nastêpnej lewy
 //
 void 
-GameData::NextTrick()
+HeartsGame::NextTrick()
 {
 	m_tricks.NextTrick();
+	TrickStartedEvent();
 }
 
 
@@ -379,7 +573,7 @@ GameData::NextTrick()
 // Przydzielenie lewie karty kolejnej
 //
 void 
-GameData::SetTrickCard(
+HeartsGame::SetTrickCard(
 	const CCard& a_card		//WE karta
 	)
 {
@@ -391,7 +585,7 @@ GameData::SetTrickCard(
 //	Zwraca nazwê koloru w zale¿noœci od wybranego koloru atu
 //
 tstring		//WY nazwa koloru
-GameData::DecodeTrumps() const
+HeartsGame::DecodeTrumps() const
 {
 	UINT l_idStr;
 
@@ -426,7 +620,7 @@ GameData::DecodeTrumps() const
 //	Ustawia kartê na u¿yt¹ dla gracza
 //
 void 
-GameData::SetUsedPlayerCard(
+HeartsGame::SetUsedPlayerCard(
 	T_PLAYER a_enPlayer, //WE gracz
 	short a_nCard,		 //WE karta
 	BOOL a_bUsed		 //WE czy u¿yta
@@ -440,7 +634,7 @@ GameData::SetUsedPlayerCard(
 //	Zwraca numer karty na podstawie numeru w rêce
 //
 short	//WY numer karty
-GameData::GetPlayerCardNr(
+HeartsGame::GetPlayerCardNr(
 	T_PLAYER a_enPlayer, //WE gracz
 	short a_nInHand		 //WE która w rêce
 	) const
@@ -454,7 +648,7 @@ GameData::GetPlayerCardNr(
 //	Zwraca kartê na podstawie numeru w rêce
 //
 const CCard&	//WY karta
-GameData::GetPlayerCard(
+HeartsGame::GetPlayerCard(
 	T_PLAYER a_enPlayer, //WE gracz
 	short a_nInHand		 //WE która w rêce
 	) const
@@ -468,7 +662,7 @@ GameData::GetPlayerCard(
 // Zwraca ostatni¹ lewê
 //
 const CTrick&	//WY ostatnia lewa
-GameData::GetLastTrick() const
+HeartsGame::GetLastTrick() const
 {
 	return m_tricks[GetTricksCnt() - 1];
 }
@@ -478,7 +672,7 @@ GameData::GetLastTrick() const
 // Zwraca ostatni¹ lewê
 //
 const CTrick&	//WY lewa
-GameData::GetTrick(
+HeartsGame::GetTrick(
 	short a_nTrick		//WE numer lewy
 	) const
 {
@@ -489,20 +683,18 @@ GameData::GetTrick(
 // ---------------------------------------------------------
 // Ustawia w³aœciciela ostatniej lewy i zwraca go
 //
-T_PLAYER	//WY w³aœciciel ostatniej lewy
-GameData::SetLastTrickOwner(
-	T_COLOR a_colorTrumps	//WE kolor atu lub E_CC_NOTHING
+void HeartsGame::SetLastTrickOwner(
+	T_SUIT a_colorTrumps	//WE kolor atu lub E_CC_NOTHING
 	)
 {
-	m_enThrower = m_tricks.SetLastTrickOwner(a_colorTrumps);
-	return m_enThrower;
+	m_pPlayers->SetThrower(m_tricks.SetLastTrickOwner(a_colorTrumps));
 }
 
 
 // ---------------------------------------------------------
 //	Zapisanie wyników gry
 //
-void GameData::SetScores()
+void HeartsGame::SetScores()
 {
 	short l_iTrick ; 
 	short l_nTrickCnt = GetTricksCnt();
@@ -594,7 +786,7 @@ void GameData::SetScores()
 // Ile punktów w lewie
 //
 short	//WY iloœæ punktów
-GameData::PointsInTrick(
+HeartsGame::PointsInTrick(
 	short a_iTrick	//WE numer lewy
 	) const
 {
@@ -616,7 +808,7 @@ GameData::PointsInTrick(
 // Referencja na lewy
 //
 const CTakenTricks&		//WY lewy
-GameData::GetTricks() const
+HeartsGame::GetTricks() const
 {
 	return m_tricks;
 }
@@ -626,7 +818,7 @@ GameData::GetTricks() const
 // Czy ma karty do gry w puzzle
 //
 BOOL	//WY TRUE - ma
-GameData::HasCardForPuzzle(
+HeartsGame::HasCardForPuzzle(
 	T_PLAYER a_enPlayer		//WE gracz
 	) const
 {
@@ -638,7 +830,7 @@ GameData::HasCardForPuzzle(
 // Do³o¿enie karty do puzzli
 //
 void 
-GameData::SetPlayerCard2Puzzle(
+HeartsGame::SetPlayerCard2Puzzle(
 	T_PLAYER a_enPlayer,	//WE gracz
 	short a_nInHand			//WE która karta na rêce
 	)
@@ -650,7 +842,7 @@ GameData::SetPlayerCard2Puzzle(
 	ASSERT(CardsOnTable() <= 52);
 
 	m_PuzzleRows.PutCard(&l_card);
-	SetNextPlayer();
+	SetNextThrower();
 
 	// ustawienie u¿ycia karty
 	SetUsedPlayerCard(a_enPlayer, a_nInHand, TRUE);
@@ -665,7 +857,7 @@ GameData::SetPlayerCard2Puzzle(
 //	Zapisanie wyniku puzzli dla gracza
 //
 void	
-GameData::SetPuzzleScore(
+HeartsGame::SetPuzzleScore(
 	T_PLAYER a_enPlayer	//WE gracz
 	)
 {
@@ -677,7 +869,7 @@ GameData::SetPuzzleScore(
 // Zwraca wierze uk³adanki
 //
 const CPuzzleRows&	//WY wiersze uk³adanki
-GameData::GetPuzzleRows() const
+HeartsGame::GetPuzzleRows() const
 {
 	return m_PuzzleRows;
 }
@@ -687,7 +879,7 @@ GameData::GetPuzzleRows() const
 // Zwraca aktualn¹ grê
 //
 T_GAMES		//WY aktualna gra
-GameData::GetGame() const
+HeartsGame::GetGame() const
 {
 	return m_enGame;
 }
@@ -697,7 +889,7 @@ GameData::GetGame() const
 // Zwraca wynik dla gracza w serii i 
 //
 short	//WY wynik
-GameData::GetPlayerScore(
+HeartsGame::GetPlayerScore(
 	T_PLAYER	a_enPlayer,	//WE gracz
 	T_SERIE		a_enSeria,	//WE seria  
 	T_GAMES		a_enGame	//WE gra
@@ -711,7 +903,7 @@ GameData::GetPlayerScore(
 // Oblcza sumê minusów dla gracza
 //
 short	//WY suma minusów
-GameData::SumPlayerMinuses(
+HeartsGame::SumPlayerMinuses(
 	T_PLAYER a_enPlayer, //WE gracz
 	T_SERIE a_enSeria,		 //WE seria
 	BOOL  a_bRobber		 //WE czy z rozbójnikiem
@@ -725,7 +917,7 @@ GameData::SumPlayerMinuses(
 // Oblcza sumê dla gracza (bez uk³adanki)
 //
 short	//WY suma
-GameData::SumPlayer(
+HeartsGame::SumPlayer(
 	T_PLAYER a_enPlayer,	//WE gracz
 	T_SERIE a_enSeria		//WE seria
 	) const
@@ -738,7 +930,7 @@ GameData::SumPlayer(
 // Oblcza sumê dla gracza z uk³adank¹
 //
 short	//WY suma
-GameData::SumPlayerAll(
+HeartsGame::SumPlayerAll(
 	T_PLAYER a_enPlayer,	//WE gracz
 	T_SERIE a_enSeria		//WE seria
 	) const
@@ -748,37 +940,24 @@ GameData::SumPlayerAll(
 
 
 // ---------------------------------------------------------
-// Nastêpny gracz rzuca
-// 
-void 
-GameData::SetNextPlayer()
-{
-	m_enThrower = CPlayers::NextPlayer(m_enThrower);
-}
-
-
-// ---------------------------------------------------------
 // Wziêcie lewy. Zwraca, czy kontynuowaæ grê
 //
 BOOL	//WY TRUE: kontynuowaæ grê 
-GameData::GetPlayedTrick()
+HeartsGame::GetPlayedTrick()
 {
 	SetLastTrickOwner(m_colorTrumps);
-	BOOL l_bContinue = Continue();
-
-	if (l_bContinue)
-	{
-		NextTrick();
-	}
-	else
-	{
-		m_bDealed = FALSE ;
-		SetScores();
-		NextGame(TRUE);		
-	}
-
-	return l_bContinue;
+	return Continue();
 }
+
+
+void HeartsGame::StartNextGame()
+{
+	m_bDealed = FALSE;
+	SetScores();
+	NextGame(TRUE);
+}
+
+
 
 
 // ---------------------------------------------------------
@@ -786,7 +965,7 @@ GameData::GetPlayedTrick()
 //	gry o krola kier gdy wziêty w lewie)
 ///
 BOOL	//WY TRUE kontynuowaæ
-GameData::Continue()
+HeartsGame::Continue()
 {
 	switch (GetGame())
 	{
@@ -818,8 +997,8 @@ GameData::Continue()
 // ---------------------------------------------------------
 // Zwraca kolor atu
 //
-T_COLOR		//WY kolor atutowy
-GameData::GetTrumps() const
+T_SUIT		//WY kolor atutowy
+HeartsGame::GetTrumps() const
 {
 	return m_colorTrumps;
 }
@@ -829,7 +1008,7 @@ GameData::GetTrumps() const
 //	Zmniejsza punktacjê w puzzlach
 //
 void 
-GameData::DecreasePuzzleScore()
+HeartsGame::DecreasePuzzleScore()
 {
 	switch (m_nPuzzleScore)
 	{
@@ -855,7 +1034,7 @@ GameData::DecreasePuzzleScore()
 // Zwraca aktualnie grana seriê
 //
 T_SERIE		//WY grana seria
-GameData::GetSerie() const
+HeartsGame::GetSerie() const
 {
 	return m_enSerie;
 }
@@ -866,7 +1045,7 @@ GameData::GetSerie() const
 // grami
 //
 short	//WY suma punktów
-GameData::SumPlayerScore(
+HeartsGame::SumPlayerScore(
 	T_PLAYER a_enPlayer,	//WE gracz
 	T_SERIE a_enSerie		//WE seria
 	) const
@@ -879,7 +1058,7 @@ GameData::SumPlayerScore(
 // Zwraca sumê punktów gracza wszystkich gier
 //
 short	//WY suma punktów
-GameData::SumPlayerAllScore(
+HeartsGame::SumPlayerAllScore(
 	T_PLAYER a_enPlayer,	//WE gracz
 	T_SERIE a_enSerie		//WE seria
 	) const
@@ -893,16 +1072,37 @@ GameData::SumPlayerAllScore(
 // Zwraca czy skoñczy³a siê gra
 //
 BOOL	//WY TRUE - kontynuowaæ grê
-GameData::NextSerie()
+HeartsGame::NextSerie()
 {
 	if (m_enSerie == E_SR_4)
 		return FALSE;
 	else
 	{
-		m_enDealer = GetFirstDealerAndSetNext();
 		NextGame(TRUE);
 		return TRUE;
 	}
+}
+
+// ---------------------------------------------------------
+// Wstawienie zagranej przez gracza karty do lewy
+//
+void
+HeartsGame::SetPlayerCard2Trick2(
+	T_PLAYER a_enPlayer,
+	short a_nInHand
+)
+{
+	ASSERT(GetPlayerCardNr(a_enPlayer, a_nInHand) > 0);
+
+	const CCard& l_card = GetPlayerCard(a_enPlayer, a_nInHand);
+	ASSERT(!l_card.IsUsed());
+
+	// decyzja o tym komu przyznamy kartê
+	SetTrickCard(l_card);
+	ASSERT(CardsOnTable() <= 4);
+
+	// ustawienie u¿ycia karty
+	SetUsedPlayerCard(a_enPlayer, a_nInHand, TRUE);
 }
 
 
@@ -910,7 +1110,7 @@ GameData::NextSerie()
 // Wstawienie zagranej przez gracza karty do lewy
 //
 void 
-GameData::SetPlayerCard2Trick(
+HeartsGame::SetPlayerCard2Trick(
 	T_PLAYER a_enPlayer, 
 	short a_nInHand
 	)
@@ -928,7 +1128,7 @@ GameData::SetPlayerCard2Trick(
 	SetUsedPlayerCard(a_enPlayer, a_nInHand, TRUE);
 	if (CardsOnTable() < 4)
 	{
-		SetNextPlayer();
+		SetNextThrower();
 	}
 }
 
@@ -937,7 +1137,7 @@ GameData::SetPlayerCard2Trick(
 // Wstawienie zagranej przez gracza karty do lewy
 //
 short	//WY ilosæ lew podanego gracza
-GameData::GetPlayerTricksCnt(
+HeartsGame::GetPlayerTricksCnt(
 	T_PLAYER a_enPlayer		//WE gracz
 	) const
 {
@@ -955,91 +1155,202 @@ GameData::GetPlayerTricksCnt(
 }
 
 
-// ---------------------------------------------------------
-// Zapis dokumentu
-//
-bool GameData::Save(LPCTSTR a_psFile) 
+bool HeartsGame::Save(const std::filesystem::path& a_filePath)
 {
-	HANDLE l_hFile = ::CreateFile(a_psFile, GENERIC_WRITE, 0,
-		NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (l_hFile == INVALID_HANDLE_VALUE)
-	{
-		return FALSE;
-	}
+	SAVERESTORE l_save{};
 
-	SAVERESTORE l_sr;
-	l_sr.m_enDealer = m_enDealer;
-	l_sr.m_enGame = m_enGame;
-	l_sr.m_enSerie = m_enSerie;
+	Fill(l_save);
 
-	m_pPlayers->SaveState(&l_sr);
-	DWORD l_dwWritten;
-	BOOL l_bOk = ::WriteFile(l_hFile, &l_sr, sizeof(l_sr), &l_dwWritten, NULL);
-	ASSERT(l_dwWritten == sizeof(l_sr));
+	std::ofstream l_file(a_filePath, std::ios::binary | std::ios::trunc);
+	if (!l_file)
+		return false;
 
-	::CloseHandle(l_hFile);
-	if (l_bOk)
-	{
-		m_sFile = a_psFile;
-	}
-	return (l_bOk != FALSE);
+	l_file.write(reinterpret_cast<const char*>(&l_save), sizeof(l_save));
+	if (!l_file || l_file.fail())
+		return false;
+
+	m_filePath = a_filePath; 
+
+	return true;
 }
 
 
-// ---------------------------------------------------------
-// opens document
-//
-bool GameData::Restore(LPCTSTR a_psFile) 
+void HeartsGame::Fill(SAVERESTORE& a_save) const
 {
-	HANDLE l_hFile = ::CreateFile(a_psFile, GENERIC_READ, 0,
-		NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	if (l_hFile == INVALID_HANDLE_VALUE)
-	{
-		return FALSE;
-	}
+	a_save.m_enDealer = m_pPlayers->GetDealer();
+	a_save.m_enGame = m_enGame;
+	a_save.m_enSerie = m_enSerie;
 
-	SAVERESTORE l_sr;
+	m_pPlayers->FillScore(a_save);
+}
 
-	DWORD l_dwRead;
-	BOOL l_bOk = ::ReadFile(l_hFile, &l_sr, sizeof(l_sr), &l_dwRead, NULL);
-	ASSERT(l_dwRead == sizeof(l_sr));
+#pragma todo ("move saving and restoring outside of the HeartsGame class! - just return and set SAVERESTORE, file saving must be external.")
+// ---------------------------------------------------------
+// restore game from file
+//
+bool HeartsGame::Restore(const std::filesystem::path& a_filePath)
+{
+	SAVERESTORE l_restore{};
+	if (!ReadFromFile(a_filePath, l_restore))
+		return false;
 
-	::CloseHandle(l_hFile);
-	if (!l_bOk)
-	{
-		return FALSE;
-	}
+	m_pPlayers->SetDealer(l_restore.m_enDealer);
+	m_enGame = l_restore.m_enGame;
+	m_enSerie = l_restore.m_enSerie;
 
-	m_enDealer = l_sr.m_enDealer;
-	m_enGame = l_sr.m_enGame;
-	m_enSerie = l_sr.m_enSerie;
+	m_pPlayers->RestoreScore(l_restore);
+	m_filePath = a_filePath;
 
-	m_pPlayers->RestoreState(&l_sr);
-	m_sFile = a_psFile;
-
-	return TRUE;
+	return true;
 }
 
 
-// ---------------------------------------------------------
-//	Pobranie pierwszego rozdaj¹cego i ustawienie nastêpnego
-//	pierwszym
-//
-T_PLAYER GameData::GetFirstDealerAndSetNext()
+
+bool HeartsGame::ReadFromFile(const std::filesystem::path& a_sFilePath, SAVERESTORE& a_outRestore)
 {
-	T_PLAYER l_playerLast = m_regData.m_regAuto.m_enFirstDealer;
-	T_PLAYER l_playerNew = CPlayers::NextPlayer(l_playerLast);
-	m_regData.m_regAuto.m_enFirstDealer = l_playerNew;
-	return l_playerLast;
+	if (!std::filesystem::exists(a_sFilePath))
+		return false;
+
+	std::ifstream l_file(a_sFilePath, std::ios::binary);
+	if (!l_file)
+		return false;
+
+	SAVERESTORE l_restore{};
+	l_file.read(reinterpret_cast<char*>(&l_restore), sizeof(l_restore));
+
+	if (!l_file || l_file.gcount() != sizeof(l_restore))
+		return false;
+
+	a_outRestore = l_restore;
+	return true;
 }
 
 
-void GameData::GameOver(void)
+void HeartsGame::GameOver(void)
 {
 	m_tricks.Clear();
-	m_enGame = E_GM_NOTHING;
+	m_enGame = E_GM_NULL;
 	m_enSerie = E_SR_NULL;
 	m_bDealed = FALSE;
 	m_bTrumpsChoice = FALSE;
 	m_bPass = false;
 }
+
+
+bool HeartsGame::IsGameSaved() const
+{
+	if (!IsFile())
+		return false;
+
+	SAVERESTORE l_restoreFile{};
+	if (!ReadFromFile(m_filePath, l_restoreFile))
+		return false;
+
+	SAVERESTORE l_restoreGame{};
+	Fill(l_restoreGame);
+
+	CheckDiff(l_restoreFile, l_restoreGame);
+	return (std::memcmp(&l_restoreFile, &l_restoreGame, sizeof(SAVERESTORE)) == 0);
+
+}
+
+
+#ifdef _DEBUG
+void HeartsGame::CheckDiff(const SAVERESTORE& a_restore1, const SAVERESTORE& a_restore2) const
+{
+
+	std::ofstream l_file1(_T("C:\\TEMP\\a1.txt"), std::ios::binary | std::ios::trunc);
+	if (!l_file1)
+		return;
+
+	l_file1.write(reinterpret_cast<const char*>(&a_restore1), sizeof(a_restore1));
+	if (!l_file1 || l_file1.fail())
+		return;
+
+	std::ofstream l_file2(_T("C:\\TEMP\\a2.txt"), std::ios::binary | std::ios::trunc);
+	if (!l_file2)
+		return;
+
+	l_file2.write(reinterpret_cast<const char*>(&a_restore2), sizeof(a_restore2));
+	if (!l_file2 || l_file2.fail())
+		return;
+
+	if (std::memcmp(&a_restore1, &a_restore2, sizeof(SAVERESTORE)) != 0)
+	{
+		const std::uint32_t* pa = reinterpret_cast<const std::uint32_t*>(&a_restore1);
+		const std::uint32_t* pb = reinterpret_cast<const std::uint32_t*>(&a_restore2);
+
+		for (size_t i = 0; i < sizeof(SAVERESTORE) / sizeof(int); ++i)
+		{
+			if (pa[i] != pb[i])
+				TRACE3("CheckDiff: %d: %d - %d\n", i, pa[i], pb[i]);
+		}
+	}
+
+}
+#endif
+
+
+
+
+// ---------------------------------- EVENTS -------------------------------------------
+
+void HeartsGame::CardPlayedEvent(Player a_playerCurrent, short a_iCardNr)
+{
+	TRACE1("HeartsGame::OnCardPlayedEvent: %d\n", GetTricksCnt());
+	if (OnCardPlayed)
+		OnCardPlayed(a_playerCurrent, a_iCardNr);
+}
+
+
+
+void HeartsGame::TrickStartedEvent()
+{
+	TRACE1("HeartsGame::TrickStartedEvent: %d\n", GetTricksCnt());
+}
+
+
+void HeartsGame::GameStartedEvent()
+{
+	TRACE1("HeartsGame::GameStartedEvent: %d\n", GetGame());
+}
+
+
+void HeartsGame::SerieStartedEvent()
+{
+	TRACE1("HeartsGame::SerieStartedEvent: %d\n", GetSerie());
+}
+
+
+void HeartsGame::EntireGameStartedEvent()
+{
+	TRACE0("HeartsGame::EntireGameStartedEvent\n");
+}
+
+
+void HeartsGame::TrickEndedEvent(bool* a_pbPlayed)
+{
+	TRACE1("HeartsGame::TrickEndedEvent: %d\n", GetTricksCnt());
+	if (OnTrickTaken)
+		OnTrickTaken(a_pbPlayed);
+}
+
+
+void HeartsGame::GameEndedEvent()
+{
+	TRACE1("HeartsGame::GameEndedEvent: %d\n", GetGame());
+}
+
+
+void HeartsGame::SerieEndedEvent()
+{
+	TRACE1("HeartsGame::SerieEndedEvent: %d\n", GetSerie());
+}
+
+
+void HeartsGame::EntireGameEndedEvent()
+{
+	TRACE0("HeartsGame::EntireGameEndedEvent\n");
+}
+
+

@@ -27,7 +27,7 @@ private:
 	short GetBestOtherCard(short a_iTrick) const;
 	short DecideOtherColor(short a_iTrick) const;
 	BOOL ShouldThrowHearts(short a_nTrick) const;
-	BOOL ShouldThrowOtherColor(short a_nTrick, T_COLOR a_enColor) const;
+	BOOL ShouldThrowOtherColor(short a_nTrick, T_SUIT a_enColor) const;
 };
 
 #endif // !defined(AFX_NOHEARTSDECIDER_H__DF2796C1_8583_11D3_B413_E87410C10000__INCLUDED_)

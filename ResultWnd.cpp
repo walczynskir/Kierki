@@ -17,14 +17,14 @@
 class ResultWndData
 {
 public:
-	ResultWndData(T_SERIE a_enSerie, GameData* a_pGameData)
+	ResultWndData(T_SERIE a_enSerie, HeartsGame* a_pGameData, CRegData& a_regData) : m_regData(a_regData)
 	{
 		m_enSerie = a_enSerie;
 		m_pGameData = a_pGameData;
 		m_hWndList = NULL;
 	}
 
-	ResultWndData(ResultWndData* a_pData)
+	ResultWndData(ResultWndData* a_pData) : m_regData(a_pData->m_regData)
 	{
 		m_enSerie = a_pData->m_enSerie;
 		m_pGameData = a_pData->m_pGameData;
@@ -48,18 +48,20 @@ public:
 
 	}
 
+	static ResultWndData* GetData(HWND a_hWnd) { return reinterpret_cast<ResultWndData*>(::GetWindowLongPtr(a_hWnd, GWLP_USERDATA)); };
+	static void SetData(HWND a_hWnd, ResultWndData* a_pData) { ::SetWindowLongPtr(a_hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(a_pData)); };
+
 
 	T_SERIE   m_enSerie;
-	GameData* m_pGameData;
+	HeartsGame* m_pGameData;
 	HWND      m_hWndList;
 	HBITMAP   m_hBmpBackground{};
+	CRegData& m_regData;
 
 };
 
 
 static const TCHAR cc_sWindowClass[] = _T("RESULTWND");	// game window class name
-static const long c_iWindowOfs = sizeof(ResultWndData*) - sizeof(int);
-static ResultWndData* GetData(HWND a_hWnd);
 
 static LRESULT ResultWnd_WndProc(HWND, UINT, WPARAM, LPARAM);
 
@@ -88,13 +90,10 @@ static BOOL ListBackgroundProc(HWND a_hWnd, HDC a_hDC, void* a_pObj, LPRECT a_pR
 
 
 
-
-
-
 HWND ResultWnd_Create(DWORD a_dwStyleEx, DWORD a_dwStyle, int a_x, int a_y,
-	int a_dx, int a_dy, HWND a_hWndParent, HINSTANCE a_hInst, T_SERIE a_enSerie, GameData* a_pGameData)
+	int a_dx, int a_dy, HWND a_hWndParent, HINSTANCE a_hInst, T_SERIE a_enSerie, HeartsGame* a_pGameData, CRegData& a_regData)
 {
-	ResultWndData l_data(a_enSerie, a_pGameData);
+	ResultWndData l_data(a_enSerie, a_pGameData, a_regData);
 	return ::CreateWindowEx(a_dwStyleEx, cc_sWindowClass, _T(""), a_dwStyle, a_x, a_y, 
 		a_dx, a_dy, a_hWndParent, NULL, a_hInst, &l_data);
 }
@@ -108,7 +107,7 @@ ATOM ResultWnd_Register(HINSTANCE a_hInst)
 	l_wcex.style			= 0;
 	l_wcex.lpfnWndProc		= SafeWndProc<ResultWnd_WndProc>;
 	l_wcex.cbClsExtra		= 0;
-	l_wcex.cbWndExtra		= sizeof(ResultWndData*);
+	l_wcex.cbWndExtra		= 0;
 	l_wcex.hInstance		= a_hInst;
 	l_wcex.hIcon			= NULL;
 	l_wcex.hCursor			= ::LoadCursor(NULL, IDC_ARROW);
@@ -117,12 +116,6 @@ ATOM ResultWnd_Register(HINSTANCE a_hInst)
 	l_wcex.lpszClassName	= cc_sWindowClass;
 	l_wcex.hIconSm			= NULL;
 	return ::RegisterClassEx(&l_wcex);
-}
-
-
-ResultWndData* GetData(HWND a_hWnd)
-{
-	return reinterpret_cast<ResultWndData*>(::GetWindowLongPtr(a_hWnd, c_iWindowOfs));
 }
 
 
@@ -190,7 +183,7 @@ OnCreate(
 	{
 		return -1;
 	}
-	::SetWindowLongPtr(a_hWnd, c_iWindowOfs, (LONG_PTR)l_pData);
+	ResultWndData::SetData(a_hWnd, l_pData);
 
 	RListCtrl_Register();
 	l_pData->m_hWndList = RListCtrl_Create(NULL, WS_VISIBLE | WS_CHILD, 
@@ -224,14 +217,14 @@ OnCreate(
 
 void OnNcDestroy(HWND a_hWnd)
 {
-	ResultWndData* l_pData = GetData(a_hWnd);
+	ResultWndData* l_pData = ResultWndData::GetData(a_hWnd);
 	delete l_pData;
 }
 
 
 void OnSize(HWND a_hWnd, int a_dxWidth, int a_dyHeight)
 {
-	ResultWndData* l_pData = GetData(a_hWnd);
+	ResultWndData* l_pData = ResultWndData::GetData(a_hWnd);
 	::SetWindowPos(l_pData->m_hWndList, NULL, 0, 0, a_dxWidth, a_dyHeight, SWP_NOZORDER);
 	long l_iColWidth = a_dxWidth / 4;
 	RListCtrl_SetColWidth(l_pData->m_hWndList, 0, l_iColWidth);
@@ -243,14 +236,14 @@ void OnSize(HWND a_hWnd, int a_dxWidth, int a_dyHeight)
 
 void OnShowWindow(HWND a_hWnd, bool a_bShow)
 {
-	ResultWndData* l_pData = GetData(a_hWnd);
+	ResultWndData* l_pData = ResultWndData::GetData(a_hWnd);
 	::ShowWindow(l_pData->m_hWndList, a_bShow ? SW_SHOW : SW_HIDE);
 }
 
 
 void OnSetFocus(HWND a_hWnd)
 {
-	ResultWndData* l_pData = GetData(a_hWnd);
+	ResultWndData* l_pData = ResultWndData::GetData(a_hWnd);
 	::SetFocus(l_pData->m_hWndList);
 }
 
@@ -264,23 +257,23 @@ void OnAppRefresh(HWND a_hWnd)
 
 void OnSetBrightness(HWND a_hWnd, BYTE a_btBrightness)
 {
-	ResultWndData* l_pData = GetData(a_hWnd);
-	l_pData->m_pGameData->m_regData.m_regAuto.m_btAlphaResultBackground = a_btBrightness;
+	ResultWndData* l_pData = ResultWndData::GetData(a_hWnd);
+	l_pData->m_regData.m_regAuto.m_btAlphaResultBackground = a_btBrightness;
 	::RedrawWindow(a_hWnd, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 }
 
 BYTE OnGetBrightness(HWND a_hWnd, BOOL* a_pSet)
 {
-	ResultWndData* l_pData = GetData(a_hWnd);
+	ResultWndData* l_pData = ResultWndData::GetData(a_hWnd);
 	if (l_pData == nullptr)
 		return 0;
 	*a_pSet = TRUE;
-	return l_pData->m_pGameData->m_regData.m_regAuto.m_btAlphaResultBackground;
+	return l_pData->m_regData.m_regAuto.m_btAlphaResultBackground;
 }
 
 void OnSetSerie(HWND a_hWnd, T_SERIE a_enSerie)
 {
-	ResultWndData* l_pData = GetData(a_hWnd);
+	ResultWndData* l_pData = ResultWndData::GetData(a_hWnd);
 	l_pData->m_enSerie = a_enSerie;
 }
 
@@ -289,15 +282,15 @@ BOOL ListDataProc(void* a_pObj, long a_iRow, long a_iCol, const TCHAR** a_ppData
 {
 	static TCHAR l_sData[128];
 	l_sData[0] = _T('\0');
-	ResultWndData* l_pData = GetData(reinterpret_cast<HWND>(a_pObj));
-	GameData* l_pGameData = l_pData->m_pGameData;
+	ResultWndData* l_pData = ResultWndData::GetData(reinterpret_cast<HWND>(a_pObj));
+	HeartsGame* l_pGameData = l_pData->m_pGameData;
 
 	// E_DL_1 == 0, E_DL_2 = 1  -- watch out: dangerous
 	if (a_iRow == 0)
 	{
 		ASSERT(a_iCol < 4);
 		_tcsncpy_s(l_sData, ArraySize(l_sData), 
-			l_pGameData->m_regData.GetPlayerName(static_cast<T_PLAYER>(a_iCol)).c_str(),
+			l_pData->m_regData.GetPlayerName(static_cast<T_PLAYER>(a_iCol)).c_str(),
 			_TRUNCATE);
 	}
 	else 
@@ -416,7 +409,7 @@ BOOL ListGridProc(HWND a_hWnd, HDC a_hDC, void* a_pObj, LPRLGRID a_pGrid)
 {
 
 	ResultWndData* l_pData = reinterpret_cast<ResultWndData*>(a_pObj);
-	if (l_pData->m_pGameData->m_regData.m_regView.m_bFancyStyle)
+	if (l_pData->m_regData.m_regView.m_bFancyStyle)
 	{
 		if (a_pGrid->bVert)
 		{
@@ -476,7 +469,7 @@ static BOOL ListBackgroundProc(HWND a_hWnd, HDC a_hDC, void* a_pObj, LPRECT a_pR
 		::DeleteDC(l_hdcMem);
 	}
 
-	RDraw::BlendOverlay(a_hDC, *a_pRect, l_pData->m_pGameData->m_regData.m_regHidden.m_clrTintResultBackground, l_pData->m_pGameData->m_regData.m_regAuto.m_btAlphaResultBackground);
+	RDraw::BlendOverlay(a_hDC, *a_pRect, l_pData->m_regData.m_regHidden.m_clrTintResultBackground, l_pData->m_regData.m_regAuto.m_btAlphaResultBackground);
 
 	return TRUE;
 }
@@ -484,7 +477,7 @@ static BOOL ListBackgroundProc(HWND a_hWnd, HDC a_hDC, void* a_pObj, LPRECT a_pR
 
 void SetColors(HWND a_hWnd)
 {
-	ResultWndData* l_pData = GetData(a_hWnd);
+	ResultWndData* l_pData = ResultWndData::GetData(a_hWnd);
 	RListCtrl_SetFixedCols(l_pData->m_hWndList, 0);
 	RListCtrl_SetMode(l_pData->m_hWndList, LMB_FILLLASTCOL | LMB_CONSTGRIDSIZE | LMB_DRAWTRANSP, TRUE);
 	RListCtrl_SetMode(l_pData->m_hWndList, LMB_DRAWCELLBORDER, FALSE);
@@ -502,7 +495,7 @@ void SetColors(HWND a_hWnd)
 
 void SetBackground(HWND a_hWnd)
 {
-	ResultWndData* l_pData = GetData(a_hWnd);
+	ResultWndData* l_pData = ResultWndData::GetData(a_hWnd);
 	if (l_pData->m_hBmpBackground == nullptr)
 	{
 		l_pData->SetBackground(reinterpret_cast<HBITMAP>(::LoadImage(
@@ -518,7 +511,7 @@ void SetBackground(HWND a_hWnd)
 
 void SetFont(HWND a_hWnd)
 {
-	ResultWndData* l_pData = GetData(a_hWnd);
+	ResultWndData* l_pData = ResultWndData::GetData(a_hWnd);
 	HFONT l_hFont = CFontFactory::Instance().GetFont(a_hWnd);
 	RListCtrl_SetFont(l_pData->m_hWndList, l_hFont);
 }

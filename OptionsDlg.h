@@ -6,13 +6,12 @@
 #include "OptionsTimeDlg.h"
 #include "OptionsPlayerDlg.h"
 #include "OptionsRulesDlg.h"
-#include "HeartsData.h"
+#include <rcommon/LanguageManager.h>
 
-#define WM_GETVALUES (WM_USER + 1)
 
 typedef HWND (*RCREATEDLGPROC)(HWND a_hParent, CRegData::RBaseRegData* a_pRegData, LPVOID a_pObj);
 
 #define MAX_TABTITLE 128
 
 
-UINT OptionsDlg_DoModal(HWND a_hWndParent, CRegData* a_pData, CHeartsData* a_pHeartsData);
+UINT OptionsDlg_DoModal(HWND a_hWndParent, CRegData* a_pData, LanguageManager& a_langmanager);

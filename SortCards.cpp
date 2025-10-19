@@ -6,7 +6,6 @@
 #include "SortCards.h"
 
 
-#include <random>
 
 
 //////////////////////////////////////////////////////////////////////
@@ -16,7 +15,7 @@
 // ---------------------------------------------------------
 //	Konstruktor
 //
-CSortCards::CSortCards()
+CSortCards::CSortCards() : m_gen(std::random_device{}())
 {
 	short l_iAt ;
 	for (l_iAt = 0; l_iAt < 52; l_iAt++)
@@ -42,16 +41,12 @@ CSortCards::ShuffleDeck()
 {
 	int l_iAt;
 
-	// initialization of random number generator
-	std::random_device l_rd;
-	std::mt19937 l_gen(l_rd());
-
 	// Fisher-Yates shuffle algorithm
 	for (l_iAt = 51; l_iAt > 0; l_iAt--)
 	{
 		// Utworzenie rozk³adu do losowania indeksu j z zakresu [0, i]
 		std::uniform_int_distribution<int> l_dist(0, l_iAt);
-		int l_iAtNew = l_dist(l_gen);
+		int l_iAtNew = l_dist(m_gen);
 		ASSERT((l_iAtNew >= 0) && (l_iAtNew <= 51));
 
 		// Zamiana elementu na pozycji i z elementem na losowej pozycji j

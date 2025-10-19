@@ -4,6 +4,7 @@
 
 #include "stdafx.h"
 #include "Card.h"
+#include <rcommon/ROwnExc.h>
 
 
 //////////////////////////////////////////////////////////////////////
@@ -17,11 +18,10 @@ CCard::CCard()
 }
 
 
-CCard::CCard(T_COLOR a_enColor, T_CARDVAL a_cv)
+CCard::CCard(T_SUIT a_enColor, T_RANK a_cv)
 {
 	ASSERT((a_cv >= E_CV_2) && (a_cv <= E_CV_A));
 	m_bUsed = FALSE;
-	m_enColor = a_enColor;
 	m_nCardNr = (short(a_enColor) - 1) * 13 + short (a_cv);
 }
 
@@ -144,38 +144,12 @@ CCard::operator<(
 
 
 // ---------------------------------------------------------
-// Czy karty s¹ w tym samym kolorze
-//
-BOOL	//WY TRUE - te same kolory
-CCard::operator==(
-	const CCard &a_Card		//WE porównywana karta
-	) const
-{
-	return EqualColor(a_Card.m_nCardNr) ;
-}
-
-CCard& CCard::operator=(const CCard &a_Card) 
-{
-	if (this != &a_Card)
-	{
-		this->m_enOwner = a_Card.m_enOwner;
-		this->m_nCardNr = a_Card.m_nCardNr;
-	}
-	return *this ;
-}
-
-
-// ---------------------------------------------------------
 // sets card nr
 //
-void 
-CCard::SetCardNr(
-	short a_nCardNr
-	) 
+void CCard::SetCardNr(short a_nCardNr) 
 { 
-	ASSERT((a_nCardNr >= 1) && (a_nCardNr <= 52)) ;	// innej mo¿liwoœci nie ma
+	ASSERT((a_nCardNr >= 1) && (a_nCardNr <= 52)) ;	
 	m_nCardNr = a_nCardNr; 
-	SetColor();
 }
 
 
@@ -193,38 +167,7 @@ CCard::SetCard(
 	m_nCardNr = a_nCardNr ; 
 	m_enOwner = a_enOwner ;
 	m_bUsed = a_bUsed ;
-	SetColor();
 }
-
-
-// ---------------------------------------------------------
-//	Ustawienie koloru karty
-//
-void 
-CCard::SetColor()
-{
-	if ((m_nCardNr >= 1) && (m_nCardNr <= 13))
-	{
-		m_enColor = E_CC_CLUB ;
-	}
-	else if ((m_nCardNr >= 14) && (m_nCardNr <= 26))
-	{
-		m_enColor = E_CC_DIAMOND ;
-	}
-	else if ((m_nCardNr >= 27) && (m_nCardNr <= 39))
-	{
-		m_enColor = E_CC_SPADE ;
-	}
-	else if ((m_nCardNr >= 14) && (m_nCardNr <= 52))
-	{
-		m_enColor = E_CC_HEART ;
-	}
-	else
-	{
-		ASSERT(FALSE);
-	}
-}
-
 
 
 /*	---------------------------------------------------------------
@@ -276,33 +219,54 @@ CCard::LeastInColor()	const
 }
 
 
-// -----------------------------------------------------------
-//	Zwraca co to za karta
-//
-T_CARDVAL		// wartoœæ karty
-CCard::CardValue() const
+
+
+
+
+[[deprecated("Use CCard::GetRank() instead")]]
+Rank CCard::CardValue() const
 {
-	if ((m_nCardNr >= 1) && (m_nCardNr <= 13))
-		return (T_CARDVAL)m_nCardNr;
-	if ((m_nCardNr >= 14) && (m_nCardNr <= 26))
-		return (T_CARDVAL)(m_nCardNr - 13);
-	if ((m_nCardNr >= 27) && (m_nCardNr <= 39))
-		return (T_CARDVAL)(m_nCardNr - 26);
-	if ((m_nCardNr >= 40) && (m_nCardNr <= 52))
-		return (T_CARDVAL)(m_nCardNr - 39);
-	// co to za karta !!!
-	ASSERT(FALSE);
-	return T_CARDVAL(0);
+	return GetRank();
 }
 
+
+Rank CCard::GetRank() const
+{
+	if ((m_nCardNr < 1) || (m_nCardNr > 52))
+	{
+		ASSERT(FALSE); // co to za karta !!!
+		return T_RANK(0);
+	}
+
+	return static_cast<Rank>((m_nCardNr - 1) % 13 + 1);
+}
 
 // ---------------------------------------------------------
 // Zwraca kolor karty
 //
-T_COLOR		//WY kolor karty
-CCard::GetColor() const
+Suit CCard::GetSuit() const
 {
-	return m_enColor;
+	if ((m_nCardNr < 1) || (m_nCardNr > 52))
+	{
+		ASSERT(FALSE); // Invalid card number
+		return E_CC_NULL; // Fallback
+	}
+
+	static constexpr Suit suits[] = {
+		E_CC_CLUB,     // 1–13
+		E_CC_DIAMOND,  // 14–26
+		E_CC_SPADE,    // 27–39
+		E_CC_HEART     // 40–52
+	};
+
+	return suits[(m_nCardNr - 1) / 13];
+}
+
+
+[[deprecated("Use CCard::GetSuit() instead")]]
+T_SUIT CCard::GetColor() const
+{ 
+	return GetSuit(); 
 }
 
 

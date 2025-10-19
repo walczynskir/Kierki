@@ -61,7 +61,7 @@ CNoLadiesDecider::FirstCard(
 	) const
 {
 	short l_iCardNr;
-	T_COLOR l_enColor = DecideColor(a_iTrick);
+	T_SUIT l_enColor = DecideColor(a_iTrick);
 	l_iCardNr = m_pCards->GetBiggestBelow(l_enColor, E_CV_D);
 	if (l_iCardNr <= 0)
 	{
@@ -81,7 +81,7 @@ CNoLadiesDecider::NextCard(
 	) const
 {
 	const CTrick& l_trickCurrent = (*m_pTricks)[a_iTrick - 1] ;
-	T_COLOR l_enColor = l_trickCurrent.GetCardColor(0);
+	T_SUIT l_enColor = l_trickCurrent.GetCardColor(0);
 	const CCard* l_pCard = l_trickCurrent.Biggest();
 	if (m_pCards->HasColor(l_enColor))
 		return CardForLadies(l_pCard);
@@ -93,12 +93,12 @@ CNoLadiesDecider::NextCard(
 // ---------------------------------------------------------
 //	Zdecyduj w jakim kolorze wychodzisz
 //
-T_COLOR	//WY wybrany kolor
+T_SUIT	//WY wybrany kolor
 CNoLadiesDecider::DecideColor(
 	short a_iTrick	//WE numer lewy
 	) const
 {
-	T_COLOR l_enColor;
+	T_SUIT l_enColor;
 
 	l_enColor = E_CC_CLUB;
 	if (CanPlayColor(a_iTrick, l_enColor))
@@ -153,7 +153,7 @@ CNoLadiesDecider::DecideColor(
 BOOL	//WY TRUE - mo¿na zagraæ
 CNoLadiesDecider::CanPlayColor(
 	short a_iTrick,		//WE numer lewy
-	T_COLOR a_enColor	//WE sprawdzany kolor
+	T_SUIT a_enColor	//WE sprawdzany kolor
 	) const
 {
 	short l_nCard;
@@ -229,7 +229,7 @@ CNoLadiesDecider::LadyOrBiggestInShortest() const
 	short l_nCardNr;
 	
 	short l_nRank;
-	T_COLOR l_enColor;
+	T_SUIT l_enColor;
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
 		l_enColor = m_pCards->GetShortestColorRank(l_nRank);

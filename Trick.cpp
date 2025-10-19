@@ -4,6 +4,7 @@
 
 #include "stdafx.h"
 #include "Trick.h"
+#include <algorithm> 
 
 
 //////////////////////////////////////////////////////////////////////
@@ -41,7 +42,7 @@ CTrick::SetCard(
 //
 T_PLAYER 
 CTrick::SetTrickOwner(
-	T_COLOR a_enTrumps	//WE kolor atu
+	T_SUIT a_enTrumps	//WE kolor atu
 	)
 {
 	ASSERT(m_nCards == 4) ;
@@ -54,7 +55,7 @@ CTrick::SetTrickOwner(
 	{
 		if ((*(m_tcCard[l_iAt - 1])) > (*l_ptcBiggest))
 			l_ptcBiggest = m_tcCard[l_iAt - 1] ;
-		if (a_enTrumps == E_CC_NOTHING)
+		if (a_enTrumps == E_CC_NULL)
 			continue;
 		if (l_ptcBiggest->GetColor() == a_enTrumps)
 			continue;
@@ -83,7 +84,7 @@ CTrick::GetTrickOwner() const
 //
 const CCard*	//WY szukana karta
 CTrick::Biggest(
-	T_COLOR a_enTrumps	//WE ewent. kolor atutuowy
+	T_SUIT a_enTrumps	//WE ewent. kolor atutuowy
 	)	const
 {
 // TODO Czy faktycznie musz¹ byæ przechowywane wskaŸniki a nie referencje?
@@ -97,7 +98,7 @@ CTrick::Biggest(
 		if ((*(m_tcCard[l_nCard - 1])) > *l_pCard)
 			l_pCard = m_tcCard[l_nCard - 1];
 		
-		if (a_enTrumps == E_CC_NOTHING)
+		if (a_enTrumps == E_CC_NULL)
 			continue;
 		// je¿eli karta jest atutem, a nastêpna nie jest wy¿sza no to ok
 		if (l_pCard->GetColor() == a_enTrumps)
@@ -137,7 +138,7 @@ CTrick::GetHeartsCnt() const
 //
 short	//WY iloœc kart w podanym kolorze w lewie
 CTrick::CntInColor(
-	T_COLOR a_enColor	//WE kolor
+	T_SUIT a_enColor	//WE kolor
 	)	const
 {
 	short l_nCard;
@@ -253,7 +254,7 @@ CTrick::InOneColor()	const
 {
 	short l_nCard;
 
-	T_COLOR l_enColor = m_tcCard[0]->GetColor();
+	T_SUIT l_enColor = m_tcCard[0]->GetColor();
 	for (l_nCard = 2; l_nCard <= m_nCards; l_nCard++)
 	{
 		if (m_tcCard[l_nCard - 1]->GetColor() != l_enColor)
@@ -268,7 +269,7 @@ CTrick::InOneColor()	const
 //
 BOOL	//WY TRUE - jest karta 
 CTrick::IsColor(
-	T_COLOR a_enColor	//WE sprawdzany kolor
+	T_SUIT a_enColor	//WE sprawdzany kolor
 	) const
 {
 	short l_nCard;
@@ -296,7 +297,7 @@ CTrick::GetCardsCnt() const
 // ---------------------------------------------------------
 // Zwraca kolor podanej karty 
 //
-T_COLOR		//WY kolor karty
+T_SUIT		//WY kolor karty
 CTrick::GetCardColor(
 	short a_nCard	//WE która karta
 	) const
@@ -351,5 +352,5 @@ CTrick::Clear()
 {
 	m_nCards = 0 ;
 	m_enOwner = E_DL_NULL;
-	memset(m_tcCard, 0, ArraySize(m_tcCard));
+	std::fill(std::begin(m_tcCard), std::end(m_tcCard), nullptr);
 }

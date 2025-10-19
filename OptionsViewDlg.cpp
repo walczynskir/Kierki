@@ -6,6 +6,7 @@
 #include "OptionsViewDlg.h"
 #include <rcommon/RSelectBitmap.h>
 #include "layout.h"
+#include "Kierki.h"
 #include <RCards/RCards.h>
 #include <RCards/resource.h>
 #include <rcommon/RSystemExc.h>
@@ -72,7 +73,7 @@ static INT_PTR OptionsViewDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LPA
 		OnInitDialog(a_hDlg, reinterpret_cast<ROptionsViewData*>(a_lParam));
 		return TRUE;
 
-	case WM_GETVALUES:
+	case WM_APP_GETVALUES:
 		GetCtrlValues(a_hDlg);
 		::SetWindowLong(a_hDlg, DWL_MSGRESULT, TRUE);
 		return TRUE; // must be TRUE too return proper LRESULT

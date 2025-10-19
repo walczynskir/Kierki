@@ -15,6 +15,9 @@
 #define WM_APP_GETBRIGHTNESS (WM_APP + 9)
 #define WM_APP_REFRESH		 (WM_APP + 10)
 #define WM_APP_SETSERIE		 (WM_APP + 11)
+#define WM_APP_GETVALUES	 (WM_APP + 12)
+#define WM_APP_HUMANMOVE	 (WM_APP + 13)
+
 
 
 

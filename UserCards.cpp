@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "UserCards.h"
 #include "TakenTricks.h"
+#include <rcommon/ROwnExc.h>
 #include <algorithm>
 
 //////////////////////////////////////////////////////////////////////
@@ -28,7 +29,7 @@ short	//WY numer karty w rêce
 CUserCards::FirstInShortest()	const
 {
 	// znajdŸ najm³odsz¹ kartê w najkrótszym kolorze
-	T_COLOR l_enShortest = ShortestColor() ;
+	T_SUIT l_enShortest = ShortestColor() ;
 	return FirstInColor(l_enShortest) ;
 }
 
@@ -38,7 +39,7 @@ CUserCards::FirstInShortest()	const
 //
 short	//WY numer najm³odszej karty w kolorze
 CUserCards::FirstInColor(
-	T_COLOR a_enShortest	//WE kolor w którym szukamy
+	T_SUIT a_enShortest	//WE kolor w którym szukamy
 	)	const
 {
 	// znajdŸ najm³odsz¹ kartê w najkrótszym kolorze
@@ -62,9 +63,9 @@ CUserCards::FirstInColor(
 // ---------------------------------------------------------
 //	Pierwsza karta w kolorze - wartoœæ
 //
-T_CARDVAL	//WY wartoœæ najmniejszej karty
+T_RANK	//WY wartoœæ najmniejszej karty
 CUserCards::FirstInColorVal(
-	T_COLOR a_enColor	//WE kolor
+	T_SUIT a_enColor	//WE kolor
 	)	const
 {
 	// znajdŸ najm³odsz¹ kartê w najkrótszym kolorze
@@ -86,7 +87,7 @@ CUserCards::FirstInColorVal(
 //
 const CCard* 
 CUserCards::FirstInColorCard(
-	T_COLOR a_enColor	//WE kolor
+	T_SUIT a_enColor	//WE kolor
 	)	const
 {
 	// znajdŸ najm³odsz¹ kartê w najkrótszym kolorze
@@ -106,41 +107,10 @@ CUserCards::FirstInColorCard(
 }
 
 
-// ---------------------------------------------------------
+
+void CUserCards::Sort(short a_nStart, short a_nEnd)
 //	Posortowanie kart
 //
-void 
-CUserCards::Sort(
- 	short a_nStart,	// od której zacz¹æ sortowanie
-	short a_nEnd	// na której skoñczyæ
-	)
-{
-#pragma message(HERE "zmieñ algorytm sortowania")
-	short l_nAt ;
-	short l_nAtIn ;
-	for (l_nAt = a_nStart; l_nAt <= a_nEnd; l_nAt++)
-	{
-		short l_nNumAt = (m_cards[l_nAt]).GetNr() ;
-		short l_nMin = l_nNumAt ;
-		short l_nMinPos = l_nAt ;
-
-		for (l_nAtIn = l_nAt + 1; l_nAtIn <= a_nEnd; l_nAtIn++)
-		{
-			if (l_nMin > (m_cards[l_nAtIn]).GetNr())
-			{
-				l_nMin = (m_cards[l_nAtIn]).GetNr() ;
-				l_nMinPos = l_nAtIn ;
-			}
-		}
-		if (l_nAt != l_nMinPos)
-		{
-			m_cards[l_nMinPos].SetCardNr(l_nNumAt) ;
-			m_cards[l_nAt].SetCardNr(l_nMin) ; 
-		}
-	}
-}
-
-void CUserCards::SortSTL(short a_nStart, short a_nEnd)
 {
 	if (a_nStart < 0 || a_nEnd >= 13 || a_nStart > a_nEnd)
 		return; // bounds check
@@ -198,7 +168,7 @@ CUserCards::SetCard(
 // ---------------------------------------------------------
 //	Najkrótszy kolor w kartach
 //
-T_COLOR		//WY kolor najkrótszy
+T_SUIT		//WY kolor najkrótszy
 CUserCards::ShortestColor()	const
 {
 
@@ -208,7 +178,7 @@ CUserCards::ShortestColor()	const
 	short l_iHeartsCnt = ColorCnt(E_CC_HEART);
 
 	short l_iShortest = l_iClubsCnt;
-	T_COLOR l_enColor = E_CC_CLUB ;
+	T_SUIT l_enColor = E_CC_CLUB ;
 
 	if (l_iShortest == 0)
 	{
@@ -255,7 +225,7 @@ CUserCards::ShortestColor()	const
 //
 short	//WY ile kart w kartach u¿ytk. w podanym kolorze
 CUserCards::ColorCnt(
-	T_COLOR a_enColor,	//WE kolor 
+	T_SUIT a_enColor,	//WE kolor 
 	BOOL a_bUsed		//WE TRUE nie uwzglêdniaj u¿ytych
 	)	const
 {
@@ -278,7 +248,7 @@ CUserCards::ColorCnt(
 //
 short	//WY iloœæ kart w kolorze z uzytymi
 CUserCards::ColorAllCnt(
-	T_COLOR a_enColor	//WE sprawdzany kolor
+	T_SUIT a_enColor	//WE sprawdzany kolor
 	)	const
 {
 	return ColorCnt(a_enColor, FALSE);
@@ -288,7 +258,7 @@ CUserCards::ColorAllCnt(
 // ---------------------------------------------------------
 //	Najkrótszy kolor niekierowy
 //
-T_COLOR		//WY najkrótszy niekierowy kolor
+T_SUIT		//WY najkrótszy niekierowy kolor
 CUserCards::ShortestColorNoHearts() const
 {
 
@@ -297,7 +267,7 @@ CUserCards::ShortestColorNoHearts() const
 	short l_iSpadesCnt = ColorCnt(E_CC_SPADE);
 
 	short l_iShortest = l_iClubsCnt;
-	T_COLOR l_enColor = E_CC_CLUB ;
+	T_SUIT l_enColor = E_CC_CLUB ;
 
 	if (l_iShortest == 0)
 	{
@@ -354,7 +324,7 @@ CUserCards::AreNoHearts() const
 //
 short	//WY numer karty najwiekszej w kolorze
 CUserCards::LastInColor(
-	T_COLOR a_enColor	//WE badany kolor
+	T_SUIT a_enColor	//WE badany kolor
 	) const
 {
 	// znajdŸ najstarsz¹ kartê w kolorze
@@ -387,7 +357,7 @@ CUserCards::LessOrBiggestInColor(
 	// znajdŸ pierwsz¹ mniejsz¹ lub najwiêksz¹ w kolorze
 	// jeœli nie masz - wyrzuæ najwy¿sz¹ w najkrótszym kolorze
 	// karty ju¿ pouk³adane
-	T_COLOR l_enColor ;
+	T_SUIT l_enColor ;
 	short l_iFoundAt = -1 ;
 	l_enColor = a_trick.GetCardColor(0);
 	const CCard* l_pCard = a_trick.Biggest() ;
@@ -418,7 +388,7 @@ CUserCards::LessOrBiggestInColor(
 //
 BOOL	//WY TRUE - kolor jest
 CUserCards::HasColor(
-	T_COLOR a_enColor	//WE sprawdzany kolor
+	T_SUIT a_enColor	//WE sprawdzany kolor
 	)	const
 {
 	short l_iCard ;
@@ -444,7 +414,7 @@ CUserCards::HasColor(
 //
 short	//WE pozycja najwiêkszej karty w kolorze
 CUserCards::Biggest(
-	T_COLOR a_enColor	//WE sprawdzany kolor
+	T_SUIT a_enColor	//WE sprawdzany kolor
 	)	const
 {
 
@@ -474,7 +444,7 @@ CUserCards::Biggest(
 //
 const CCard*	//WY karta najwiêksza w kolorze
 CUserCards::BiggestInColorCard(
-	T_COLOR a_enColor	//WE sprawdzany kolor
+	T_SUIT a_enColor	//WE sprawdzany kolor
 	)	const
 {
 	return BiggestInColorCardRank(a_enColor, 1);
@@ -486,7 +456,7 @@ CUserCards::BiggestInColorCard(
 //
 const CCard*	//WY karta najwy¿sza w kolorze
 CUserCards::BiggestInColorCardRank(
-	T_COLOR a_enColor,	//WE sprawdzany kolor
+	T_SUIT a_enColor,	//WE sprawdzany kolor
 	short a_nRank		//WE która najwy¿sza
 	)	const
 {
@@ -517,8 +487,8 @@ CUserCards::BiggestInColorCardRank(
 //
 short	//WY numer karty
 CUserCards::GetBiggestBelow(
-	T_COLOR a_enColor,	//WE kolor
-	T_CARDVAL a_cv		//WE wartoœæ karty
+	T_SUIT a_enColor,	//WE kolor
+	T_RANK a_cv		//WE wartoœæ karty
 	) const
 {
 	short l_iCard;
@@ -541,8 +511,8 @@ CUserCards::GetBiggestBelow(
 //
 short	//WY numer karty w rêce
 CUserCards::FindCard(
-	T_COLOR a_enColor,	//WE kolor
-	T_CARDVAL a_cv,		//WE wartoœæ karty
+	T_SUIT a_enColor,	//WE kolor
+	T_RANK a_cv,		//WE wartoœæ karty
 	BOOL a_bUsed		//WE TRUE - bez u¿ywanych
 	) const
 {
@@ -606,7 +576,7 @@ CUserCards::FindCard(
 //	Ranking 2 oznacza 2 z kolei kolor w którym jest najmniej 
 //	kart, itd.
 //
-T_COLOR		//WY njkrótszy kolor wed³ug rankingu
+T_SUIT		//WY njkrótszy kolor wed³ug rankingu
 CUserCards::GetShortestColorRank(
 	short a_nRank,	//WE ranking
 	BOOL a_bUsed	//WE TRUE - nie uwzglêdniaæ u¿ytych
@@ -615,7 +585,7 @@ CUserCards::GetShortestColorRank(
 	ASSERT((a_nRank >= 1) && (a_nRank <= 4));
 	struct S_RANK
 	{
-		T_COLOR enColor;
+		T_SUIT enColor;
 		short	nLeft;
 	} l_aColorCnt[4], l_aColorSort[4];
 
@@ -667,7 +637,7 @@ CUserCards::GetShortestColorRank(
 //	Ranking 2 oznacza 2 z kolei kolor w którym jest najmniej 
 //	kart, itd.
 //
-T_COLOR		//WY znaleziony kolor
+T_SUIT		//WY znaleziony kolor
 CUserCards::GetShortestColorAllRank(
 	short a_nRank	//WE który najkrótszy
 	)	const
@@ -682,7 +652,7 @@ CUserCards::GetShortestColorAllRank(
 //	Ranking 2 oznacza 2 z kolei kolor w którym jest najmniej 
 //	kart, itd.
 //
-T_COLOR		//WY njkrótszy kolor wed³ug rankingu
+T_SUIT		//WY njkrótszy kolor wed³ug rankingu
 CUserCards::GetLongestColorRank(
 	short a_nRank,	//WE ranking
 	BOOL a_bUsed	//WE TRUE - nie uwzglêdniaæ u¿ytych
@@ -739,7 +709,7 @@ CUserCards::IsCard(
 //
 short	//WY ilosæ kart w kolorze
 CUserCards::CardsInColor(
-	T_COLOR a_enColor	//WE sprawdzany kolor
+	T_SUIT a_enColor	//WE sprawdzany kolor
 	) const
 {
 	short l_nCard;
@@ -761,7 +731,7 @@ CUserCards::CardsInColor(
 //
 short	//WY iloœæ kart
 CUserCards::AllCardsInColor(
-	T_COLOR a_enColor	//WE sprawdzany kolor
+	T_SUIT a_enColor	//WE sprawdzany kolor
 	)	const
 {
 	short l_nCard;
@@ -847,7 +817,7 @@ CUserCards::HasKingOfHeart() const
 //	zwraca kolory wed³ug rankingu z najmniejsz¹ 
 //	kart¹  w danym kolorze
 //
-T_COLOR		//WY kolor z najmniejsz¹ kart¹
+T_SUIT		//WY kolor z najmniejsz¹ kart¹
 CUserCards::GetLowestCardColorRank(
 	short a_nRank	//WE ranking
 	) const
@@ -855,7 +825,7 @@ CUserCards::GetLowestCardColorRank(
 	ASSERT((a_nRank >= 1) && (a_nRank <= c_app_btPlayersCnt));
 	struct S_RANK
 	{
-		T_COLOR enColor;
+		T_SUIT enColor;
 		short	nLowest;
 	} l_aColorCnt[4], l_aColorSort[4];
 
@@ -905,7 +875,7 @@ CUserCards::GetLowestCardColorRank(
 //	Zwraca kolor w którym pierwsza karta jest najwiêksza 
 //	(wedlug rankingu)
 //
-T_COLOR		//WY kolor z najwiêksz¹ kart¹
+T_SUIT		//WY kolor z najwiêksz¹ kart¹
 CUserCards::GetBiggestFirstCardColorRank(
 	short a_nRank	//WE ranking
 	) const
@@ -932,7 +902,7 @@ CUserCards::CardsBetween(
 
 	for (l_iCardNr = 0; l_iCardNr < 13; l_iCardNr++)
 	{
-		if (!(m_cards[l_iCardNr] == a_card1))
+		if (m_cards[l_iCardNr].GetColor() != a_card1.GetColor())
 			continue;
 		if (m_cards[l_iCardNr].IsUsed())
 			continue;
@@ -964,7 +934,7 @@ CUserCards::CardsBetweenAll(
 
 	for (l_iCardNr = 0; l_iCardNr < 13; l_iCardNr++)
 	{
-		if (!(m_cards[l_iCardNr] == a_card1))
+		if (m_cards[l_iCardNr].GetColor() != a_card1.GetColor())
 			continue;
 		if (m_cards[l_iCardNr] < a_card1) 
 			continue;
@@ -981,11 +951,11 @@ CUserCards::CardsBetweenAll(
 //
 short	//WY iloœc kart w najkrótszym kolorze
 CUserCards::InShortestColorAllNoOneColor(
-	T_COLOR a_enColor	//WE niesprawdzany kolor
+	T_SUIT a_enColor	//WE niesprawdzany kolor
 	)	const
 {
 	short l_nRank;
-	T_COLOR l_enColor;
+	T_SUIT l_enColor;
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
 		l_enColor = GetShortestColorAllRank(l_nRank);
@@ -1005,11 +975,11 @@ CUserCards::InShortestColorAllNoOneColor(
 //
 short	//WY iloœæ w kolorze
 CUserCards::InShortestColorNoOneColor(
-	T_COLOR a_enColor	//WE kolor nieuwzglêdniany
+	T_SUIT a_enColor	//WE kolor nieuwzglêdniany
 	)	const
 {
 	short l_nRank;
-	T_COLOR l_enColor;
+	T_SUIT l_enColor;
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
 		l_enColor = GetShortestColorRank(l_nRank);
@@ -1031,22 +1001,22 @@ CUserCards::InShortestColorNoOneColor(
 //
 BOOL	//WY TRUE - ma wszystkie
 CUserCards::HasCards(
-	T_COLOR a_enColor,	//WE sprawdzany kolor
+	T_SUIT a_enColor,	//WE sprawdzany kolor
 	BOOL a_bUsed,		//WE TRUE - bez uwzglêdniania u¿ytych
 	short a_nCnt,		//WE iloœæ sprawdzanych kart
-	...					//WE sprawdzane karty typu T_CARDVAL
+	...					//WE sprawdzane karty typu T_RANK
 	)	const
 {
 
 	ASSERT((a_nCnt >= 1) && (a_nCnt <= 13));
 	short l_nArg;
-	T_CARDVAL l_cv;
+	T_RANK l_cv;
 
 	va_list l_vaList;
 	va_start(l_vaList, a_nCnt);
 	for (l_nArg = 1; l_nArg <= a_nCnt; l_nArg++)
 	{
-		l_cv = va_arg(l_vaList, T_CARDVAL);
+		l_cv = va_arg(l_vaList, T_RANK);
 		if (FindCard(a_enColor, l_cv, a_bUsed) < 0)
 		{
 			return FALSE;
@@ -1062,22 +1032,22 @@ CUserCards::HasCards(
 //
 BOOL	//WY TRUE - ma choæ jedn¹ kartê
 CUserCards::HasOneOfCards(
-	T_COLOR a_enColor,	//WE kolor
+	T_SUIT a_enColor,	//WE kolor
 	BOOL a_bUsed,		//WE TRUE - nie uwzglêdniæ u¿ytych
 	short a_nCnt,		//WE iloœæ sprawdzanych kart
-	...					//WE sprawdzane karty (T_CARDVAL)
+	...					//WE sprawdzane karty (T_RANK)
 	)	const
 {
 
 	ASSERT((a_nCnt >= 1) && (a_nCnt <= 13));
 	short l_nArg;
-	T_CARDVAL l_cv;
+	T_RANK l_cv;
 
 	va_list l_vaList;
 	va_start(l_vaList, a_nCnt);
 	for (l_nArg = 1; l_nArg <= a_nCnt; l_nArg++)
 	{
-		l_cv = va_arg(l_vaList, T_CARDVAL);
+		l_cv = va_arg(l_vaList, T_RANK);
 		if (FindCard(a_enColor, l_cv, a_bUsed) >= 0)
 		{
 			return TRUE;
@@ -1090,15 +1060,15 @@ CUserCards::HasOneOfCards(
 // ---------------------------------------------------------
 //	Czy ma kolor w którym jest dok³adnie tyle kart co wymieniono
 //
-T_COLOR		//WY znaleziony kolor lub E_CC_NOTHING
+T_SUIT		//WY znaleziony kolor lub E_CC_NOTHING
 CUserCards::GetColorExactNumNoOneColor(
 	short a_nNum,		//WE szukana liczba kart
-	T_COLOR a_enColor,	//WE oprócz koloru
+	T_SUIT a_enColor,	//WE oprócz koloru
 	BOOL a_bUsed		//WE TRUE - nie uwzglêdniaæ u¿ywanych
 	)	const
 {
 	short l_nCnt;
-	T_COLOR l_enColor = E_CC_CLUB;
+	T_SUIT l_enColor = E_CC_CLUB;
 	l_nCnt = ColorCnt(a_enColor, a_bUsed);
 	if (
 		(l_nCnt == a_nNum) &&
@@ -1130,7 +1100,7 @@ CUserCards::GetColorExactNumNoOneColor(
 	   )
 	   return l_enColor;
 
-	return E_CC_NOTHING;
+	return E_CC_NULL;
 }
 
 
@@ -1189,7 +1159,7 @@ CUserCards::HasCardForPuzzle(
 BOOL	//WY TRUE: jest karta do zagrania
 CUserCards::HasCardForPuzzleColor(
 	const CPuzzleRows* a_pPuzzleRow,	//WE wszystkie wiersze
-	T_COLOR a_enColor					//WE sprawdzany kolor
+	T_SUIT a_enColor					//WE sprawdzany kolor
 	) const
 {
 	const CCard* l_pCard;
@@ -1201,7 +1171,7 @@ CUserCards::HasCardForPuzzleColor(
 	}
 	else
 	{
-		if (FindCard(a_enColor, (T_CARDVAL)(l_pCard->CardValue() + 1)) >= 0)
+		if (FindCard(a_enColor, (T_RANK)(l_pCard->CardValue() + 1)) >= 0)
 			return TRUE;
 	}
 
@@ -1213,7 +1183,7 @@ CUserCards::HasCardForPuzzleColor(
 	}
 	else
 	{
-		if (FindCard(a_enColor, (T_CARDVAL)(l_pCard->CardValue() - 1)) >= 0)
+		if (FindCard(a_enColor, (T_RANK)(l_pCard->CardValue() - 1)) >= 0)
 			return TRUE;
 	}
 	return FALSE;
@@ -1284,7 +1254,7 @@ CUserCards::GetCard(
 //
 BOOL 
 CUserCards::HasLeastInColor(
-	T_COLOR a_enColor, 
+	T_SUIT a_enColor, 
 	const CTakenTricks* a_pTricks
 	) const
 {

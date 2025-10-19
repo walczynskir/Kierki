@@ -37,7 +37,7 @@ CTakenTricks::Clear()
 {
 	m_nTrickCnt = 0;
 	int l_iAt;
-	for (l_iAt = 0; l_iAt < ArraySize(m_tricks); l_iAt++)
+	for (l_iAt = 0; l_iAt < ArraySize(m_tricks); ++l_iAt)
 	{
 		m_tricks[l_iAt].Clear();
 	}
@@ -61,7 +61,7 @@ CTakenTricks::operator[](
 //
 short	//WY ile kart posz³o w kolorze
 CTakenTricks::TakenInColor(
-	T_COLOR a_enColor	//kolor sprawdzany
+	T_SUIT a_enColor	//kolor sprawdzany
 	) const
 {
 	short l_nTrick;
@@ -79,7 +79,7 @@ CTakenTricks::TakenInColor(
 //
 short	//WY iloœæ w kolorze nieu¿ytych
 CTakenTricks::LeftInColor(
-	T_COLOR a_enColor	//WE sprawdzany kolor
+	T_SUIT a_enColor	//WE sprawdzany kolor
 	) const
 {
 	return 13 - TakenInColor(a_enColor);
@@ -96,7 +96,7 @@ CTakenTricks::AreBiggerInColor(
 	const CUserCards* a_pCards	//WE karty gracza
 	) const
 {
-	T_COLOR l_enColor = a_pCard->GetColor();
+	T_SUIT l_enColor = a_pCard->GetColor();
 	if (LeftInColor(l_enColor) == 0)
 		return FALSE;
 	
@@ -141,7 +141,7 @@ CTakenTricks::AreLessInColor(
 	const CUserCards* a_pCards	//WE karty usera
 	) const
 {
-	T_COLOR l_enColor = a_pCard->GetColor();
+	T_SUIT l_enColor = a_pCard->GetColor();
 	if (LeftInColor(l_enColor) == 0)
 		return FALSE;
 	
@@ -185,7 +185,7 @@ CTakenTricks::BiggerInColorCnt(
 	const CCard* a_pCard
 	) const
 {
-	T_COLOR l_enColor = a_pCard->GetColor();
+	T_SUIT l_enColor = a_pCard->GetColor();
 	short l_nCard = a_pCard->GetNr();
 	if (LeftInColor(l_enColor) == 0)
 		return 0;
@@ -227,7 +227,7 @@ CTakenTricks::BiggerInColorCnt(
 //	Ranking 2 oznacza 2 z kolei kolor w którym zosta³o 
 //	najwiêcej kart, itd.
 //
-T_COLOR		//WY wybrany kolor
+T_SUIT		//WY wybrany kolor
 CTakenTricks::LeftInColorRank(
 	short a_nRank	//WE ranking
 	) const
@@ -235,7 +235,7 @@ CTakenTricks::LeftInColorRank(
 	ASSERT((a_nRank >= 1) && (a_nRank <= 4));
 	struct S_RANK
 	{
-		T_COLOR enColor;
+		T_SUIT enColor;
 		short	nLeft;
 	} l_aColorCnt[4], l_aColorSort[4];
 
@@ -285,7 +285,7 @@ CTakenTricks::LeftInColorRank(
 //
 short	//WY iloœæ wziêtych lew
 CTakenTricks::TricksInColor(
-	T_COLOR a_enColor	//WE sprawdzany kolor
+	T_SUIT a_enColor	//WE sprawdzany kolor
 	) const
 {
 	short l_nTrick;
@@ -365,7 +365,7 @@ CTakenTricks::TakenLadies() const
 //
 BOOL	//WY TRUE - grane tylko ca³e lewy
 CTakenTricks::FullTricksInColor(
-	T_COLOR a_enColor	//WE kolor sprawdzany
+	T_SUIT a_enColor	//WE kolor sprawdzany
 	)	const
 {
 	short l_nTrick;
@@ -390,8 +390,8 @@ CTakenTricks::FullTricksInColor(
 //
 BOOL	//WY TRUE - by³y atu
 CTakenTricks::TrumpsInLastTrickInColor(
-	T_COLOR a_enColor,	//WE kolor sprawdzany
-	T_COLOR a_enTrumps	//WE kolor atutowy
+	T_SUIT a_enColor,	//WE kolor sprawdzany
+	T_SUIT a_enTrumps	//WE kolor atutowy
 	) const
 {
 	short l_nTrick;
@@ -426,6 +426,8 @@ CTakenTricks::GetTricksCnt() const
 const CTrick&	//WY rozgrywana lewa
 CTakenTricks::GetCurrentTrick() const
 {
+	ASSERT(m_nTrickCnt > 0);
+	ASSERT(m_nTrickCnt <=13);
 	return m_tricks[m_nTrickCnt - 1];
 }
 
@@ -457,7 +459,7 @@ CTakenTricks::SetCard(
 //
 T_PLAYER	//WY w³aœciciel ostatniej lewy
 CTakenTricks::SetLastTrickOwner(
-	T_COLOR a_colorTrumps	//WE kolor atu lub E_CC_NOTHING
+	T_SUIT a_colorTrumps	//WE kolor atu lub E_CC_NOTHING
 	)
 {
 	return m_tricks[GetTricksCnt() - 1].SetTrickOwner(a_colorTrumps);

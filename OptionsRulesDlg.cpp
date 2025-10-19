@@ -4,6 +4,7 @@
 #include "resource.h"
 #include "OptionsDlg.h"
 #include "OptionsTimeDlg.h"
+#include "Kierki.h"
 #include <rcommon/RColorWnd.h>
 #include <commctrl.h>
 #include <rcommon/LanguageManager.h>
@@ -71,7 +72,7 @@ static INT_PTR OptionsRulesDlgProc(HWND a_hDlg, UINT a_iMsg, WPARAM a_wParam, LP
 		OnInitDialog(a_hDlg, reinterpret_cast<LPOptRulesData>(a_lParam));
 		return TRUE;
 
-	case WM_GETVALUES:
+	case WM_APP_GETVALUES:
 		GetCtrlValues(a_hDlg);
 		::SetWindowLong(a_hDlg, DWL_MSGRESULT, TRUE);
 		return TRUE; // must be TRUE too return proper LRESULT

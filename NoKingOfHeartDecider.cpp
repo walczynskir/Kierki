@@ -59,7 +59,7 @@ CNoKingOfHeartDecider::FirstCard(
 	short a_iTrick	//WE numer lewy
 	) const
 {
-	T_COLOR l_enColor = DecideColor(a_iTrick);
+	T_SUIT l_enColor = DecideColor(a_iTrick);
 	if (l_enColor == E_CC_HEART)
 		return m_pCards->FirstInColor(l_enColor);
 	else
@@ -77,13 +77,13 @@ CNoKingOfHeartDecider::FirstCard(
 // ---------------------------------------------------------
 //	W jakim kolorze zagramy
 //
-T_COLOR		//WY wybrany kolor
+T_SUIT		//WY wybrany kolor
 CNoKingOfHeartDecider::DecideColor(
 	short a_iTrick	//WE numer lewy
 	) const
 {
 	short l_nRank;
-	T_COLOR l_enColor;
+	T_SUIT l_enColor;
 	// mo¿e nie ma innego koloru oprócz kierów
 	if (!m_pCards->HasNoHeartsColor())
 		return E_CC_HEART;
@@ -147,7 +147,7 @@ CNoKingOfHeartDecider::NextCard(
 {
 	const CTrick& l_trickCurrent = (*m_pTricks)[a_iTrick - 1] ;
 	const CCard* l_cardFirst = l_trickCurrent.GetCard(0) ;
-	T_COLOR l_enColor = l_trickCurrent.GetCardColor(0);
+	T_SUIT l_enColor = l_trickCurrent.GetCardColor(0);
 	short l_nCardNr;
 
 	if (l_trickCurrent.IsKingOfHeart())
@@ -192,7 +192,7 @@ CNoKingOfHeartDecider::NextCard(
 short	//WY numer karty
 CNoKingOfHeartDecider::FindCardOther() const
 {
-	T_COLOR l_enColor;
+	T_SUIT l_enColor;
 	short l_nRank;
 	short l_nCardNr;
 

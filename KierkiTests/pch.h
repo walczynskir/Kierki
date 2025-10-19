@@ -10,4 +10,12 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
+#define DEBUG_PRINT(fmt, ...)                         \
+    do {                                              \
+        wchar_t buf[256];                             \
+        swprintf_s(buf, _countof(buf), fmt, __VA_ARGS__); \
+        OutputDebugString(buf);                       \
+    } while (0)
+
+
 #endif //PCH_H

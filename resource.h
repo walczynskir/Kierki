@@ -113,6 +113,7 @@
 #define IDI_BRIGHTNESS                  192
 #define IDS_SLIDER_TT					193
 #define IDC_HELP_SECTIONLABEL			194
+#define IDB_GAMEWND_NOTRUMP				195
 #define IDC_PLAYER1                     1001
 #define IDC_PLAYER2                     1002
 #define IDC_COVER                       1003

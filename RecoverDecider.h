@@ -14,7 +14,7 @@
 class CRecoverDecider : public  CDecider  
 {
 public:
-	CRecoverDecider(const CUserCards* a_pUserCards, const CTakenTricks* a_pTricks, T_PLAYER a_enPlayer, T_COLOR a_enTrumps);
+	CRecoverDecider(const CUserCards* a_pUserCards, const CTakenTricks* a_pTricks, T_PLAYER a_enPlayer, T_SUIT a_enTrumps);
 	virtual ~CRecoverDecider();
 	virtual short GetCardNr(short a_nTrick) const;
 
@@ -34,7 +34,7 @@ private:
 	short NextCardNoTrumps(short a_nTrick) const;
 	short NextCardInColorNoTrumps(short a_nTrick) const;
 	short NextCardNotInColorNoTrumps(short a_nTrick) const;
-	T_COLOR m_enTrumps;
+	T_SUIT m_enTrumps;
 };
 
 #endif // !defined(AFX_RECOVERDECIDER_H__8A41AE41_DA77_11D3_A79A_407610C10000__INCLUDED_)

@@ -4,25 +4,25 @@
 #include "stdafx.h"
 #include "OptionsDlg.h"
 #include "resource.h"
+#include "kierki.h"
 #include <tchar.h>
 #include <commctrl.h>
 #include <rcommon/RHyperlinkWnd.h>
 #include <RCards/resource.h>
 #include <rcommon/RSystemExc.h>
-#include "HeartsData.h"
 #include <rcommon/SafeWndProc.hpp>
 
 
 typedef struct S_OPTDATA
 {
 	CRegData* m_pData; 
-	CHeartsData* m_pHeartsData;
+	LanguageManager& m_langManager;
 } TOptData, *LPOptData;
 
 class ROptionsData
 {
 public:
-	ROptionsData(CRegData* a_pRegData, CHeartsData* a_pHeartsData)
+	ROptionsData(CRegData* a_pRegData, LanguageManager& a_langManager)
 	{
 		m_ahDlg[0].m_pfnCreateDlg = static_cast<RCREATEDLGPROC>(CreateOptViewDlg);
 		m_ahDlg[0].m_pRegData = &(a_pRegData->m_regView);
@@ -38,7 +38,7 @@ public:
 
 		m_ahDlg[3].m_pfnCreateDlg = static_cast<RCREATEDLGPROC>(CreateOptRulesDlg);
 		m_ahDlg[3].m_pRegData = &(a_pRegData->m_regRules);
-		m_ahDlg[3].m_pObj = static_cast<LPVOID>(&(a_pHeartsData->m_langManager));
+		m_ahDlg[3].m_pObj = static_cast<LPVOID>(&(a_langManager));
 		::LoadString(::GetModuleHandle(NULL), IDS_TABTITLE_RULES, m_ahDlg[3].m_sTitle, ArraySize(m_ahDlg[0].m_sTitle));
 	}
 
@@ -71,11 +71,9 @@ inline static void SetActiveTab(HWND a_hDlg, int a_iTab);
 static ROptionsData* GetRData(HWND a_hDlg);
 
 
-UINT OptionsDlg_DoModal(HWND a_hWndParent, CRegData* a_pData, CHeartsData* a_pHeartsData)
+UINT OptionsDlg_DoModal(HWND a_hWndParent, CRegData* a_pData, LanguageManager& a_langManager)
 {
-	TOptData l_optData;
-	l_optData.m_pData = a_pData;
-	l_optData.m_pHeartsData = a_pHeartsData;
+	TOptData l_optData{ a_pData, a_langManager };
 	RHyperlinkWnd_RegisterClass();
 	INT_PTR l_iRes = ::DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_OPTIONS), a_hWndParent, SafeDialogProc<OptionsDlgProc>, reinterpret_cast<LPARAM>(&l_optData));
 	return static_cast<UINT>(l_iRes);
@@ -135,7 +133,7 @@ bool GetCtrlValues(HWND a_hDlg)
 	{
 		if (l_pData->m_ahDlg[l_iAt].m_hWnd != NULL)
 		{
-			if (::SendMessage(l_pData->m_ahDlg[l_iAt].m_hWnd, WM_GETVALUES, 0, 0) != TRUE)
+			if (::SendMessage(l_pData->m_ahDlg[l_iAt].m_hWnd, WM_APP_GETVALUES, 0, 0) != TRUE)
 			{
 				return false;
 			}
@@ -147,7 +145,7 @@ bool GetCtrlValues(HWND a_hDlg)
 
 static void OnInitDialog(HWND a_hDlg, LPOptData a_pData)
 {
-	ROptionsData* l_pOptData = new ROptionsData(a_pData->m_pData, a_pData->m_pHeartsData);	// delete in OnDestroy()
+	ROptionsData* l_pOptData = new ROptionsData(a_pData->m_pData, a_pData->m_langManager);	// delete in OnDestroy()
 
 	::SetWindowLongPtr(a_hDlg, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(l_pOptData));	
 

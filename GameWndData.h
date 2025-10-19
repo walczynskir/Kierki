@@ -1,5 +1,6 @@
 #pragma once
-#include "GameData.h"
+#include "HeartsGame.h"
+#include "UIHeartsGame.h"
 
 
 struct CVertPos  
@@ -20,8 +21,8 @@ class GameWndData
 {
 public:
 
-	GameWndData(HWND a_hWndApp, GameData* a_pGameData) :
-		m_hWndApp(a_hWndApp), m_pGameData(a_pGameData)
+	GameWndData(HWND a_hWndApp, HeartsGame* a_pGameData, CRegData& a_regData) :
+		m_hWndApp(a_hWndApp), m_pGameData(a_pGameData), m_regData(a_regData)
 	{
 		m_hWndNoTrump = NULL;
 		m_nLastHighlighted = -1;
@@ -35,6 +36,9 @@ public:
 		SetBmpPass(NULL);
 		SetBmpFelt(NULL);
 	}
+
+	static GameWndData* GetData(HWND a_hWnd) { return reinterpret_cast<GameWndData*>(::GetWindowLongPtr(a_hWnd, GWLP_USERDATA)); };
+	static void SetData(HWND a_hWnd, GameWndData* a_pData) { ::SetWindowLongPtr(a_hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(a_pData)); };
 
 	void SetBmpCover(HBITMAP a_hBmp) 
 	{ 
@@ -72,8 +76,11 @@ public:
 
 	HBITMAP GetBmpFelt() const { return m_hBmpFelt; };
 
+	void SetUIGameWnd(HWND a_hWnd) { m_uiGame.SetWnd(a_hWnd); };
+	CUIHeartsGame& GetUI() { return m_uiGame; };
 
-	GameData* m_pGameData;
+
+	HeartsGame* m_pGameData;
 	HWND	  m_hWndApp;
 
 	HWND      m_hWndNoTrump;
@@ -89,11 +96,13 @@ public:
 	SIZE		m_sizeBmpPass;
 	T_PLAYER    m_enPassPlayer;
 
-	bool     m_bConfirmTrick;
-	short m_nLastHighlighted;
+	bool		m_bConfirmTrick;
+	short		m_nLastHighlighted;
+	CRegData&	m_regData;
 
 private:
 	HBITMAP  m_hBmpFelt{};
 	HBITMAP  m_hBmpCover{};
 	HBITMAP  m_hBmpPass{};
+	CUIHeartsGame m_uiGame;
 };

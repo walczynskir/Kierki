@@ -24,7 +24,7 @@
     <ClCompile Include="Decider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameData.cpp">
+    <ClCompile Include="HeartsGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameWnd.cpp">
@@ -149,7 +149,7 @@
     <ClInclude Include="Decider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameData.h">
+    <ClInclude Include="HeartsGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameWnd.h">
@@ -276,6 +276,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FontFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UIHeartsGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

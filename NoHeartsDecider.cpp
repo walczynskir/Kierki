@@ -89,7 +89,7 @@ CNoHeartsDecider::NextCard(
 	// lub najwiêksz¹
 	const CTrick& l_trickCurrent = (*m_pTricks)[a_iTrick - 1] ;
 	const CCard* l_pCardFirst = l_trickCurrent.GetCard(0);
-	T_COLOR l_enColor = l_trickCurrent.GetCardColor(0);
+	T_SUIT l_enColor = l_trickCurrent.GetCardColor(0);
 
 	short l_iRetAt = 0;
 	short l_nCardNr ;
@@ -178,7 +178,7 @@ CNoHeartsDecider::GetWorstColorCard(
 	short l_nCardNr = -1;
 	for (short l_nRank = 1; l_nRank <=4; l_nRank++)
 	{
-		T_COLOR l_enColor = 
+		T_SUIT l_enColor = 
 			m_pCards->GetBiggestFirstCardColorRank(l_nRank);
 		if (l_enColor == E_CC_HEART)
 		{
@@ -209,7 +209,7 @@ CNoHeartsDecider::GetNotTakingCard(
 	
 	for (short l_nRank = 1; l_nRank <=4; l_nRank++)
 	{
-		T_COLOR l_enColor = 
+		T_SUIT l_enColor = 
 			m_pCards->GetLowestCardColorRank(l_nRank);
 		if (l_enColor == E_CC_HEART)
 		{
@@ -237,7 +237,7 @@ CNoHeartsDecider::GetShortestAreBigger(
 {
 	short l_nCardNr = -1;
 	short l_nRank;
-	T_COLOR l_enColor = E_CC_NOTHING;
+	T_SUIT l_enColor = E_CC_NULL;
 
 	for (l_nRank = 1; l_nRank < 5; l_nRank++)
 	{
@@ -280,7 +280,7 @@ CNoHeartsDecider::GetBestOtherCard(
 	// taki w którym s¹ wy¿sze
 	short l_nCardNr = -1;
 	short l_nRank;
-	T_COLOR l_enColor = E_CC_NOTHING;
+	T_SUIT l_enColor = E_CC_NULL;
 
 	for (l_nRank = 1; l_nRank < 5; l_nRank++)
 	{
@@ -314,7 +314,7 @@ CNoHeartsDecider::DecideOtherColor(
 	// first - color with biggest lowest card
 	for (short l_nRank = 4; l_nRank >= 1; l_nRank--)
 	{
-		T_COLOR l_enColor = 
+		T_SUIT l_enColor = 
 			m_pCards->GetLowestCardColorRank(l_nRank);
 		// hearts only if we have only 2 hearts
 		// or in other cards we have only lowest cards
@@ -343,7 +343,7 @@ CNoHeartsDecider::DecideOtherColor(
 		return m_pCards->Biggest(E_CC_HEART);
 	}
 	// throw biggest card
-	T_COLOR l_enColor = 
+	T_SUIT l_enColor = 
 		m_pCards->GetBiggestFirstCardColorRank(1);
 	return m_pCards->Biggest(l_enColor);
 }
@@ -387,7 +387,7 @@ CNoHeartsDecider::ShouldThrowHearts(
 BOOL	//OUT TRUE - we should
 CNoHeartsDecider::ShouldThrowOtherColor(
 	short a_nTrick,		//IN trick nr 
-	T_COLOR a_enColor	//IN color to check
+	T_SUIT a_enColor	//IN color to check
 	) const
 {
 	if (LeftInColorOthers(a_enColor) <= 0)

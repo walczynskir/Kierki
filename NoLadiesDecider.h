@@ -22,8 +22,8 @@ private:
 	short CardForLadies(const CCard* a_pCard) const;
 	short FirstCard(short a_iTrick) const;
 	short NextCard(short a_iTrick) const;
-	T_COLOR DecideColor(short a_iTrick) const;
-	BOOL CanPlayColor(short a_iTrick, T_COLOR a_enColor) const;
+	T_SUIT DecideColor(short a_iTrick) const;
+	BOOL CanPlayColor(short a_iTrick, T_SUIT a_enColor) const;
 };
 
 #endif // !defined(AFX_NOLADIESDECIDER_H__69EFE701_AB11_11D3_A79A_9C7610C10000__INCLUDED_)

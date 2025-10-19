@@ -16,7 +16,7 @@ CRecoverDecider::CRecoverDecider(
 	const CUserCards* a_pUserCards,	//WE karty gracza
 	const CTakenTricks* a_pTricks,	//WE wziête lewy
 	T_PLAYER a_enPlayer,			//WE gracz
-	T_COLOR a_enTrumps				//WE kolor atu
+	T_SUIT a_enTrumps				//WE kolor atu
 	)
 {
 	m_pCards = a_pUserCards;	
@@ -122,9 +122,9 @@ CRecoverDecider::FirstCard(
 
 	// je¿eli mamy jakiœ kolor ró¿ny od atu w którym mamy jedn¹ kartê
 	// to go zagrajmy, chyba ¿e to A
-	T_COLOR l_enColor = m_pCards->GetColorExactNumNoOneColor(1, m_enTrumps, FALSE);
+	T_SUIT l_enColor = m_pCards->GetColorExactNumNoOneColor(1, m_enTrumps, FALSE);
 	if (
-		(l_enColor != E_CC_NOTHING) &&
+		(l_enColor != E_CC_NULL) &&
 		(m_pCards->HasColor(l_enColor)) &&
 		(m_pCards->FirstInColorVal(l_enColor) != E_CV_A)
 		)
@@ -245,7 +245,7 @@ CRecoverDecider::NextCard(
 	)	const
 {
 	const CTrick& l_trickCurrent = (*m_pTricks)[a_nTrick - 1] ;
-	T_COLOR l_enColor = l_trickCurrent.GetCardColor(0);
+	T_SUIT l_enColor = l_trickCurrent.GetCardColor(0);
 
 	if (m_pCards->HasColor(l_enColor))
 		return NextCardInColor(a_nTrick);
@@ -322,7 +322,7 @@ CRecoverDecider::NextCardInColor3(
 {
 	const CTrick& l_trickCurrent = (*m_pTricks)[a_nTrick - 1] ;
 	const CCard* l_pBiggest = l_trickCurrent.Biggest(m_enTrumps);
-	T_COLOR l_enColor = l_trickCurrent.GetCardColor(0);
+	T_SUIT l_enColor = l_trickCurrent.GetCardColor(0);
 
 	// jeœli lewa w kolorze atutowym to trzba zagraæ wy¿sz¹ jeœli 
 	// mamy
@@ -349,7 +349,7 @@ CRecoverDecider::NextCardInColor2(
 {
 	const CTrick& l_trickCurrent = (*m_pTricks)[a_nTrick - 1] ;
 	const CCard* l_pBiggest = l_trickCurrent.Biggest(m_enTrumps);
-	T_COLOR l_enColor = l_trickCurrent.GetCardColor(0);
+	T_SUIT l_enColor = l_trickCurrent.GetCardColor(0);
 
 	// jeœli lewa w kolorze atutowym to trzeba zagraæ wy¿sz¹ jeœli 
 	// mamy
@@ -556,7 +556,7 @@ CRecoverDecider::DecideNotNeededCard()	const
 	short l_nRank;
 	for (l_nRank = 4; l_nRank >= 1; l_nRank--)
 	{
-		T_COLOR l_enColor = m_pCards->GetShortestColorRank(l_nRank);
+		T_SUIT l_enColor = m_pCards->GetShortestColorRank(l_nRank);
 		if (!m_pCards->HasColor(l_enColor))
 			continue;
 		return m_pCards->FirstInColor(l_enColor);
@@ -577,7 +577,7 @@ CRecoverDecider::FirstCardNoTrumps(
 	) const
 {
 	// lets check if we have five or more cards color
-	T_COLOR l_enLongest = m_pCards->GetLongestColorRank(1, TRUE);
+	T_SUIT l_enLongest = m_pCards->GetLongestColorRank(1, TRUE);
 	short l_nCardsAll = m_pCards->ColorAllCnt(l_enLongest);
 	short l_nCards = m_pCards->ColorCnt(l_enLongest);
 
@@ -599,7 +599,7 @@ CRecoverDecider::FirstCardNoTrumps(
 	short l_nRank;
 	for (l_nRank = 2; l_nRank < 4; l_nRank++)
 	{
-		T_COLOR l_enColor = m_pCards->GetLongestColorRank(l_nRank, TRUE);
+		T_SUIT l_enColor = m_pCards->GetLongestColorRank(l_nRank, TRUE);
 		l_nCards = m_pCards->ColorCnt(l_enColor);
 		// lets play in longest possible color
 		if (l_nCards > 0)
@@ -631,7 +631,7 @@ CRecoverDecider::NextCardNoTrumps(
 {
 	// check if we have card in trick color
 	const CTrick& l_trickCurrent = (*m_pTricks)[a_nTrick - 1] ;
-	T_COLOR l_enColor = l_trickCurrent.GetCardColor(0);
+	T_SUIT l_enColor = l_trickCurrent.GetCardColor(0);
 
 	if (m_pCards->HasColor(l_enColor))
 		return NextCardInColorNoTrumps(a_nTrick);
@@ -649,7 +649,7 @@ CRecoverDecider::NextCardInColorNoTrumps(
 	)	const
 {
 	const CTrick& l_trickCurrent = (*m_pTricks)[a_nTrick - 1];
-	T_COLOR l_enColor = l_trickCurrent.GetCardColor(0);
+	T_SUIT l_enColor = l_trickCurrent.GetCardColor(0);
 
 	const CCard* l_pBiggest = l_trickCurrent.Biggest(m_enTrumps);
 	return m_pCards->FirstBiggerOrLeastInColor(l_pBiggest);

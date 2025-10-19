@@ -37,7 +37,7 @@ CDecider::~CDecider()
 //
 short	//WY iloœæ kart w kolorze u innych
 CDecider::LeftInColorOthers(
-	T_COLOR a_enColor	//WE sprawdzany kolor
+	T_SUIT a_enColor	//WE sprawdzany kolor
 	)	const
 {
 	short l_nWent;
@@ -52,7 +52,7 @@ CDecider::LeftInColorOthers(
 // ---------------------------------------------------------
 //	Kolory w których zosta³o najmniej kart wed³ug rankingu
 //
-T_COLOR		//WY kolor z najmniejsz¹ iloœci¹ kart
+T_SUIT		//WY kolor z najmniejsz¹ iloœci¹ kart
 CDecider::LeftInColorOthersRank(
 	short a_nRank	//WE ranking
 	)	const
@@ -60,7 +60,7 @@ CDecider::LeftInColorOthersRank(
 	ASSERT((a_nRank >= 1) && (a_nRank <= 4));
 	struct S_RANK
 	{
-		T_COLOR enColor;
+		T_SUIT enColor;
 		short	nLeft;
 	} l_aColorCnt[4], l_aColorSort[4];
 

@@ -60,7 +60,7 @@ CNoSixAndLastDecider::FirstCard(
 	short a_iTrick	//WE numer lewy
 	) const
 {
-	T_COLOR l_enColor = DecideColor(a_iTrick);
+	T_SUIT l_enColor = DecideColor(a_iTrick);
 	if (a_iTrick == 6)
 		return m_pCards->FirstInColor(l_enColor);
 
@@ -77,7 +77,7 @@ CNoSixAndLastDecider::NextCard(
 	) const
 {
 	const CTrick& l_trickCurrent = (*m_pTricks)[a_iTrick - 1] ;
-	T_COLOR l_enColor = l_trickCurrent.GetCardColor(0);
+	T_SUIT l_enColor = l_trickCurrent.GetCardColor(0);
 
 	// tu nie ma wyboru
 	if (a_iTrick == 13)
@@ -101,12 +101,12 @@ CNoSixAndLastDecider::NextCard(
 // ---------------------------------------------------------
 //	Zdecyduj w jakim kolorze wyjœæ
 //
-T_COLOR	//WY wybrany kolor
+T_SUIT	//WY wybrany kolor
 CNoSixAndLastDecider::DecideColor(
 	short a_iTrick	//WE numer lewy
 	) const
 {
-	T_COLOR l_enColor;
+	T_SUIT l_enColor;
 	// przy ostatniej lewie i tak nie ma wyboru
 	if (a_iTrick == 13)
 		return m_pCards->ShortestColor();
@@ -155,12 +155,12 @@ CNoSixAndLastDecider::DecideColor(
 // ---------------------------------------------------------
 // Decyduj w jakim kolorze wyjœæ przy 6 lewie
 //
-T_COLOR	//WY wybrany kolor
+T_SUIT	//WY wybrany kolor
 CNoSixAndLastDecider::Decide6Color(
 	short a_iTrick	//WE numer lewy
 	) const
 {
-	T_COLOR l_enColor;
+	T_SUIT l_enColor;
 
 	short l_nRank;
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
@@ -198,12 +198,12 @@ CNoSixAndLastDecider::Decide6Color(
 //	w kartê któr¹ mam tylko jed¹ w kolorze, inni maj¹ 
 //	jeszcze ten kolor i jest wy¿sza od 3)
 //
-T_COLOR		//WY wybrany kolor
+T_SUIT		//WY wybrany kolor
 CNoSixAndLastDecider::Decide5Color(
 	short a_iTrick	//WE numer lewy
 	) const
 {
-	T_COLOR l_enColor;
+	T_SUIT l_enColor;
 
 	short l_nRank;
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
@@ -242,7 +242,7 @@ CNoSixAndLastDecider::Next6Card(
 	) const
 {
 	const CTrick& l_trickCurrent = (*m_pTricks)[a_iTrick - 1] ;
-	T_COLOR l_enColor = l_trickCurrent.GetCardColor(0);
+	T_SUIT l_enColor = l_trickCurrent.GetCardColor(0);
 
 	// jeœli nie ma karty w podanym kolorze
 	// to zagraj kartê w kolorze w którym masz 
@@ -250,7 +250,7 @@ CNoSixAndLastDecider::Next6Card(
 	if (!m_pCards->HasColor(l_enColor))
 		return BestCard(a_iTrick);
 
-	T_CARDVAL l_cvBiggest;
+	T_RANK l_cvBiggest;
 
 	l_cvBiggest = l_trickCurrent.Biggest()->CardValue();
 
@@ -271,7 +271,7 @@ CNoSixAndLastDecider::BestCard(
 	) const
 {
 	short l_nRank;
-	T_COLOR l_enColor;
+	T_SUIT l_enColor;
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
 		l_enColor = m_pCards->GetBiggestFirstCardColorRank(l_nRank);

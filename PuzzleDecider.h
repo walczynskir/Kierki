@@ -27,7 +27,7 @@ private:
 	void DecidePointsFurthest(CAllowedCards* a_pAllowedCards, short a_nCard) const;
 	short FindFurthest(CAllowedCards* a_pAllowedCards) const;
 	short DecideCard(CAllowedCards* a_pAllowedCards) const;
-	short GetCardInColor(T_COLOR a_enColor, BOOL a_bTop) const;
+	short GetCardInColor(T_SUIT a_enColor, BOOL a_bTop) const;
 	const CPuzzleRows* m_pPuzzleRows;
 	void FillAllowedCards(CAllowedCards* a_pAllowedCards) const;
 };

@@ -1,10 +1,11 @@
 #pragma once
 #include <map>
-#include "GameData.h"
+#include "HeartsGame.h"
 #include "OwnToolbar.h"
 #include "StatusBar.h"
 #include "FontFactory.h"
 #include <rcommon/LanguageManager.h>
+#include <rcommon/ROwnExc.h>
 #include <rcommon/drawutl.h>
 #include <commctrl.h>
 #include <optional>
@@ -12,11 +13,11 @@
 
 
 
-enum T_TABPAGES
+enum class TabPages
 {
-	TAB_GAME = 0,
-	TAB_RESULTS,
-	TAB_HELP
+	GAME = 0,
+	RESULTS,
+	HELP
 };
 
 
@@ -29,23 +30,33 @@ public:
 	static CHeartsData* GetData(HWND a_hWnd) { return reinterpret_cast<CHeartsData*>(::GetWindowLongPtr(a_hWnd, GWLP_USERDATA)); };
 	static void SetData(HWND a_hWnd, CHeartsData* a_pData) { ::SetWindowLongPtr(a_hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(a_pData)); };
 
-	HWND GetTabWnd(enum T_TABPAGES a_enPage) { return m_mapTabs[a_enPage]; }
+	HeartsGame& GetGameData() 
+	{
+		if (!m_gameData.has_value())
+			throw ROwnExc(_T("HeartsGame not initialized"));
+		return *m_gameData;
+	};
 
-	HWND GetGameWnd()  { return m_mapTabs[TAB_GAME]; }
-	void SetGameWnd(HWND a_hWnd) { m_mapTabs[TAB_GAME] = a_hWnd; }
 
-	HWND GetResultsWnd()  { return m_mapTabs[TAB_RESULTS]; }
-	void SetResultsWnd(HWND a_hWnd) { m_mapTabs[TAB_RESULTS] = a_hWnd; }
+	HWND GetTabWnd(TabPages a_enPage) { return m_mapTabs[a_enPage]; }
 
-	HWND GetHelpWnd()  { return m_mapTabs[TAB_HELP]; }
-	void SetHelpWnd(HWND a_hWnd) { m_mapTabs[TAB_HELP] = a_hWnd; }
+	HWND GetGameWnd()  { return m_mapTabs[TabPages::GAME]; }
+	void SetGameWnd(HWND a_hWnd) { m_mapTabs[TabPages::GAME] = a_hWnd; }
+
+	HWND GetResultsWnd()  { return m_mapTabs[TabPages::RESULTS]; }
+	void SetResultsWnd(HWND a_hWnd) { m_mapTabs[TabPages::RESULTS] = a_hWnd; }
+
+	HWND GetHelpWnd()  { return m_mapTabs[TabPages::HELP]; }
+	void SetHelpWnd(HWND a_hWnd) { m_mapTabs[TabPages::HELP] = a_hWnd; }
 
 	short GetTabsCount() const { ASSERT(m_hWndTab != NULL); return TabCtrl_GetItemCount(m_hWndTab); };
 
-	std::map<enum T_TABPAGES, HWND> m_mapTabs;
+	std::map<TabPages, HWND> m_mapTabs;
+	void EmplaceGameData(const tstring& a_sName1, const tstring& a_sName2, const tstring& a_sName3, const tstring& a_sName4)
+	{
+		m_gameData.emplace(a_sName1, a_sName2, a_sName3, a_sName4);
+	}
 
-	// game data
-	GameData m_gameData;
 	LanguageManager m_langManager;
 	std::optional<RDraw::DpiContext> m_dpiContext;
 
@@ -55,6 +66,10 @@ public:
 	HWND m_hWndTab{};
 	COwnToolbar m_toolbar;
 	CStatusBar m_statusbar;
+	CRegData m_regData;
 
+private:
+	// game data - I can't initiate it in constructor, as I need to pass player names
+	std::optional<HeartsGame> m_gameData;
 };
 

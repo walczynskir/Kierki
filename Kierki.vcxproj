@@ -344,7 +344,7 @@
     <ClCompile Include="JsonParser.cpp" />
     <ClCompile Include="OwnToolbar.cpp" />
     <ClCompile Include="Decider.cpp" />
-    <ClCompile Include="GameData.cpp" />
+    <ClCompile Include="HeartsGame.cpp" />
     <ClCompile Include="GameWnd.cpp" />
     <ClCompile Include="Kierki.cpp" />
     <ClCompile Include="LogonDlg.cpp" />
@@ -386,6 +386,7 @@
     <ClInclude Include="AllowedCards.h" />
     <ClInclude Include="BaseJson.h" />
     <ClInclude Include="Card.h" />
+    <ClInclude Include="UIHeartsGame.h" />
     <ClInclude Include="FontFactory.h" />
     <ClInclude Include="HelpJson.h" />
     <ClInclude Include="HelpWnd.h" />
@@ -393,7 +394,7 @@
     <ClInclude Include="OwnToolbar.h" />
     <ClInclude Include="CrashFileNames.h" />
     <ClInclude Include="Decider.h" />
-    <ClInclude Include="GameData.h" />
+    <ClInclude Include="HeartsGame.h" />
     <ClInclude Include="GameWnd.h" />
     <ClInclude Include="GameWndData.h" />
     <ClInclude Include="HeartsData.h" />

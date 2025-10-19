@@ -21,7 +21,7 @@ public:
 private:
 	short FirstCard(short a_iTrick) const;
 	short NextCard(short a_iTrick) const;
-	T_COLOR DecideColor(short a_iTrick) const;
+	T_SUIT DecideColor(short a_iTrick) const;
 	short FindCardOther() const;
 };
 

@@ -42,7 +42,7 @@ namespace KierkiTests
 
             CUserCards deck;
             for (int i = 0; i < 13; ++i) {
-                deck.SetCard(i, values[i], E_DL_1);
+                deck.SetCard(i, values[i], Player::South);
             }
 
             short start = 2;
@@ -72,8 +72,8 @@ namespace KierkiTests
 
             CUserCards manualDeck, stlDeck;
             for (int i = 0; i < 13; ++i) {
-                manualDeck.SetCard(i, values[i], E_DL_1);
-                stlDeck.SetCard(i, values[i], E_DL_1);
+                manualDeck.SetCard(i, values[i], Player::South);
+                stlDeck.SetCard(i, values[i], Player::South);
             }
 
             manualDeck.Sort(start, end);

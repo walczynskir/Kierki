@@ -90,7 +90,7 @@ public:
 		BYTE		m_btAlphaHelpBackground;
 		BYTE		m_btAlphaResultBackground;
 		BYTE		m_btAlphaGameBackground;
-		T_PLAYER	m_enFirstDealer;	// dealer
+		Player		m_enFirstDealer;	// dealer
 	};
 
 	RViewRegData	m_regView;

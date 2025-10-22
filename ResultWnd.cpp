@@ -292,7 +292,7 @@ BOOL ListDataProc(void* a_pObj, long a_iRow, long a_iCol, const TCHAR** a_ppData
 	ResultWndData* l_pData = GetData(reinterpret_cast<HWND>(a_pObj));
 	GameData* l_pGameData = l_pData->m_pGameData;
 
-	// E_DL_1 == 0, E_DL_2 = 1  -- watch out: dangerous
+	#pragma todo("South == 0, West = 1  -- watch out: dangerous")
 	if (a_iRow == 0)
 	{
 		ASSERT(a_iCol < 4);

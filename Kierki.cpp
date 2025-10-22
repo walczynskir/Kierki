@@ -315,7 +315,7 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 	CFontFactory::SetFontNames(l_reg.m_regHidden.m_sNormalFont, l_reg.m_regHidden.m_sFancyFont);
 	CFontFactory::Instance().SetFontStyle(l_reg.m_regView.m_bFancyStyle ? FontStyle::Fancy : FontStyle::Normal);
 
-	tstring l_sName = l_pData->m_gameData.m_regData.GetPlayerName(E_DL_1);
+	tstring l_sName = l_pData->m_gameData.m_regData.GetPlayerName(Player::South);
 	if (l_reg.m_regRules.m_bLogonDlg)
 	{
 		if (!LogonDlg_DoModal(l_hWndKierki, &l_sName, &(l_pData->m_langManager), &(l_reg.m_regRules.m_bLogonDlg)))
@@ -399,7 +399,7 @@ HWND InitInstance(HINSTANCE a_hInst, int a_nCmdShow)
 	::ShowWindow(l_hWndKierki, a_nCmdShow);
 	::UpdateWindow(l_hWndKierki);
 
-	l_pData->m_gameData.m_regData.SetPlayerName(E_DL_1, l_sName);
+	l_pData->m_gameData.m_regData.SetPlayerName(Player::South, l_sName);
 	l_pData->m_gameData.m_regData.m_regPlayers.Serialize();
 
 	return l_hWndKierki;

@@ -22,7 +22,7 @@
 CPlayer::CPlayer()
 {
 	m_pDecider = NULL;
-	m_playerMe = E_DL_NULL;
+	m_playerMe = Player::E_DL_NULL;
 // TODO nie zaimplementowane zapamietanie wskaŸnika na imiê z m_pRegData
 }
 
@@ -225,7 +225,7 @@ CPlayer::SetCard(
 	ASSERT(a_nCard < 13);
 	ASSERT(a_nCardNr >= 1);
 	ASSERT(a_nCard < 53);
-	ASSERT(m_playerMe != E_DL_NULL);
+	ASSERT(m_playerMe != Player::E_DL_NULL);
 
 	m_usercards.SetCard(a_nCard, a_nCardNr, m_playerMe);
 }

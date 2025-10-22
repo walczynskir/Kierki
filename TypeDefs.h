@@ -1,12 +1,34 @@
 #pragma once
 
-typedef enum {
+typedef enum class Player : int {
 	E_DL_NULL = -1,
-	E_DL_1 = 0,		// has to start with zero, as used as array index
-	E_DL_2,
-	E_DL_3,
-	E_DL_4
+	South = 0,		// has to start with zero, as used as array index
+	West,
+	North,
+	East
 }	T_PLAYER ;
+
+template<typename T>
+class PlayerArray {
+	T m_data[4];
+
+public:
+	T& operator[](Player a_player) {
+		return m_data[static_cast<int>(a_player)];
+	}
+
+	const T& operator[](Player a_player) const {
+		return m_data[static_cast<int>(a_player)];
+	}
+};
+
+constexpr Player constAllPlayers[] = {
+	Player::South,
+	Player::West,
+	Player::North,
+	Player::East
+};
+
 
 typedef enum 
 {
@@ -58,6 +80,8 @@ typedef enum {
 	E_SR_3,
 	E_SR_4,
 }	T_SERIE;
+
+
 
 
 

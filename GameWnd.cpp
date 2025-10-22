@@ -153,7 +153,7 @@ void GameWnd_NewDeal(HWND a_hWnd, bool a_bOpen)
 {
 	GameWndData* l_pData = GetData(a_hWnd);
 	l_pData->m_bConfirmTrick = false;
-	l_pData->m_enPassPlayer = E_DL_NULL;
+	l_pData->m_enPassPlayer = Player::E_DL_NULL;
 	::RedrawWindow(a_hWnd, NULL, NULL, RDW_INVALIDATE | RDW_ERASE | RDW_ERASENOW | RDW_UPDATENOW);
 
 	// zaczynamy grê
@@ -326,54 +326,54 @@ void CalculatePositions(HWND a_hWnd)
 	POINT l_ptMid = { RectWidth(l_rect) / 2, RectHeight(l_rect) / 2 };
 
 	// calculate positions of laid cards
-	l_pData->m_ptsLaidCards[E_DL_1].x = l_ptMid.x - c_dxCard / 2 - c_iLaidCardsShift;
-	l_pData->m_ptsLaidCards[E_DL_1].y = l_ptMid.y - c_iLaidCardsOverlap;
-	l_pData->m_ptsLaidCards[E_DL_3].x = l_pData->m_ptsLaidCards[E_DL_1].x + 2 * c_iLaidCardsShift;
-	l_pData->m_ptsLaidCards[E_DL_3].y = l_ptMid.y - c_dyCard + c_iLaidCardsOverlap;
+	l_pData->m_ptsLaidCards[Player::South].x = l_ptMid.x - c_dxCard / 2 - c_iLaidCardsShift;
+	l_pData->m_ptsLaidCards[Player::South].y = l_ptMid.y - c_iLaidCardsOverlap;
+	l_pData->m_ptsLaidCards[Player::North].x = l_pData->m_ptsLaidCards[Player::South].x + 2 * c_iLaidCardsShift;
+	l_pData->m_ptsLaidCards[Player::North].y = l_ptMid.y - c_dyCard + c_iLaidCardsOverlap;
 
-	l_pData->m_ptsLaidCards[E_DL_2].x = l_ptMid.x - c_dxCard + c_iLaidCardsOverlap;
-	l_pData->m_ptsLaidCards[E_DL_2].y = l_ptMid.y - c_dyCard / 2 - c_iLaidCardsShift;
-	l_pData->m_ptsLaidCards[E_DL_4].x = l_ptMid.x - c_iLaidCardsOverlap;
-	l_pData->m_ptsLaidCards[E_DL_4].y = l_pData->m_ptsLaidCards[E_DL_2].y + 2 * c_iLaidCardsShift;
+	l_pData->m_ptsLaidCards[Player::West].x = l_ptMid.x - c_dxCard + c_iLaidCardsOverlap;
+	l_pData->m_ptsLaidCards[Player::West].y = l_ptMid.y - c_dyCard / 2 - c_iLaidCardsShift;
+	l_pData->m_ptsLaidCards[Player::East].x = l_ptMid.x - c_iLaidCardsOverlap;
+	l_pData->m_ptsLaidCards[Player::East].y = l_pData->m_ptsLaidCards[Player::West].y + 2 * c_iLaidCardsShift;
 
 	// calculate invalidate rect of laid cards
-	l_pData->m_rectLaidCards.left = l_pData->m_ptsLaidCards[E_DL_2].x;
-	l_pData->m_rectLaidCards.top = l_pData->m_ptsLaidCards[E_DL_3].y;
-	l_pData->m_rectLaidCards.right = l_pData->m_ptsLaidCards[E_DL_4].x + c_dxCard;
-	l_pData->m_rectLaidCards.bottom = l_pData->m_ptsLaidCards[E_DL_1].y + c_dyCard;
+	l_pData->m_rectLaidCards.left = l_pData->m_ptsLaidCards[Player::West].x;
+	l_pData->m_rectLaidCards.top = l_pData->m_ptsLaidCards[Player::North].y;
+	l_pData->m_rectLaidCards.right = l_pData->m_ptsLaidCards[Player::East].x + c_dxCard;
+	l_pData->m_rectLaidCards.bottom = l_pData->m_ptsLaidCards[Player::South].y + c_dyCard;
 
 	// calculate names RECT
-	l_pData->m_rectsNames[E_DL_1].left = CP1_LEFT;
-	l_pData->m_rectsNames[E_DL_1].top = CP1_BOTTOM + c_dyMargin - c_dyNameHeight;
-	l_pData->m_rectsNames[E_DL_1].right = CP1_RIGHT;
-	l_pData->m_rectsNames[E_DL_1].bottom = l_pData->m_rectsNames[E_DL_1].top + c_dyNameHeight;
+	l_pData->m_rectsNames[Player::South].left = CP1_LEFT;
+	l_pData->m_rectsNames[Player::South].top = CP1_BOTTOM + c_dyMargin - c_dyNameHeight;
+	l_pData->m_rectsNames[Player::South].right = CP1_RIGHT;
+	l_pData->m_rectsNames[Player::South].bottom = l_pData->m_rectsNames[Player::South].top + c_dyNameHeight;
 
-	l_pData->m_rectsNames[E_DL_2].left = 0;
-	l_pData->m_rectsNames[E_DL_2].top = CP2_TOP - c_dyNameHeight;
-	l_pData->m_rectsNames[E_DL_2].right = CP2_RIGHT;
-	l_pData->m_rectsNames[E_DL_2].bottom = l_pData->m_rectsNames[E_DL_2].top + c_dyNameHeight;
+	l_pData->m_rectsNames[Player::West].left = 0;
+	l_pData->m_rectsNames[Player::West].top = CP2_TOP - c_dyNameHeight;
+	l_pData->m_rectsNames[Player::West].right = CP2_RIGHT;
+	l_pData->m_rectsNames[Player::West].bottom = l_pData->m_rectsNames[Player::West].top + c_dyNameHeight;
 
-	l_pData->m_rectsNames[E_DL_3].left = CP3_LEFT;
-	l_pData->m_rectsNames[E_DL_3].top = CP3_TOP - c_dyNameHeight;
-	l_pData->m_rectsNames[E_DL_3].right = CP3_RIGHT;
-	l_pData->m_rectsNames[E_DL_3].bottom = l_pData->m_rectsNames[E_DL_3].top + c_dyNameHeight;
+	l_pData->m_rectsNames[Player::North].left = CP3_LEFT;
+	l_pData->m_rectsNames[Player::North].top = CP3_TOP - c_dyNameHeight;
+	l_pData->m_rectsNames[Player::North].right = CP3_RIGHT;
+	l_pData->m_rectsNames[Player::North].bottom = l_pData->m_rectsNames[Player::North].top + c_dyNameHeight;
 
-	l_pData->m_rectsNames[E_DL_4].left = CP4_LEFT;
-	l_pData->m_rectsNames[E_DL_4].top = CP4_TOP - c_dyNameHeight;
-	l_pData->m_rectsNames[E_DL_4].right = CP4_RIGHT + c_dxMargin;
-	l_pData->m_rectsNames[E_DL_4].bottom = l_pData->m_rectsNames[E_DL_4].top + c_dyNameHeight;
+	l_pData->m_rectsNames[Player::East].left = CP4_LEFT;
+	l_pData->m_rectsNames[Player::East].top = CP4_TOP - c_dyNameHeight;
+	l_pData->m_rectsNames[Player::East].right = CP4_RIGHT + c_dxMargin;
+	l_pData->m_rectsNames[Player::East].bottom = l_pData->m_rectsNames[Player::East].top + c_dyNameHeight;
 
-	l_pData->m_ptsPass[E_DL_1].x = l_ptMid.x - c_dxPass / 2;
-	l_pData->m_ptsPass[E_DL_1].y = CP1_BOTTOM;
+	l_pData->m_ptsPass[Player::South].x = l_ptMid.x - c_dxPass / 2;
+	l_pData->m_ptsPass[Player::South].y = CP1_BOTTOM;
 
-	l_pData->m_ptsPass[E_DL_2].x = RectWidth(l_pData->m_rectsNames[E_DL_2]) / 2 - c_dxPass / 2;
-	l_pData->m_ptsPass[E_DL_2].y = CP2_TOP - c_dyPass;
+	l_pData->m_ptsPass[Player::West].x = RectWidth(l_pData->m_rectsNames[Player::West]) / 2 - c_dxPass / 2;
+	l_pData->m_ptsPass[Player::West].y = CP2_TOP - c_dyPass;
 
-	l_pData->m_ptsPass[E_DL_3].x = l_ptMid.x - c_dxPass / 2;
-	l_pData->m_ptsPass[E_DL_3].y = CP3_TOP - c_dyPass;
+	l_pData->m_ptsPass[Player::North].x = l_ptMid.x - c_dxPass / 2;
+	l_pData->m_ptsPass[Player::North].y = CP3_TOP - c_dyPass;
 
-	l_pData->m_ptsPass[E_DL_4].x = l_pData->m_rectsNames[E_DL_4].left + RectWidth(l_pData->m_rectsNames[E_DL_4]) / 2 - c_dxPass / 2;
-	l_pData->m_ptsPass[E_DL_4].y = CP4_TOP - c_dyPass;
+	l_pData->m_ptsPass[Player::East].x = l_pData->m_rectsNames[Player::East].left + RectWidth(l_pData->m_rectsNames[Player::East]) / 2 - c_dxPass / 2;
+	l_pData->m_ptsPass[Player::East].y = CP4_TOP - c_dyPass;
 }
 
 
@@ -404,10 +404,10 @@ Draw(
 	{
 		l_nStartCard = 12;
 	}
-	DrawCardsHorz(a_hWnd, a_hDC, l_pGameData->GetPlayerCards(E_DL_1), CP_YB, FALSE, l_nStartCard, TRUE);
-	DrawCardsVert(a_hWnd, a_hDC, l_pGameData->GetPlayerCards(E_DL_2), CP_XL, TRUE, l_nStartCard);
-	DrawCardsHorz(a_hWnd, a_hDC, l_pGameData->GetPlayerCards(E_DL_3), CP_YT, TRUE, l_nStartCard, FALSE);
-	DrawCardsVert(a_hWnd, a_hDC, l_pGameData->GetPlayerCards(E_DL_4), CP_XR, TRUE, l_nStartCard);
+	DrawCardsHorz(a_hWnd, a_hDC, l_pGameData->GetPlayerCards(Player::South), CP_YB, FALSE, l_nStartCard, TRUE);
+	DrawCardsVert(a_hWnd, a_hDC, l_pGameData->GetPlayerCards(Player::West), CP_XL, TRUE, l_nStartCard);
+	DrawCardsHorz(a_hWnd, a_hDC, l_pGameData->GetPlayerCards(Player::North), CP_YT, TRUE, l_nStartCard, FALSE);
+	DrawCardsVert(a_hWnd, a_hDC, l_pGameData->GetPlayerCards(Player::East), CP_XR, TRUE, l_nStartCard);
 
 	bool l_bDrawTakenTricks = false;
 	if (l_pGameData->GetGame() != E_GM_PUZZLE)
@@ -422,7 +422,7 @@ Draw(
 	{
 		DrawPuzzle(a_hWnd, a_hDC);
 	}
-	if (l_pData->m_enPassPlayer != E_DL_NULL)
+	if (l_pData->m_enPassPlayer != Player::E_DL_NULL)
 	{	
 		RDraw::DrawTransparentAlphaBlend(a_hDC, l_pData->m_ptsPass[l_pData->m_enPassPlayer].x, l_pData->m_ptsPass[l_pData->m_enPassPlayer].y, l_pData->GetBmpPass(), 255);
 	}
@@ -468,7 +468,7 @@ void InvalidateAllCards(
 {
 	if (a_bInvTable)
 	{
-		InvalidateTableCards(a_hWnd, TRUE, E_DL_1);
+		InvalidateTableCards(a_hWnd, TRUE, Player::South);
 	}
 	if (a_bInvPuzzle)
 	{
@@ -489,23 +489,23 @@ POINT PassPos(HWND a_hWnd, T_PLAYER a_enPlayer, const SIZE& a_sizePass)
 
 	switch (a_enPlayer)
 	{
-	case E_DL_1:
+	case Player::South:
 		l_point.x = CP_XH + (c_dxCard + 12 * c_dxCardGap) + 7;
 //		l_point.x = CP_XH - a_sizePass.cx;
 		l_point.y = CP_YB + c_dyCard / 2;
 		break;
 
-	case E_DL_2:
+	case Player::West:
 		l_point.x = CP_XL +30;
 		l_point.y = CP_YV + (c_dyCard + 12 * c_dyCardGap) + 20;
 		break;
 
-	case E_DL_3:
+	case Player::North:
 		l_point.x = CP_XH - 7;
 		l_point.y = CP_YT + c_dyCard / 2;
 		break;
 
-	case E_DL_4:
+	case Player::East:
 		l_point.x = CP_XR + c_dxCard / 2;
 		l_point.y = CP_YV - 20 ;
 		break;
@@ -526,12 +526,12 @@ void InvalidateCards(HWND a_hWnd, short a_iInHand, T_PLAYER a_enPlayer,	BOOL a_b
 {
 	switch (a_enPlayer)
 	{
-	case E_DL_1:
-	case E_DL_3:
+	case Player::South:
+	case Player::North:
 		InvalidateCardHorz(a_hWnd, a_iInHand, a_enPlayer, FALSE);
 		break ;
-	case E_DL_2:
-	case E_DL_4:
+	case Player::West:
+	case Player::East:
 		InvalidateCardVert(a_hWnd, a_iInHand, a_enPlayer);
 		break ;
 	}
@@ -577,8 +577,8 @@ void TrumpsChoice(HWND a_hWnd)
 	}
 	::ShowWindow(l_pData->m_hWndNoTrump, SW_SHOW);
 	InvalidateAllPlayersCards(a_hWnd);
-	InvalidateTableCards(a_hWnd, TRUE, E_DL_1);
-	InvalidateResult(a_hWnd, true, E_DL_1);
+	InvalidateTableCards(a_hWnd, TRUE, Player::South);
+	InvalidateResult(a_hWnd, true, Player::South);
 	::UpdateWindow(a_hWnd);
 }
 
@@ -598,11 +598,11 @@ InvalidateCardHorz(
 	RECT l_rectInv ;
 	switch (a_enPlayer)
 	{
-	case E_DL_1:
+	case Player::South:
 		l_rectInv.top = CP_YB ;
 		break ;
 
-	case E_DL_3:
+	case Player::North:
 		l_rectInv.top = CP_YT ;
 		break ;
 	default:
@@ -662,11 +662,11 @@ InvalidateCardVert(
 
 	switch (a_enPlayer)
 	{
-	case E_DL_2:
+	case Player::West:
 		l_rectInv.left = CP_XL;
 		break ;
 
-	case E_DL_4:
+	case Player::East:
 		l_rectInv.left = CP_XR;
 		break ;
 	default:
@@ -840,10 +840,10 @@ InvalidateAllPlayersCards(
 	HWND a_hWnd	//IN game wnd
 	)
 {
-	InvalidatePlayerCards(a_hWnd, E_DL_1);
-	InvalidatePlayerCards(a_hWnd, E_DL_2);
-	InvalidatePlayerCards(a_hWnd, E_DL_3);
-	InvalidatePlayerCards(a_hWnd, E_DL_4);
+	InvalidatePlayerCards(a_hWnd, Player::South);
+	InvalidatePlayerCards(a_hWnd, Player::West);
+	InvalidatePlayerCards(a_hWnd, Player::North);
+	InvalidatePlayerCards(a_hWnd, Player::East);
 }
 
 
@@ -856,14 +856,14 @@ void InvalidatePlayerCards(HWND a_hWnd, T_PLAYER a_enPlayer)
 	RECT l_rect;
 	switch (a_enPlayer)
 	{
-		case E_DL_1:
-		case E_DL_3:
+		case Player::South:
+		case Player::North:
 			l_rect.left = l_pData->m_arrHorzPos[0].m_iLeft;
 			l_rect.right = l_pData->m_arrHorzPos[12].m_iRight;
 			break;
 
-		case E_DL_2:
-		case E_DL_4:
+		case Player::West:
+		case Player::East:
 			l_rect.top = l_pData->m_arrVertPos[0].m_iTop;
 			l_rect.bottom = l_pData->m_arrVertPos[12].m_iBottom;
 			break;
@@ -874,22 +874,22 @@ void InvalidatePlayerCards(HWND a_hWnd, T_PLAYER a_enPlayer)
 
 	switch (a_enPlayer)
 	{
-		case E_DL_1:
+		case Player::South:
 			l_rect.top = CP_YB;
 			l_rect.bottom = l_rect.top + c_dyCard;
 			break;
 
-		case E_DL_3:
+		case Player::North:
 			l_rect.top = CP_YT;
 			l_rect.bottom = l_rect.top + c_dyCard;
 			break;
 
-		case E_DL_2:
+		case Player::West:
 			l_rect.left = CP_XL;
 			l_rect.right = l_rect.left + c_dxCard;
 			break;
 
-		case E_DL_4:
+		case Player::East:
 			l_rect.left = CP_XR;
 			l_rect.right = l_rect.left + c_dxCard;
 			break;
@@ -914,18 +914,17 @@ DrawNames(
 	)
 {
 	GameWndData* l_pData = GetData(a_hWnd);
-	tstring l_sDrawText;
 
 	// all players
 
-	for (short l_iAt = E_DL_1; l_iAt <= E_DL_4; l_iAt++)
+	for (Player l_player : constAllPlayers) 
 	{
 		tstring l_sDrawText;
 		const CRegData& l_regData = l_pData->m_pGameData->m_regData;
-		const tstring& l_sPlayerName = l_regData.GetPlayerName(static_cast<T_PLAYER>(l_iAt));
+		const tstring& l_sPlayerName = l_regData.GetPlayerName(l_player);
 		if (a_bTakenTricksCount)
 		{
-			l_sDrawText = FormatTextT("{} ({})", l_sPlayerName, l_pData->m_pGameData->GetPlayerTricksCnt(static_cast<T_PLAYER>(l_iAt)));
+			l_sDrawText = FormatTextT("{} ({})", l_sPlayerName, l_pData->m_pGameData->GetPlayerTricksCnt(l_player));
 		}
 		else
 		{
@@ -933,7 +932,7 @@ DrawNames(
 		}
 
 		HFONT l_hFont = CFontFactory::Instance().GetFont(a_hWnd, l_regData.m_regHidden.m_iGameFontSize);
-		RDraw::DrawSmartText(a_hDC, l_hFont, l_pData->m_rectsNames[l_iAt], l_sDrawText.c_str());
+		RDraw::DrawSmartText(a_hDC, l_hFont, l_pData->m_rectsNames[l_player], l_sDrawText.c_str());
 	
 	}
 
@@ -1225,10 +1224,10 @@ void InvalidateResult(HWND a_hWnd, bool a_bAll,	T_PLAYER a_enPlayer)
 	GameWndData* l_pData = GetData(a_hWnd);
 	if (a_bAll)
 	{
-		::InvalidateRect(a_hWnd, &(l_pData->m_rectsNames[E_DL_1]), TRUE);
-		::InvalidateRect(a_hWnd, &(l_pData->m_rectsNames[E_DL_2]), TRUE);
-		::InvalidateRect(a_hWnd, &(l_pData->m_rectsNames[E_DL_3]), TRUE);
-		::InvalidateRect(a_hWnd, &(l_pData->m_rectsNames[E_DL_4]), TRUE);
+		::InvalidateRect(a_hWnd, &(l_pData->m_rectsNames[Player::South]), TRUE);
+		::InvalidateRect(a_hWnd, &(l_pData->m_rectsNames[Player::West]), TRUE);
+		::InvalidateRect(a_hWnd, &(l_pData->m_rectsNames[Player::North]), TRUE);
+		::InvalidateRect(a_hWnd, &(l_pData->m_rectsNames[Player::East]), TRUE);
 	}
 	else
 	{
@@ -1311,11 +1310,11 @@ short GetClicked(HWND a_hWnd, const POINT& a_point)
 	}
 	if (l_pData->GetGame() == E_GM_PUZZLE)
 	{
-		l_bOk = CanPlayCardPuzzle(a_hWnd, l_iAt, E_DL_1);
+		l_bOk = CanPlayCardPuzzle(a_hWnd, l_iAt, Player::South);
 	}
 	else
 	{
-		l_bOk = CanPlayCard(a_hWnd, l_iAt, E_DL_1);
+		l_bOk = CanPlayCard(a_hWnd, l_iAt, Player::South);
 	}
 	if (l_bOk)
 	{
@@ -1326,13 +1325,13 @@ short GetClicked(HWND a_hWnd, const POINT& a_point)
 
 
 // ---------------------------------------------------------
-// returns card nr of E_DL_1 player, or -1
+// returns card nr of South player, or -1
 //
 short GetCardFromPoint(HWND a_hWnd, const POINT& a_point, short a_nStartCard)
 {
 	GameWndData* l_pData = GetData(a_hWnd);
 	short l_iAt;
-	const CUserCards& l_usercards = l_pData->m_pGameData->GetPlayerCards(E_DL_1);
+	const CUserCards& l_usercards = l_pData->m_pGameData->GetPlayerCards(Player::South);
 	for (l_iAt = a_nStartCard; l_iAt >= 0; l_iAt--)
 	{
 		if  (
@@ -1495,14 +1494,14 @@ void OnLButtonDown(HWND a_hWnd, int a_x, int a_y)
 {
 	GameWndData* l_pData = GetData(a_hWnd);
 // TODO to co poni¿ej powinno byæ uruchamiane tylko gdy czas na klikniêcie przez E_DL_1
-	if (!l_pData->m_bConfirmTrick && l_pData->m_pGameData->IsDealed() && l_pData->m_pGameData->GetThrower() == E_DL_1)
+	if (!l_pData->m_bConfirmTrick && l_pData->m_pGameData->IsDealed() && l_pData->m_pGameData->GetThrower() == Player::South)
 	{
 		Capture(a_hWnd, true);
 		POINT l_pt = {a_x, a_y};
 		l_pData->m_nLastHighlighted = GetClicked(a_hWnd, l_pt);
 		if (l_pData->m_nLastHighlighted != -1)
 		{
-			InvalidateCardHorz(a_hWnd, l_pData->m_nLastHighlighted, E_DL_1, TRUE);
+			InvalidateCardHorz(a_hWnd, l_pData->m_nLastHighlighted, Player::South, TRUE);
 			::UpdateWindow(a_hWnd);
 		}
 	}
@@ -1527,7 +1526,7 @@ void OnLButtonUp(HWND a_hWnd, int a_x, int a_y)
 	{
 		ClickConfirmTrick(a_hWnd, l_pt);
 	}
-	else if (l_pData->m_pGameData->IsDealed() && (l_pData->m_pGameData->GetThrower() == E_DL_1))
+	else if (l_pData->m_pGameData->IsDealed() && (l_pData->m_pGameData->GetThrower() == Player::South))
 	{
 		ClickOnCards(a_hWnd, l_pt);
 	}
@@ -1551,13 +1550,13 @@ void OnMouseMove(HWND a_hWnd, UINT a_nFlags, int a_x, int a_y)
 
 			if ((l_nClicked == -1) && (l_pData->m_nLastHighlighted != -1))
 			{
-				InvalidateCardHorz(a_hWnd, l_pData->m_nLastHighlighted, E_DL_1, TRUE);
+				InvalidateCardHorz(a_hWnd, l_pData->m_nLastHighlighted, Player::South, TRUE);
 				l_pData->m_nLastHighlighted = -1;
 			}
 			else if ((l_nClicked != -1) && (l_nClicked != l_pData->m_nLastHighlighted))
 			{
-				InvalidateCardHorz(a_hWnd, l_pData->m_nLastHighlighted, E_DL_1, TRUE);
-				InvalidateCardHorz(a_hWnd, l_nClicked, E_DL_1, TRUE);
+				InvalidateCardHorz(a_hWnd, l_pData->m_nLastHighlighted, Player::South, TRUE);
+				InvalidateCardHorz(a_hWnd, l_nClicked, Player::South, TRUE);
 				l_pData->m_nLastHighlighted = l_nClicked;
 			}
 		}
@@ -1632,7 +1631,7 @@ void ClickOnCardsTrumps(HWND a_hWnd, const POINT& a_point)
 	}
 
 	GameWndData* l_pData = GetData(a_hWnd);
-	const CUserCards& l_usercards = l_pData->m_pGameData->GetPlayerCards(E_DL_1);
+	const CUserCards& l_usercards = l_pData->m_pGameData->GetPlayerCards(Player::South);
 	T_COLOR l_enColor = l_usercards[l_nCardNr].GetColor();
 
 	TrumpsChosen(a_hWnd, l_enColor);
@@ -1653,16 +1652,16 @@ void ClickOnCards(HWND a_hWnd, const POINT& a_point)
 		return ;
 	}
 	ASSERT((l_iClicked >= 0) && (l_iClicked < 13));
-	InvalidateCardHorz(a_hWnd, l_iClicked, E_DL_1, TRUE) ;
+	InvalidateCardHorz(a_hWnd, l_iClicked, Player::South, TRUE) ;
 
 	GameWndData* l_pData = GetData(a_hWnd);
 	if (l_pData->m_pGameData->GetGame() == E_GM_PUZZLE)
 	{
-		ThrowCardPuzzle(a_hWnd, l_iClicked, E_DL_1) ;
+		ThrowCardPuzzle(a_hWnd, l_iClicked, Player::South) ;
 	}
 	else
 	{
-		ThrowCard(a_hWnd, l_iClicked, E_DL_1) ;
+		ThrowCard(a_hWnd, l_iClicked, Player::South) ;
 	}
 	if (!l_pData->m_bConfirmTrick)
 	{
@@ -1744,7 +1743,7 @@ void ThrowCardPuzzle(HWND a_hWnd, short a_nInHand, T_PLAYER a_enPlayer)
 		if (l_pData->m_pGameData->GetPlayerCards(a_enPlayer).CardsLeft() > 0)
 		{
 			// chyba, ¿e gracz E_Dl_1 nie ma ju¿ kart
-			if (l_pData->m_pGameData->GetPlayerCards(E_DL_1).CardsLeft() > 0)
+			if (l_pData->m_pGameData->GetPlayerCards(Player::South).CardsLeft() > 0)
 			{
 				ShowPass(a_hWnd, a_enPlayer);
 			}
@@ -1817,12 +1816,12 @@ void PlayPuzzle(HWND a_hWnd)
 	// nastêpna karta
 	// w przeciwnym przypadku wywo³ujemy kolejnych Deciderów
 	short l_iInHand;	// uwaga zmienna niezainicjowana
-						// dla m_enThrower = E_DL_1
+						// dla m_enThrower = South
 	while (TRUE)
 	{
-		if (l_pGameData->GetThrower() == E_DL_1)
+		if (l_pGameData->GetThrower() == Player::South)
 		{
-			if (!l_pGameData->HasCardForPuzzle(E_DL_1))
+			if (!l_pGameData->HasCardForPuzzle(Player::South))
 			{
 				l_iInHand = -1;
 			}
@@ -1853,7 +1852,7 @@ void PlayPuzzle(HWND a_hWnd)
 		::SendMessage(l_pData->m_hWndApp, WM_APP_NEXTSERIE, 0, 0);
 
 		InvalidateAllCards(a_hWnd, FALSE, TRUE);
-		InvalidateResult(a_hWnd, TRUE, E_DL_1);
+		InvalidateResult(a_hWnd, TRUE, Player::South);
 		::UpdateWindow(a_hWnd);
 #ifdef _DEBUG
 //w trybie debug mogê chcieæ graæ tylko w puzzle
@@ -1897,7 +1896,7 @@ void Play(HWND a_hWnd)
 	short l_iInHand;
 	while (TRUE)
 	{
-		if (l_pGameData->GetThrower() == E_DL_1)
+		if (l_pGameData->GetThrower() == Player::South)
 		{
 			::SendMessage(l_pData->m_hWndApp, WM_APP_PLAYCARD, 0, 0);
 			break ;
@@ -1944,27 +1943,27 @@ void InvalidateAfterTrumpsChoice(HWND a_hWnd)
 {
 	GameWndData* l_pData = GetData(a_hWnd);
 	RECT l_rect;
-	// gracz E_DL_1 - wszystkie karty
+	// gracz South - wszystkie karty
 	l_rect.left = l_pData->m_arrHorzPos[0].m_iLeft;
 	l_rect.right = l_pData->m_arrHorzPos[12].m_iRight;
 	l_rect.top = CP_YB;
 	l_rect.bottom = l_rect.top + c_dyCard;
 	::InvalidateRect(a_hWnd, &l_rect, TRUE);
 
-	// gracz E_DL_3 - ju¿ tylko pozosta³e
+	// gracz North - ju¿ tylko pozosta³e
 	l_rect.left = l_pData->m_arrHorzPos[7].m_iLeft;
 	l_rect.top = CP_YT;
 	l_rect.bottom = l_rect.top + c_dyCard;
 	::InvalidateRect(a_hWnd, &l_rect, TRUE);
 
-	// gracz E_DL_2
+	// gracz West
 	l_rect.left = CP_XL;
 	l_rect.right = l_rect.left + c_dxCard;
 	l_rect.top = l_pData->m_arrVertPos[7].m_iTop;
 	l_rect.bottom = l_pData->m_arrVertPos[12].m_iBottom;
 	::InvalidateRect(a_hWnd, &l_rect, TRUE);
 
-	// gracz E_DL_4
+	// gracz East
 	l_rect.left = CP_XR;
 	l_rect.right = l_rect.left + c_dxCard;
 	::InvalidateRect(a_hWnd, &l_rect, TRUE);
@@ -1983,7 +1982,7 @@ void TrickTaking(HWND a_hWnd)
 	if (l_bContinue)
 	{
 		InvalidateResult(a_hWnd, FALSE, l_pData->GetThrower());
-		InvalidateTableCards(a_hWnd, TRUE, E_DL_1);
+		InvalidateTableCards(a_hWnd, TRUE, Player::South);
 	}
 
 	// zmieni³a siê gra, ale nie czas na wybór atu
@@ -1996,12 +1995,12 @@ void TrickTaking(HWND a_hWnd)
 			if (l_pData->GetGame() == E_GM_PUZZLE)
 			{
 				InvalidateAllCards(a_hWnd, TRUE, TRUE);
-				InvalidateResult(a_hWnd, TRUE, E_DL_1);
+				InvalidateResult(a_hWnd, TRUE, Player::South);
 			}
 			else
 			{
 				InvalidateAllCards(a_hWnd, TRUE, FALSE);
-				InvalidateResult(a_hWnd, TRUE, E_DL_1);
+				InvalidateResult(a_hWnd, TRUE, Player::South);
 			}
 		}
 	}
@@ -2011,13 +2010,13 @@ void TrickTaking(HWND a_hWnd)
 bool AreCardsToPlayPuzzle(HWND a_hWnd)
 {
 	GameData* l_pData = GetData(a_hWnd)->m_pGameData;
-	if (l_pData->GetPlayerCards(E_DL_1).CardsLeft() > 0)
+	if (l_pData->GetPlayerCards(Player::South).CardsLeft() > 0)
 		return true;
-	if (l_pData->GetPlayerCards(E_DL_2).CardsLeft() > 0)
+	if (l_pData->GetPlayerCards(Player::West).CardsLeft() > 0)
 		return true;
-	if (l_pData->GetPlayerCards(E_DL_3).CardsLeft() > 0)
+	if (l_pData->GetPlayerCards(Player::North).CardsLeft() > 0)
 		return true;
-	if (l_pData->GetPlayerCards(E_DL_4).CardsLeft() > 0)
+	if (l_pData->GetPlayerCards(Player::East).CardsLeft() > 0)
 		return true;
 	return false;
 }
@@ -2048,7 +2047,7 @@ void ShowPass(HWND a_hWnd, T_PLAYER a_enPlayer)
 	::InvalidateRect(a_hWnd, &l_rect, TRUE);
 	::UpdateWindow(a_hWnd);
 	::Sleep(l_pGameData->m_regData.m_regTime.m_iWaitPassTime);
-	l_pData->m_enPassPlayer = E_DL_NULL;
+	l_pData->m_enPassPlayer = Player::E_DL_NULL;
 	::InvalidateRect(a_hWnd, &l_rect, TRUE);
 	::UpdateWindow(a_hWnd);
 }
@@ -2061,7 +2060,7 @@ void ClickConfirmTrick(HWND a_hWnd, const POINT& a_pt)
 	l_pData->m_bConfirmTrick = false;
 	TrickTaking(a_hWnd);
 	::UpdateWindow(a_hWnd);
-	if (l_pData->m_pGameData->GetThrower() == E_DL_1)
+	if (l_pData->m_pGameData->GetThrower() == Player::South)
 	{
 		::SendMessage(l_pData->m_hWndApp, WM_APP_PLAYCARD, 0, 0L);
 	}

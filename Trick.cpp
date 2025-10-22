@@ -350,6 +350,7 @@ void
 CTrick::Clear()
 {
 	m_nCards = 0 ;
-	m_enOwner = E_DL_NULL;
+	m_enOwner = Player::E_DL_NULL;
+#pragma todo("refactor")
 	memset(m_tcCard, 0, ArraySize(m_tcCard));
 }

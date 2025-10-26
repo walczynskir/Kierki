@@ -22,7 +22,7 @@
 CPlayer::CPlayer()
 {
 	m_pDecider = NULL;
-	m_playerMe = E_DL_NULL;
+	m_playerMe = Player::E_DL_NULL;
 // TODO nie zaimplementowane zapamietanie wskaŸnika na imiê z m_pRegData
 }
 
@@ -225,7 +225,7 @@ CPlayer::SetCard(
 	ASSERT(a_nCard < 13);
 	ASSERT(a_nCardNr >= 1);
 	ASSERT(a_nCard < 53);
-	ASSERT(m_playerMe != E_DL_NULL);
+	ASSERT(m_playerMe != Player::E_DL_NULL);
 
 	m_usercards.SetCard(a_nCard, a_nCardNr, m_playerMe);
 }
@@ -253,23 +253,20 @@ CPlayer::ChooseTrumps() const
 	{
 		short   nCnt;
 		short   nPoints;
-	}	l_arColorsCnt[4];
+	}	l_arColorsCnt[4]{};
 
-	memset(l_arColorsCnt, 0, sizeof(l_arColorsCnt)); 
 
-	short l_nCard;
-	for (l_nCard = 0; l_nCard < 7; l_nCard++)
+	for (short l_nCard = 0; l_nCard < 7; l_nCard++)
 	{
 		const CCard& a_card = m_usercards[l_nCard];
-		l_arColorsCnt[a_card.GetColor() - 1].nCnt += 1;
-		l_arColorsCnt[a_card.GetColor() - 1].nPoints += a_card.CardValue();
+		l_arColorsCnt[SuitToIndex(a_card.GetSuit())].nCnt += 1;
+		l_arColorsCnt[SuitToIndex(a_card.GetSuit())].nPoints += a_card.CardValue();
 	}
 
-	short l_iAt;
 	short l_nCntBest = 0;;
 	short l_nPointsBest = 0;
 	short l_nPosBest = 0;
-	for (l_iAt = 0; l_iAt < 4; l_iAt++)
+	for (short l_iAt = 0; l_iAt < 4; l_iAt++)
 	{
 		if ((l_arColorsCnt[l_iAt].nCnt > l_nCntBest) ||
 			((l_arColorsCnt[l_iAt].nCnt == l_nCntBest) && ((l_arColorsCnt[l_iAt].nPoints > l_nPointsBest))))
@@ -341,7 +338,7 @@ CPlayer::CreateDecider(
 //
 void 
 CPlayer::CreateDecider(
-	const CPuzzleRows* a_pPuzzleRow	//WE wskazanie na polo¿one karty
+	const CPuzzleRowSet* a_pPuzzleRow	//WE wskazanie na polo¿one karty
 	)
 {
 	RemoveDecider();

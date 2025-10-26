@@ -10,8 +10,8 @@ typedef registry_string<tstring> RRegTString;
 typedef registry_string_def<tstring> RRegTStringDef;
 typedef registry_int<int> RRegInt;
 typedef registry_int_def<int> RRegIntDef;
-typedef registry_int<T_PLAYER> RRegPlayer;
-typedef registry_int_def<T_PLAYER> RRegPlayerDef;
+typedef registry_int<int> RRegPlayer;
+typedef registry_int_def<int> RRegPlayerDef;
 typedef registry_int<COLORREF> RRegColor;
 typedef registry_int_def<COLORREF> RRegColorDef;
 typedef registry_binary<POINT> RRegPoint;
@@ -274,7 +274,8 @@ void CRegData::RHiddenRegData::Serialize(void)
 
 CRegData::RAutoPersistent::RAutoPersistent(void)
 {
-	m_enFirstDealer = (T_PLAYER)RRegPlayerDef(c_sDealerReg, HKEY_CURRENT_USER, E_DL_1);
+	RRegPlayerDef l_regPlayer(c_sDealerReg, HKEY_CURRENT_USER, static_cast<int>(Player::South));
+	m_enFirstDealer = static_cast<Player>(static_cast<int>(l_regPlayer));
 
 	m_btAlphaHelpBackground = (BYTE)RRegByteDef(c_sAlphaHelpBackground, HKEY_CURRENT_USER, cc_iAlphaDefault);;
 	m_btAlphaGameBackground = (BYTE)RRegByteDef(c_sAlphaGameBackground, HKEY_CURRENT_USER, cc_iAlphaDefault);;
@@ -285,7 +286,7 @@ CRegData::RAutoPersistent::RAutoPersistent(void)
 CRegData::RAutoPersistent::~RAutoPersistent(void)
 {
 	RRegPlayer l_regDealer(c_sDealerReg, HKEY_CURRENT_USER);
-	l_regDealer = m_enFirstDealer;
+	l_regDealer = static_cast<int>(m_enFirstDealer);
 
 	RRegByte l_regAlphaHelpBackground(c_sAlphaHelpBackground, HKEY_CURRENT_USER);
 	l_regAlphaHelpBackground = m_btAlphaHelpBackground;

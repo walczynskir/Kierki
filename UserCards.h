@@ -6,7 +6,7 @@
 
 #include "Card.h"	// Added by ClassView
 #include "Trick.h"
-#include "PuzzleRows.h"	
+#include "PuzzleRowSet.h"	
 
 class CTakenTricks;
 
@@ -28,8 +28,8 @@ public:
 	void SetCard(short a_iAt, short a_iCardNr, T_PLAYER a_enOwner, BOOL a_bUsed = FALSE);
 
 	short CardsLeft() const;
-	BOOL HasCardForPuzzle(const CPuzzleRows* a_pPuzzleRow) const;
-	BOOL HasCardForPuzzleColor(const CPuzzleRows* a_pPuzzleRow, T_COLOR a_enColor) const;
+	BOOL HasCardForPuzzle(const CPuzzleRowSet* a_pPuzzleRow) const;
+	BOOL HasCardForPuzzleColor(const CPuzzleRowSet* a_pPuzzleRow, T_COLOR a_enColor) const;
 	short FirstBiggerOrLeastInColor(const CCard* a_pCard) const;
 	T_COLOR GetColorExactNumNoOneColor(short a_nNum, T_COLOR a_enColor, BOOL a_bUsed = TRUE) const;
 	BOOL HasCards(T_COLOR a_enColor, BOOL a_bUsed, short a_nCnt, ...) const;

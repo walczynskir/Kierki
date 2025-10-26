@@ -65,11 +65,11 @@ CNoHeartsDecider::FirstCard(
 		l_nCardNr = DecideFirstCardNoHearts(a_iTrick);
 		ASSERT((l_nCardNr >= 0) && (l_nCardNr < 13)) ;
 		ASSERT(!m_pCards->GetCard(l_nCardNr).IsUsed());
-		ASSERT(m_pCards->GetCard(l_nCardNr).GetColor() != E_CC_HEART);
+		ASSERT(m_pCards->GetCard(l_nCardNr).GetSuit() != Suit::Heart);
 		return l_nCardNr;
 	}
 
-	l_nCardNr = m_pCards->FirstInColor(E_CC_HEART);
+	l_nCardNr = m_pCards->FirstInColor(Suit::Heart);
 	ASSERT((l_nCardNr >= 0) && (l_nCardNr < 13)) ;
 	ASSERT(m_pCards->GetCard(l_nCardNr).IsUsed() == FALSE);
 	return l_nCardNr;
@@ -94,7 +94,7 @@ CNoHeartsDecider::NextCard(
 	short l_iRetAt = 0;
 	short l_nCardNr ;
 	BOOL l_bFound = FALSE ;
-	if (l_enColor != E_CC_HEART)
+	if (l_enColor != Suit::Heart)
 	{
 		if (m_pCards->HasColor(l_enColor))
 		{
@@ -103,9 +103,9 @@ CNoHeartsDecider::NextCard(
 		else
 		{
 			l_nCardNr = DecideOtherColor(a_iTrick);
-/*			if (m_pCards->HasColor(E_CC_HEART))
+/*			if (m_pCards->HasColor(Suit::Heart))
 			{
-				l_nCardNr = m_pCards->Biggest(E_CC_HEART) ;
+				l_nCardNr = m_pCards->Biggest(Suit::Heart) ;
 			}
 			else
 			{
@@ -180,7 +180,7 @@ CNoHeartsDecider::GetWorstColorCard(
 	{
 		T_COLOR l_enColor = 
 			m_pCards->GetBiggestFirstCardColorRank(l_nRank);
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 		{
 			continue;
 		}
@@ -211,7 +211,7 @@ CNoHeartsDecider::GetNotTakingCard(
 	{
 		T_COLOR l_enColor = 
 			m_pCards->GetLowestCardColorRank(l_nRank);
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 		{
 			continue;
 		}
@@ -237,12 +237,12 @@ CNoHeartsDecider::GetShortestAreBigger(
 {
 	short l_nCardNr = -1;
 	short l_nRank;
-	T_COLOR l_enColor = E_CC_NOTHING;
+	T_COLOR l_enColor = Suit::Nothing;
 
 	for (l_nRank = 1; l_nRank < 5; l_nRank++)
 	{
 		l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 		{
 			continue;
 		}
@@ -280,12 +280,12 @@ CNoHeartsDecider::GetBestOtherCard(
 	// taki w którym s¹ wy¿sze
 	short l_nCardNr = -1;
 	short l_nRank;
-	T_COLOR l_enColor = E_CC_NOTHING;
+	T_COLOR l_enColor = Suit::Nothing;
 
 	for (l_nRank = 1; l_nRank < 5; l_nRank++)
 	{
 		l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 		{
 			continue;
 		}
@@ -318,7 +318,7 @@ CNoHeartsDecider::DecideOtherColor(
 			m_pCards->GetLowestCardColorRank(l_nRank);
 		// hearts only if we have only 2 hearts
 		// or in other cards we have only lowest cards
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 		{
 			if (ShouldThrowHearts(a_iTrick))
 			{
@@ -338,9 +338,9 @@ CNoHeartsDecider::DecideOtherColor(
 	// still didn't throw - lets throw biggest HEART if 
 	// we have
 
-	if (m_pCards->CardsInColor(E_CC_HEART) > 0)
+	if (m_pCards->CardsInColor(Suit::Heart) > 0)
 	{
-		return m_pCards->Biggest(E_CC_HEART);
+		return m_pCards->Biggest(Suit::Heart);
 	}
 	// throw biggest card
 	T_COLOR l_enColor = 
@@ -365,7 +365,7 @@ CNoHeartsDecider::ShouldThrowHearts(
 	}
 
 	// or we have two or less hearts in hand
-	if (m_pCards->ColorAllCnt(E_CC_HEART) <= 2)
+	if (m_pCards->ColorAllCnt(Suit::Heart) <= 2)
 	{
 		return TRUE;
 	}
@@ -373,9 +373,9 @@ CNoHeartsDecider::ShouldThrowHearts(
 	// or we have only lowest cards in other colors (or don't
 	// have a color)
 	return	(
-		(m_pCards->HasLeastInColor(E_CC_DIAMOND, m_pTricks)) &&
-		(m_pCards->HasLeastInColor(E_CC_SPADE, m_pTricks)) &&
-		(m_pCards->HasLeastInColor(E_CC_CLUB, m_pTricks))
+		(m_pCards->HasLeastInColor(Suit::Diamond, m_pTricks)) &&
+		(m_pCards->HasLeastInColor(Suit::Spade, m_pTricks)) &&
+		(m_pCards->HasLeastInColor(Suit::Club, m_pTricks))
 			);
 	
 }

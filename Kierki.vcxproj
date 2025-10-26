@@ -362,7 +362,7 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Players.cpp" />
     <ClCompile Include="PuzzleDecider.cpp" />
-    <ClCompile Include="PuzzleRows.cpp" />
+    <ClCompile Include="PuzzleRowSet.cpp" />
     <ClCompile Include="RecoverDecider.cpp" />
     <ClCompile Include="ResultWnd.cpp" />
     <ClCompile Include="RobberDecider.cpp" />
@@ -414,7 +414,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="Players.h" />
     <ClInclude Include="PuzzleDecider.h" />
-    <ClInclude Include="PuzzleRows.h" />
+    <ClInclude Include="PuzzleRowSet.h" />
     <ClInclude Include="RecoverDecider.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ResultWnd.h" />

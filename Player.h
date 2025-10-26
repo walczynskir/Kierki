@@ -23,8 +23,8 @@ public:
 	CPlayer();
 	virtual ~CPlayer();
 
-	void CreateDecider(T_GAMES a_enGame, const CTakenTricks* a_pTricks, T_COLOR a_colorTrumps = E_CC_NOTHING);
-	void CreateDecider(const CPuzzleRows* a_pPuzzleRow);
+	void CreateDecider(T_GAMES a_enGame, const CTakenTricks* a_pTricks, Suit a_colorTrumps = Suit::Nothing);
+	void CreateDecider(const CPuzzleRowSet* a_pPuzzleRow);
 
 	T_COLOR ChooseTrumps() const;
 

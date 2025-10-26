@@ -14,10 +14,10 @@ CPlayers::CPlayers(
 	)
 {
 	m_enFirstDealer = a_enFirstDealer;
-	m_arPlayers[E_DL_1].SetMe(E_DL_1);
-	m_arPlayers[E_DL_2].SetMe(E_DL_2);
-	m_arPlayers[E_DL_3].SetMe(E_DL_3);
-	m_arPlayers[E_DL_4].SetMe(E_DL_4);
+	m_arPlayers[Player::South].SetMe(Player::South);
+	m_arPlayers[Player::West].SetMe(Player::West);
+	m_arPlayers[Player::North].SetMe(Player::North);
+	m_arPlayers[Player::East].SetMe(Player::East);
 }
 
 
@@ -51,8 +51,8 @@ CPlayers::NextPlayer(
 	)
 {
 	T_PLAYER l_enNextPlayer ;
-	if (a_enCurrentPlayer == E_DL_4)
-		 l_enNextPlayer = E_DL_1 ;
+	if (a_enCurrentPlayer == Player::East)
+		 l_enNextPlayer = Player::South ;
 	else
 	{
 		short l_iPlayer = (short)a_enCurrentPlayer ;
@@ -79,10 +79,9 @@ CPlayers::SetNextFirstDealer()
 void 
 CPlayers::RemoveDeciders()
 {
-	short l_nPlayer;
-	for	(l_nPlayer = 0; l_nPlayer <= 3; l_nPlayer++)
+	for (Player l_player : constAllPlayers) 
 	{
-		m_arPlayers[l_nPlayer].RemoveDecider();
+		m_arPlayers[l_player].RemoveDecider();
 	}
 }
 
@@ -130,10 +129,10 @@ CPlayers::DistributeCards(
 		// przypisanie 52 numerów kart do m_cards*
 	for (l_nAt = 0; l_nAt < 13; l_nAt++)
 	{
-		m_arPlayers[E_DL_1].SetCard(l_nAt, a_sortcards.GetCardNr(l_nAt * 4));
-		m_arPlayers[E_DL_2].SetCard(l_nAt, a_sortcards.GetCardNr(l_nAt * 4 + 1));
-		m_arPlayers[E_DL_3].SetCard(l_nAt, a_sortcards.GetCardNr(l_nAt * 4 + 2));
-		m_arPlayers[E_DL_4].SetCard(l_nAt, a_sortcards.GetCardNr(l_nAt * 4 + 3)) ;
+		m_arPlayers[Player::South].SetCard(l_nAt, a_sortcards.GetCardNr(l_nAt * 4));
+		m_arPlayers[Player::West].SetCard(l_nAt, a_sortcards.GetCardNr(l_nAt * 4 + 1));
+		m_arPlayers[Player::North].SetCard(l_nAt, a_sortcards.GetCardNr(l_nAt * 4 + 2));
+		m_arPlayers[Player::East].SetCard(l_nAt, a_sortcards.GetCardNr(l_nAt * 4 + 3)) ;
 	}
 
 }
@@ -161,9 +160,9 @@ CPlayers::CreateDeciders(
 	T_COLOR				a_colorTrumps	//WE ew. kolor atutowy
 	)
 {
-	m_arPlayers[E_DL_2].CreateDecider(a_enGame, a_pTricks, a_colorTrumps);	
-	m_arPlayers[E_DL_3].CreateDecider(a_enGame, a_pTricks, a_colorTrumps);	
-	m_arPlayers[E_DL_4].CreateDecider(a_enGame, a_pTricks, a_colorTrumps);	
+	m_arPlayers[Player::West].CreateDecider(a_enGame, a_pTricks, a_colorTrumps);
+	m_arPlayers[Player::North].CreateDecider(a_enGame, a_pTricks, a_colorTrumps);
+	m_arPlayers[Player::East].CreateDecider(a_enGame, a_pTricks, a_colorTrumps);
 }
 
 
@@ -172,12 +171,12 @@ CPlayers::CreateDeciders(
 //
 void 
 CPlayers::CreateDeciders(
-	const CPuzzleRows* a_pPuzzleRow	//WE wskazanie na polo¿one karty
+	const CPuzzleRowSet* a_pPuzzleRow	//WE wskazanie na polo¿one karty
 	)
 {
-	m_arPlayers[E_DL_2].CreateDecider(a_pPuzzleRow);
-	m_arPlayers[E_DL_3].CreateDecider(a_pPuzzleRow);
-	m_arPlayers[E_DL_4].CreateDecider(a_pPuzzleRow);
+	m_arPlayers[Player::West].CreateDecider(a_pPuzzleRow);
+	m_arPlayers[Player::North].CreateDecider(a_pPuzzleRow);
+	m_arPlayers[Player::East].CreateDecider(a_pPuzzleRow);
 }
 
 // ---------------------------------------------------------
@@ -271,10 +270,9 @@ CPlayers::ClearScores(
 	T_SERIE a_enSerie	//WE seria
 	)
 {
-	short l_nAt;
-	for (l_nAt = 0; l_nAt < 4; l_nAt++)
+	for (Player l_player : constAllPlayers)
 	{
-		m_arPlayers[l_nAt].ClearScore(a_enSerie);
+		m_arPlayers[l_player].ClearScore(a_enSerie);
 	}
 }
 
@@ -298,10 +296,9 @@ CPlayers::SetName(
 void 
 CPlayers::ClearAllScores()
 {
-	short l_nAt;
-	for (l_nAt = 0; l_nAt < 4; l_nAt++)
+	for (Player l_player : constAllPlayers)
 	{
-		m_arPlayers[l_nAt].ClearAllScores();
+		m_arPlayers[l_player].ClearAllScores();
 	}	
 }
 
@@ -340,9 +337,9 @@ CPlayers::SumPlayerAllScore(
 void CPlayers::SaveState(LPSAVERESTORE a_pSaveRestore) const
 {
 	a_pSaveRestore->m_enFirstDealer = m_enFirstDealer;
-	for (UINT l_iAt = 0; l_iAt < ArraySize(m_arPlayers); l_iAt++)
+	for (Player l_player : constAllPlayers)
 	{
-		m_arPlayers[l_iAt].SaveState(&(a_pSaveRestore->m_playerscore[l_iAt]));
+		m_arPlayers[l_player].SaveState(&(a_pSaveRestore->m_playerscore[static_cast<int>(l_player)]));
 	}
 
 }
@@ -354,8 +351,8 @@ void CPlayers::SaveState(LPSAVERESTORE a_pSaveRestore) const
 void CPlayers::RestoreState(const LPSAVERESTORE a_pSaveRestore)
 {
 	m_enFirstDealer = a_pSaveRestore->m_enFirstDealer;
-	for (UINT l_iAt = 0; l_iAt < ArraySize(m_arPlayers); l_iAt++)
+	for (Player l_player : constAllPlayers)
 	{
-		m_arPlayers[l_iAt].RestoreState(&(a_pSaveRestore->m_playerscore[l_iAt]));
+		m_arPlayers[l_player].RestoreState(&(a_pSaveRestore->m_playerscore[static_cast<int>(l_player)]));	// I need to use plain-old static_Cast, as it is plain-c struct
 	}
 }

@@ -205,19 +205,19 @@ CCard::SetColor()
 {
 	if ((m_nCardNr >= 1) && (m_nCardNr <= 13))
 	{
-		m_enColor = E_CC_CLUB ;
+		m_enColor = Suit::Club ;
 	}
 	else if ((m_nCardNr >= 14) && (m_nCardNr <= 26))
 	{
-		m_enColor = E_CC_DIAMOND ;
+		m_enColor = Suit::Diamond;
 	}
 	else if ((m_nCardNr >= 27) && (m_nCardNr <= 39))
 	{
-		m_enColor = E_CC_SPADE ;
+		m_enColor = Suit::Spade ;
 	}
 	else if ((m_nCardNr >= 14) && (m_nCardNr <= 52))
 	{
-		m_enColor = E_CC_HEART ;
+		m_enColor = Suit::Heart ;
 	}
 	else
 	{
@@ -300,7 +300,7 @@ CCard::CardValue() const
 // Zwraca kolor karty
 //
 T_COLOR		//WY kolor karty
-CCard::GetColor() const
+CCard::GetSuit() const
 {
 	return m_enColor;
 }

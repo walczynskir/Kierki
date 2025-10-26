@@ -2,15 +2,11 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_PLAYERS_H__8BB517A1_11DE_11D4_A79A_347710C10000__INCLUDED_)
-#define AFX_PLAYERS_H__8BB517A1_11DE_11D4_A79A_347710C10000__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 #include "Player.h"
 #include "SortCards.h"
 #include <rcommon/RString.h>
+#include <array>
 
 class CPlayers
 {
@@ -26,7 +22,7 @@ public:
 	virtual ~CPlayers();
 
 	void CreateDeciders(T_GAMES	a_enGame, const CTakenTricks* a_pTricks, T_COLOR a_colorTrumps);
-	void CreateDeciders(const CPuzzleRows* a_pPuzzleRows);
+	void CreateDeciders(const CPuzzleRowSet* a_pPuzzleRows);
 
 	T_COLOR ChooseTrumps(T_PLAYER a_player) const;
 	void DistributeCards(const CSortCards& a_sortcards);
@@ -49,11 +45,10 @@ public:
 	// saving and restoring
 	void SaveState(LPSAVERESTORE a_pSaveRestore) const;
 	void RestoreState(const LPSAVERESTORE a_pSaveRestore);
+	CPlayer& operator[](Player a_player) { return m_arPlayers[a_player]; };
 
 private:
-
 	T_PLAYER m_enFirstDealer;
-	CPlayer m_arPlayers[4];
+	PlayerArray<CPlayer> m_arPlayers;
 };
 
-#endif // !defined(AFX_PLAYERS_H__8BB517A1_11DE_11D4_A79A_347710C10000__INCLUDED_)

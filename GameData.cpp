@@ -44,10 +44,10 @@ void
 GameData::CreatePlayers()
 {
 	m_pPlayers = new CPlayers(m_regData.m_regAuto.m_enFirstDealer);
-	m_pPlayers->SetName(E_DL_1, &(m_regData.GetPlayerName(E_DL_1)));
-	m_pPlayers->SetName(E_DL_2, &(m_regData.GetPlayerName(E_DL_2)));
-	m_pPlayers->SetName(E_DL_3, &(m_regData.GetPlayerName(E_DL_3)));
-	m_pPlayers->SetName(E_DL_4, &(m_regData.GetPlayerName(E_DL_4)));
+	m_pPlayers->SetName(Player::South, &(m_regData.GetPlayerName(Player::South)));
+	m_pPlayers->SetName(Player::West, &(m_regData.GetPlayerName(Player::West)));
+	m_pPlayers->SetName(Player::North, &(m_regData.GetPlayerName(Player::North)));
+	m_pPlayers->SetName(Player::East, &(m_regData.GetPlayerName(Player::East)));
 }
 
 
@@ -78,7 +78,7 @@ GameData::NextGame(
 			m_enGame = T_GAMES(m_enGame + 1);
 		}
 	}
-	m_colorTrumps = E_CC_NOTHING;
+	m_colorTrumps = Suit::Nothing;
 
 	// w przypadku odgrywek trzeba w miêdzyczasie wybraæ atu.
 	switch (m_enGame)
@@ -252,8 +252,8 @@ GameData::ChooseTrumps()
 {
 	switch (m_enDealer)
 	{
-	case E_DL_1:
-		m_pPlayers->Sort(E_DL_1, 0, 6);
+	case Player::South:
+		m_pPlayers->Sort(Player::South, 0, 6);
 		m_bTrumpsChoice = TRUE;
 		return FALSE;
 
@@ -397,19 +397,19 @@ GameData::DecodeTrumps() const
 
 	switch (m_colorTrumps)
 	{
-	case E_CC_CLUB:
+	case Suit::Club:
 		l_idStr = IDS_COLOR_CLUB;
 		break;
-	case E_CC_DIAMOND:
+	case Suit::Diamond:
 		l_idStr = IDS_COLOR_DIAMOND;
 		break;
-	case E_CC_SPADE:
+	case Suit::Spade:
 		l_idStr = IDS_COLOR_SPADE;
 		break;
-	case E_CC_HEART:
+	case Suit::Heart:
 		l_idStr = IDS_COLOR_HEART;
 		break;
-	case E_CC_NOTRUMPS:
+	case Suit::NoTrumps:
 		l_idStr = IDS_COLOR_NOTRUMP;
 		break;
 	default:
@@ -491,7 +491,7 @@ GameData::GetTrick(
 //
 T_PLAYER	//WY w³aœciciel ostatniej lewy
 GameData::SetLastTrickOwner(
-	T_COLOR a_colorTrumps	//WE kolor atu lub E_CC_NOTHING
+	T_COLOR a_colorTrumps	//WE kolor atu lub Suit::Nothing
 	)
 {
 	m_enThrower = m_tricks.SetLastTrickOwner(a_colorTrumps);
@@ -676,7 +676,7 @@ GameData::SetPuzzleScore(
 // ---------------------------------------------------------
 // Zwraca wierze uk³adanki
 //
-const CPuzzleRows&	//WY wiersze uk³adanki
+const CPuzzleRowSet&	//WY wiersze uk³adanki
 GameData::GetPuzzleRows() const
 {
 	return m_PuzzleRows;
@@ -1025,10 +1025,10 @@ bool GameData::Restore(LPCTSTR a_psFile)
 //	Pobranie pierwszego rozdaj¹cego i ustawienie nastêpnego
 //	pierwszym
 //
-T_PLAYER GameData::GetFirstDealerAndSetNext()
+Player GameData::GetFirstDealerAndSetNext()
 {
-	T_PLAYER l_playerLast = m_regData.m_regAuto.m_enFirstDealer;
-	T_PLAYER l_playerNew = CPlayers::NextPlayer(l_playerLast);
+	Player l_playerLast = m_regData.m_regAuto.m_enFirstDealer;
+	Player l_playerNew = CPlayers::NextPlayer(l_playerLast);
 	m_regData.m_regAuto.m_enFirstDealer = l_playerNew;
 	return l_playerLast;
 }

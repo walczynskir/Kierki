@@ -65,19 +65,19 @@ CDecider::LeftInColorOthersRank(
 	} l_aColorCnt[4], l_aColorSort[4];
 
 	short l_iAt = 0;
-	l_aColorCnt[l_iAt].enColor = E_CC_CLUB;
+	l_aColorCnt[l_iAt].enColor = Suit::Club;
 	l_aColorCnt[l_iAt].nLeft = LeftInColorOthers(l_aColorCnt[l_iAt].enColor);
 	l_iAt++;
 
-	l_aColorCnt[l_iAt].enColor = E_CC_DIAMOND;
+	l_aColorCnt[l_iAt].enColor = Suit::Diamond;
 	l_aColorCnt[l_iAt].nLeft = LeftInColorOthers(l_aColorCnt[l_iAt].enColor);
 	l_iAt++;
 
-	l_aColorCnt[l_iAt].enColor = E_CC_SPADE;
+	l_aColorCnt[l_iAt].enColor = Suit::Spade;
 	l_aColorCnt[l_iAt].nLeft = LeftInColorOthers(l_aColorCnt[l_iAt].enColor);
 	l_iAt++;
 
-	l_aColorCnt[l_iAt].enColor = E_CC_HEART;
+	l_aColorCnt[l_iAt].enColor = Suit::Heart;
 	l_aColorCnt[l_iAt].nLeft = LeftInColorOthers(l_aColorCnt[l_iAt].enColor);
 
 	// po wszystkich elementach - najd³u¿szy przepisuj

@@ -1,6 +1,6 @@
 #pragma once
 #include "TakenTricks.h"
-#include "PuzzleRows.h"	
+#include "PuzzleRowSet.h"	
 #include "Players.h"	
 #include "SortCards.h"	
 #include "Scores.h"	
@@ -36,7 +36,7 @@ public:
 	short SumPlayerMinuses(T_PLAYER a_enPlayer, T_SERIE a_enSeria, BOOL a_bRobber = FALSE) const;
 	short GetPlayerScore(T_PLAYER a_enPlayer, T_SERIE a_enSeria, T_GAMES a_enGame) const;
 	T_GAMES GetGame() const;
-	const CPuzzleRows& GetPuzzleRows() const;
+	const CPuzzleRowSet& GetPuzzleRows() const;
 	void SetPlayerCard2Puzzle(T_PLAYER a_enPlayer, short a_nInHand);
 	BOOL HasCardForPuzzle(T_PLAYER a_enPlayer) const;
 	const CTakenTricks& GetTricks() const;
@@ -86,7 +86,7 @@ private:
 	T_PLAYER GetFirstDealerAndSetNext();
 
 	CTakenTricks m_tricks;
-	CPuzzleRows  m_PuzzleRows;
+	CPuzzleRowSet  m_PuzzleRows;
 	T_GAMES		 m_enGame;
 	T_COLOR		 m_colorTrumps;
 	BOOL		 m_bTrumpsChoice;

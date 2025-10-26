@@ -1,5 +1,6 @@
 #pragma once
 #include "GameData.h"
+#include <array>
 
 
 struct CVertPos  
@@ -25,7 +26,7 @@ public:
 	{
 		m_hWndNoTrump = NULL;
 		m_nLastHighlighted = -1;
-		m_enPassPlayer = E_DL_NULL;
+		m_enPassPlayer = Player::E_DL_NULL;
 		m_bConfirmTrick = false;
 	}
 
@@ -78,16 +79,17 @@ public:
 
 	HWND      m_hWndNoTrump;
 
-	POINT	  m_ptsLaidCards[4] = {};	// left corners points of laid cards
-	RECT	  m_rectLaidCards = {};		// rect of laid cards (for invalidation)
-	RECT	  m_rectsNames[4] = {};		// rect of names
-	POINT	  m_ptsPass[4] = {};		   // points (left top) of passes
+	RECT m_rectLaidCards{};	// rect of laid cards (for invalidation)
+	PlayerArray<RECT> m_rectsNames{};		// rect of names
+	PlayerArray<POINT> m_ptsPass{};
+	PlayerArray <POINT> m_ptsLaidCards{};	// left corners points of laid cards
+
 
 	CHorzPos m_arrHorzPos[13] {};
 	CVertPos m_arrVertPos[13] {};
 
 	SIZE		m_sizeBmpPass;
-	T_PLAYER    m_enPassPlayer;
+	Player      m_enPassPlayer;
 
 	bool     m_bConfirmTrick;
 	short m_nLastHighlighted;

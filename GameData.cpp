@@ -78,7 +78,7 @@ GameData::NextGame(
 			m_enGame = T_GAMES(m_enGame + 1);
 		}
 	}
-	m_colorTrumps = E_CC_NOTHING;
+	m_colorTrumps = Suit::Nothing;
 
 	// w przypadku odgrywek trzeba w miêdzyczasie wybraæ atu.
 	switch (m_enGame)
@@ -397,19 +397,19 @@ GameData::DecodeTrumps() const
 
 	switch (m_colorTrumps)
 	{
-	case E_CC_CLUB:
+	case Suit::Club:
 		l_idStr = IDS_COLOR_CLUB;
 		break;
-	case E_CC_DIAMOND:
+	case Suit::Diamond:
 		l_idStr = IDS_COLOR_DIAMOND;
 		break;
-	case E_CC_SPADE:
+	case Suit::Spade:
 		l_idStr = IDS_COLOR_SPADE;
 		break;
-	case E_CC_HEART:
+	case Suit::Heart:
 		l_idStr = IDS_COLOR_HEART;
 		break;
-	case E_CC_NOTRUMPS:
+	case Suit::NoTrumps:
 		l_idStr = IDS_COLOR_NOTRUMP;
 		break;
 	default:
@@ -491,7 +491,7 @@ GameData::GetTrick(
 //
 T_PLAYER	//WY w³aœciciel ostatniej lewy
 GameData::SetLastTrickOwner(
-	T_COLOR a_colorTrumps	//WE kolor atu lub E_CC_NOTHING
+	T_COLOR a_colorTrumps	//WE kolor atu lub Suit::Nothing
 	)
 {
 	m_enThrower = m_tricks.SetLastTrickOwner(a_colorTrumps);
@@ -676,7 +676,7 @@ GameData::SetPuzzleScore(
 // ---------------------------------------------------------
 // Zwraca wierze uk³adanki
 //
-const CPuzzleRows&	//WY wiersze uk³adanki
+const CPuzzleRowSet&	//WY wiersze uk³adanki
 GameData::GetPuzzleRows() const
 {
 	return m_PuzzleRows;

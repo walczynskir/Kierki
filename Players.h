@@ -22,7 +22,7 @@ public:
 	virtual ~CPlayers();
 
 	void CreateDeciders(T_GAMES	a_enGame, const CTakenTricks* a_pTricks, T_COLOR a_colorTrumps);
-	void CreateDeciders(const CPuzzleRows* a_pPuzzleRows);
+	void CreateDeciders(const CPuzzleRowSet* a_pPuzzleRows);
 
 	T_COLOR ChooseTrumps(T_PLAYER a_player) const;
 	void DistributeCards(const CSortCards& a_sortcards);

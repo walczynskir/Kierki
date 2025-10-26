@@ -171,7 +171,7 @@ CPlayers::CreateDeciders(
 //
 void 
 CPlayers::CreateDeciders(
-	const CPuzzleRows* a_pPuzzleRow	//WE wskazanie na polo¿one karty
+	const CPuzzleRowSet* a_pPuzzleRow	//WE wskazanie na polo¿one karty
 	)
 {
 	m_arPlayers[Player::West].CreateDecider(a_pPuzzleRow);

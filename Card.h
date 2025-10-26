@@ -13,7 +13,7 @@
 class CCard  
 {
 public:
-	T_COLOR GetColor() const;
+	Suit GetSuit() const;
 	T_PLAYER GetOwner() const;
 	void SetUsed(BOOL a_bUsed);
 	BOOL IsUsed() const;

@@ -51,7 +51,7 @@ CRecoverDecider::GetCardNr(
 
 	const CTrick& l_trickCurrent = (*m_pTricks)[a_nTrick - 1] ;
 
-	if (m_enTrumps == E_CC_NOTRUMPS)
+	if (m_enTrumps == Suit::NoTrumps)
 	{
 		l_nCardNr = (l_trickCurrent.GetCardsCnt() == 0 ? FirstCardNoTrumps(a_nTrick) : NextCardNoTrumps(a_nTrick));
 	}
@@ -124,7 +124,7 @@ CRecoverDecider::FirstCard(
 	// to go zagrajmy, chyba ¿e to A
 	T_COLOR l_enColor = m_pCards->GetColorExactNumNoOneColor(1, m_enTrumps, FALSE);
 	if (
-		(l_enColor != E_CC_NOTHING) &&
+		(l_enColor != Suit::Nothing) &&
 		(m_pCards->HasColor(l_enColor)) &&
 		(m_pCards->FirstInColorVal(l_enColor) != E_CV_A)
 		)
@@ -330,7 +330,7 @@ CRecoverDecider::NextCardInColor3(
 		return m_pCards->FirstBiggerOrLeastInColor(l_pBiggest);
 	// je¿eli najwiêksza karta to atu, to gramy najmniejsz¹
 	// w kolorze
-	if (l_pBiggest->GetColor() == m_enTrumps)
+	if (l_pBiggest->GetSuit() == m_enTrumps)
 		return m_pCards->FirstInColor(l_enColor);
 
 	// je¿eli nie to gramy pierwsz¹ wiêksz¹ lub najmniejsz¹
@@ -358,7 +358,7 @@ CRecoverDecider::NextCardInColor2(
 
 	// je¿eli najwiêksza karta to atu, to gramy najmniejsz¹
 	// w kolorze
-	if (l_pBiggest->GetColor() == m_enTrumps)
+	if (l_pBiggest->GetSuit() == m_enTrumps)
 		return m_pCards->FirstInColor(l_enColor);
 
 	// jeœli karta najwy¿sza jest najwy¿sz¹ z mo¿liwych 
@@ -504,7 +504,7 @@ CRecoverDecider::NextCardNotInColor3(
 	const CTrick& l_trickCurrent = (*m_pTricks)[a_nTrick - 1] ;
 	const CCard* l_pBiggest = l_trickCurrent.Biggest(m_enTrumps);
 	if (m_pCards->HasColor(m_enTrumps))
-		if (l_pBiggest->GetColor() == m_enTrumps)
+		if (l_pBiggest->GetSuit() == m_enTrumps)
 			return m_pCards->FirstBiggerOrLeastInColor(l_pBiggest);
 		else
 			return m_pCards->FirstInColor(m_enTrumps);

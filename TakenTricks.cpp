@@ -96,7 +96,7 @@ CTakenTricks::AreBiggerInColor(
 	const CUserCards* a_pCards	//WE karty gracza
 	) const
 {
-	T_COLOR l_enColor = a_pCard->GetColor();
+	T_COLOR l_enColor = a_pCard->GetSuit();
 	if (LeftInColor(l_enColor) == 0)
 		return FALSE;
 	
@@ -141,7 +141,7 @@ CTakenTricks::AreLessInColor(
 	const CUserCards* a_pCards	//WE karty usera
 	) const
 {
-	T_COLOR l_enColor = a_pCard->GetColor();
+	T_COLOR l_enColor = a_pCard->GetSuit();
 	if (LeftInColor(l_enColor) == 0)
 		return FALSE;
 	
@@ -185,7 +185,7 @@ CTakenTricks::BiggerInColorCnt(
 	const CCard* a_pCard
 	) const
 {
-	T_COLOR l_enColor = a_pCard->GetColor();
+	T_COLOR l_enColor = a_pCard->GetSuit();
 	short l_nCard = a_pCard->GetNr();
 	if (LeftInColor(l_enColor) == 0)
 		return 0;
@@ -240,19 +240,19 @@ CTakenTricks::LeftInColorRank(
 	} l_aColorCnt[4], l_aColorSort[4];
 
 	short l_iAt = 0;
-	l_aColorCnt[l_iAt].enColor = E_CC_CLUB;
+	l_aColorCnt[l_iAt].enColor = Suit::Club;
 	l_aColorCnt[l_iAt].nLeft = LeftInColor(l_aColorCnt[l_iAt].enColor);
 	l_iAt++;
 
-	l_aColorCnt[l_iAt].enColor = E_CC_DIAMOND;
+	l_aColorCnt[l_iAt].enColor = Suit::Diamond;
 	l_aColorCnt[l_iAt].nLeft = LeftInColor(l_aColorCnt[l_iAt].enColor);
 	l_iAt++;
 
-	l_aColorCnt[l_iAt].enColor = E_CC_SPADE;
+	l_aColorCnt[l_iAt].enColor = Suit::Spade;
 	l_aColorCnt[l_iAt].nLeft = LeftInColor(l_aColorCnt[l_iAt].enColor);
 	l_iAt++;
 
-	l_aColorCnt[l_iAt].enColor = E_CC_HEART;
+	l_aColorCnt[l_iAt].enColor = Suit::Heart;
 	l_aColorCnt[l_iAt].nLeft = LeftInColor(l_aColorCnt[l_iAt].enColor);
 
 	// po wszystkich elementach - najd³u¿szy przepisuj
@@ -457,7 +457,7 @@ CTakenTricks::SetCard(
 //
 T_PLAYER	//WY w³aœciciel ostatniej lewy
 CTakenTricks::SetLastTrickOwner(
-	T_COLOR a_colorTrumps	//WE kolor atu lub E_CC_NOTHING
+	T_COLOR a_colorTrumps	//WE kolor atu lub Suit::Nothing
 	)
 {
 	return m_tricks[GetTricksCnt() - 1].SetTrickOwner(a_colorTrumps);

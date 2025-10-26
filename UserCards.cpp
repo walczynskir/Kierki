@@ -48,7 +48,7 @@ CUserCards::FirstInColor(
 	{
 		if (!m_cards[l_nAt].IsUsed())
 		{
-			if (m_cards[l_nAt].GetColor() == a_enShortest)
+			if (m_cards[l_nAt].GetSuit() == a_enShortest)
 			{
 				return l_nAt;
 			}
@@ -96,7 +96,7 @@ CUserCards::FirstInColorCard(
 	{
 		if (!m_cards[l_iAt].IsUsed())
 		{
-			if (m_cards[l_iAt].GetColor() == a_enColor)
+			if (m_cards[l_iAt].GetSuit() == a_enColor)
 			{
 				return &(m_cards[l_iAt]);
 			}
@@ -202,46 +202,46 @@ T_COLOR		//WY kolor najkrótszy
 CUserCards::ShortestColor()	const
 {
 
-	short l_iClubsCnt = ColorCnt(E_CC_CLUB);
-	short l_iDiamondsCnt = ColorCnt(E_CC_DIAMOND);
-	short l_iSpadesCnt = ColorCnt(E_CC_SPADE);
-	short l_iHeartsCnt = ColorCnt(E_CC_HEART);
+	short l_iClubsCnt = ColorCnt(Suit::Club);
+	short l_iDiamondsCnt = ColorCnt(Suit::Diamond);
+	short l_iSpadesCnt = ColorCnt(Suit::Spade);
+	short l_iHeartsCnt = ColorCnt(Suit::Heart);
 
 	short l_iShortest = l_iClubsCnt;
-	T_COLOR l_enColor = E_CC_CLUB ;
+	T_COLOR l_enColor = Suit::Club ;
 
 	if (l_iShortest == 0)
 	{
 		l_iShortest = l_iDiamondsCnt ;
-		l_enColor = E_CC_DIAMOND ;
+		l_enColor = Suit::Diamond ;
 	}
 	if (l_iShortest == 0)
 	{
 		l_iShortest = l_iSpadesCnt ;
-		l_enColor = E_CC_SPADE ;
+		l_enColor = Suit::Spade ;
 	}
 	if (l_iShortest == 0)
 	{
 		l_iShortest = l_iHeartsCnt ;
-		l_enColor = E_CC_HEART ;
+		l_enColor = Suit::Heart ;
 	}
 	ASSERT(l_iShortest > 0) ;
 
 	if ((l_iDiamondsCnt < l_iShortest) && (l_iDiamondsCnt > 0))
 	{
-		l_enColor = E_CC_DIAMOND ;
+		l_enColor = Suit::Diamond ;
 		l_iShortest = l_iDiamondsCnt ;
 	}
 
 	if ((l_iSpadesCnt < l_iShortest) && (l_iSpadesCnt > 0))
 	{
-		l_enColor = E_CC_SPADE ;
+		l_enColor = Suit::Spade ;
 		l_iShortest = l_iSpadesCnt ;
 	}
 
 	if ((l_iHeartsCnt < l_iShortest) && (l_iHeartsCnt > 0))
 	{
-		l_enColor = E_CC_HEART ;
+		l_enColor = Suit::Heart ;
 		l_iShortest = l_iHeartsCnt ;
 	}
 
@@ -266,7 +266,7 @@ CUserCards::ColorCnt(
 		if (m_cards[l_nAt].IsUsed() && a_bUsed)
 			continue;
 
-		if (m_cards[l_nAt].GetColor() == a_enColor)
+		if (m_cards[l_nAt].GetSuit() == a_enColor)
 			l_nCnt++ ;
 	}
 	return l_nCnt ;
@@ -292,34 +292,34 @@ T_COLOR		//WY najkrótszy niekierowy kolor
 CUserCards::ShortestColorNoHearts() const
 {
 
-	short l_iClubsCnt = ColorCnt(E_CC_CLUB);
-	short l_iDiamondsCnt = ColorCnt(E_CC_DIAMOND);
-	short l_iSpadesCnt = ColorCnt(E_CC_SPADE);
+	short l_iClubsCnt = ColorCnt(Suit::Club);
+	short l_iDiamondsCnt = ColorCnt(Suit::Diamond);
+	short l_iSpadesCnt = ColorCnt(Suit::Spade);
 
 	short l_iShortest = l_iClubsCnt;
-	T_COLOR l_enColor = E_CC_CLUB ;
+	T_COLOR l_enColor = Suit::Club ;
 
 	if (l_iShortest == 0)
 	{
 		l_iShortest = l_iDiamondsCnt ;
-		l_enColor = E_CC_DIAMOND ;
+		l_enColor = Suit::Diamond ;
 	}
 	if (l_iShortest == 0)
 	{
 		l_iShortest = l_iSpadesCnt ;
-		l_enColor = E_CC_SPADE ;
+		l_enColor = Suit::Spade ;
 	}
 	ASSERT(l_iShortest > 0) ;
 
 	if ((l_iDiamondsCnt < l_iShortest) && (l_iDiamondsCnt > 0))
 	{
-		l_enColor = E_CC_DIAMOND ;
+		l_enColor = Suit::Diamond ;
 		l_iShortest = l_iDiamondsCnt ;
 	}
 
 	if ((l_iSpadesCnt < l_iShortest) && (l_iSpadesCnt > 0))
 	{
-		l_enColor = E_CC_SPADE ;
+		l_enColor = Suit::Spade ;
 		l_iShortest = l_iSpadesCnt ;
 	}
 
@@ -338,7 +338,7 @@ CUserCards::AreNoHearts() const
 	{	
 		if (!(m_cards[l_iAt].IsUsed()))
 		{
-			if (m_cards[l_iAt].GetColor() != E_CC_HEART)
+			if (m_cards[l_iAt].GetSuit() != Suit::Heart)
 			{
 				return TRUE;
 			}
@@ -365,7 +365,7 @@ CUserCards::LastInColor(
 	{
 		if (!m_cards[l_iAt - 1].IsUsed())
 		{
-			if (m_cards[l_iAt - 1].GetColor() == a_enColor)
+			if (m_cards[l_iAt - 1].GetSuit() == a_enColor)
 			{
 				return l_iAt - 1;
 			}
@@ -429,7 +429,7 @@ CUserCards::HasColor(
 			continue ;
 		}
 
-		if (m_cards[l_iCard].GetColor() != a_enColor)
+		if (m_cards[l_iCard].GetSuit() != a_enColor)
 		{
 			continue;
 		}
@@ -456,7 +456,7 @@ CUserCards::Biggest(
 			continue;
 		}
 
-		if (m_cards[l_nCard - 1].GetColor() != a_enColor)
+		if (m_cards[l_nCard - 1].GetSuit() != a_enColor)
 		{
 			continue;
 		}
@@ -497,7 +497,7 @@ CUserCards::BiggestInColorCardRank(
 		if (m_cards[l_iCardNr - 1].IsUsed())
 			continue ;
 
-		if (m_cards[l_iCardNr - 1].GetColor() != a_enColor)
+		if (m_cards[l_iCardNr - 1].GetSuit() != a_enColor)
 			continue ;
 		l_iCnt++;
 		if (l_iCnt != a_nRank)
@@ -526,7 +526,7 @@ CUserCards::GetBiggestBelow(
 	{
 		if (m_cards[l_iCard - 1].IsUsed())
 			continue;
-		if (m_cards[l_iCard - 1].GetColor() != a_enColor)
+		if (m_cards[l_iCard - 1].GetSuit() != a_enColor)
 			continue;
 		if (m_cards[l_iCard - 1].CardValue() <	a_cv)
 			return l_iCard - 1;
@@ -551,7 +551,7 @@ CUserCards::FindCard(
 	{
 		if (m_cards[l_nCard].IsUsed() == a_bUsed)
 			continue;
-		if (m_cards[l_nCard].GetColor() != a_enColor)
+		if (m_cards[l_nCard].GetSuit() != a_enColor)
 			continue;
 		if (m_cards[l_nCard].CardValue() != a_cv)
 			continue;
@@ -590,7 +590,7 @@ CUserCards::FindCard(
 	{
 		if (m_cards[l_nCard].IsUsed() == a_bUsed)
 			continue;
-		if (m_cards[l_nCard].GetColor() != a_pCard->GetColor())
+		if (m_cards[l_nCard].GetSuit() != a_pCard->GetSuit())
 			continue;
 		if (m_cards[l_nCard].CardValue() != a_pCard->CardValue())
 			continue;
@@ -620,19 +620,19 @@ CUserCards::GetShortestColorRank(
 	} l_aColorCnt[4], l_aColorSort[4];
 
 	short l_nAt = 0;
-	l_aColorCnt[l_nAt].enColor = E_CC_CLUB;
+	l_aColorCnt[l_nAt].enColor = Suit::Club;
 	l_aColorCnt[l_nAt].nLeft = ColorCnt(l_aColorCnt[l_nAt].enColor, a_bUsed);
 	l_nAt++;
 
-	l_aColorCnt[l_nAt].enColor = E_CC_DIAMOND;
+	l_aColorCnt[l_nAt].enColor = Suit::Diamond;
 	l_aColorCnt[l_nAt].nLeft = ColorCnt(l_aColorCnt[l_nAt].enColor, a_bUsed);
 	l_nAt++;
 
-	l_aColorCnt[l_nAt].enColor = E_CC_SPADE;
+	l_aColorCnt[l_nAt].enColor = Suit::Spade;
 	l_aColorCnt[l_nAt].nLeft = ColorCnt(l_aColorCnt[l_nAt].enColor, a_bUsed);
 	l_nAt++;
 
-	l_aColorCnt[l_nAt].enColor = E_CC_HEART;
+	l_aColorCnt[l_nAt].enColor = Suit::Heart;
 	l_aColorCnt[l_nAt].nLeft = ColorCnt(l_aColorCnt[l_nAt].enColor, a_bUsed);
 
 	// po wszystkich elementach - najd³u¿szy przepisuj
@@ -698,15 +698,15 @@ CUserCards::GetLongestColorRank(
 BOOL	//WY TRUE - posiada
 CUserCards::HasNoHeartsColor() const
 {
-	if (HasColor(E_CC_CLUB))
+	if (HasColor(Suit::Club))
 	{
 		return TRUE;
 	}
-	if (HasColor(E_CC_SPADE))
+	if (HasColor(Suit::Spade))
 	{
 		return TRUE;
 	}
-	if (HasColor(E_CC_DIAMOND))
+	if (HasColor(Suit::Diamond))
 	{
 		return TRUE;
 	}
@@ -748,7 +748,7 @@ CUserCards::CardsInColor(
 	{
 		if (m_cards[l_nCard].IsUsed())
 			continue;
-		if (m_cards[l_nCard].GetColor() != a_enColor)
+		if (m_cards[l_nCard].GetSuit() != a_enColor)
 			continue;
 		l_nCnt++;
 	}
@@ -768,7 +768,7 @@ CUserCards::AllCardsInColor(
 	short l_nCnt = 0;
 	for (l_nCard = 0; l_nCard < 13; l_nCard++)
 	{
-		if (m_cards[l_nCard].GetColor() != a_enColor)
+		if (m_cards[l_nCard].GetSuit() != a_enColor)
 		{
 			continue;
 		}
@@ -795,7 +795,7 @@ CUserCards::LessOrFirstBiggerInColor(
 	{
 		if (m_cards[l_nCard].IsUsed())
 			continue;
-		if (m_cards[l_nCard].GetColor() != a_pCard->GetColor())
+		if (m_cards[l_nCard].GetSuit() != a_pCard->GetSuit())
 			continue;
 		l_bHasColor = TRUE;
 		if (m_cards[l_nCard] > *a_pCard)
@@ -834,7 +834,7 @@ CUserCards::HasKingOfHeart() const
 	{
 		if (m_cards[l_nCard].IsUsed())
 			continue;
-		if (m_cards[l_nCard].GetColor() != E_CC_HEART)
+		if (m_cards[l_nCard].GetSuit() != Suit::Heart)
 			continue;
 		if (m_cards[l_nCard].CardValue() == E_CV_K)
 			return TRUE;
@@ -860,19 +860,19 @@ CUserCards::GetLowestCardColorRank(
 	} l_aColorCnt[4], l_aColorSort[4];
 
 	short l_nAt = 0;
-	l_aColorCnt[l_nAt].enColor = E_CC_CLUB;
+	l_aColorCnt[l_nAt].enColor = Suit::Club;
 	l_aColorCnt[l_nAt].nLowest = FirstInColorVal(l_aColorCnt[l_nAt].enColor);
 	l_nAt++;
 
-	l_aColorCnt[l_nAt].enColor = E_CC_DIAMOND;
+	l_aColorCnt[l_nAt].enColor = Suit::Diamond;
 	l_aColorCnt[l_nAt].nLowest = FirstInColorVal(l_aColorCnt[l_nAt].enColor);
 	l_nAt++;
 
-	l_aColorCnt[l_nAt].enColor = E_CC_SPADE;
+	l_aColorCnt[l_nAt].enColor = Suit::Spade;
 	l_aColorCnt[l_nAt].nLowest = FirstInColorVal(l_aColorCnt[l_nAt].enColor);
 	l_nAt++;
 
-	l_aColorCnt[l_nAt].enColor = E_CC_HEART;
+	l_aColorCnt[l_nAt].enColor = Suit::Heart;
 	l_aColorCnt[l_nAt].nLowest = FirstInColorVal(l_aColorCnt[l_nAt].enColor);
 
 	// po wszystkich elementach - najd³u¿szy przepisuj
@@ -924,7 +924,7 @@ CUserCards::CardsBetween(
 	) const
 {
 	// karty musz¹ byæ w tym samym kolorze
-	ASSERT(a_card1.GetColor() == a_card2.GetColor());
+	ASSERT(a_card1.GetSuit() == a_card2.GetSuit());
 	// druga musi byæ wiêksza od pierwszej
 	ASSERT(a_card1 < a_card2);
 	short l_nCardCnt = 0;
@@ -956,7 +956,7 @@ CUserCards::CardsBetweenAll(
 	) const
 {
 	// karty musz¹ byæ w tym samym kolorze
-	ASSERT(a_card1.GetColor() == a_card2.GetColor());
+	ASSERT(a_card1.GetSuit() == a_card2.GetSuit());
 	// druga musi byæ wiêksza od pierwszej
 	ASSERT(a_card1 < a_card2);
 	short l_nCardCnt = 0;
@@ -1090,7 +1090,7 @@ CUserCards::HasOneOfCards(
 // ---------------------------------------------------------
 //	Czy ma kolor w którym jest dok³adnie tyle kart co wymieniono
 //
-T_COLOR		//WY znaleziony kolor lub E_CC_NOTHING
+T_COLOR		//WY znaleziony kolor lub Suit::Nothing
 CUserCards::GetColorExactNumNoOneColor(
 	short a_nNum,		//WE szukana liczba kart
 	T_COLOR a_enColor,	//WE oprócz koloru
@@ -1098,7 +1098,7 @@ CUserCards::GetColorExactNumNoOneColor(
 	)	const
 {
 	short l_nCnt;
-	T_COLOR l_enColor = E_CC_CLUB;
+	T_COLOR l_enColor = Suit::Club;
 	l_nCnt = ColorCnt(a_enColor, a_bUsed);
 	if (
 		(l_nCnt == a_nNum) &&
@@ -1106,7 +1106,7 @@ CUserCards::GetColorExactNumNoOneColor(
 	   )
 	   return l_enColor;
 
-	l_enColor = E_CC_SPADE;
+	l_enColor = Suit::Spade;
 	l_nCnt = ColorCnt(a_enColor, a_bUsed);
 	if (
 		(l_nCnt == a_nNum) &&
@@ -1114,7 +1114,7 @@ CUserCards::GetColorExactNumNoOneColor(
 	   )
 	   return l_enColor;
 
-	l_enColor = E_CC_DIAMOND;
+	l_enColor = Suit::Diamond;
 	l_nCnt = ColorCnt(a_enColor, a_bUsed);
 	if (
 		(l_nCnt == a_nNum) &&
@@ -1122,7 +1122,7 @@ CUserCards::GetColorExactNumNoOneColor(
 	   )
 	   return l_enColor;
 
-	l_enColor = E_CC_HEART;
+	l_enColor = Suit::Heart;
 	l_nCnt = ColorCnt(a_enColor, a_bUsed);
 	if (
 		(l_nCnt == a_nNum) &&
@@ -1130,7 +1130,7 @@ CUserCards::GetColorExactNumNoOneColor(
 	   )
 	   return l_enColor;
 
-	return E_CC_NOTHING;
+	return Suit::Nothing;
 }
 
 
@@ -1158,7 +1158,7 @@ CUserCards::FirstBiggerOrLeastInColor(
 		}
 	}
 	// nie ma wiêkszej, to gramy najmniejsz¹
-	return FirstInColor(a_pCard->GetColor());
+	return FirstInColor(a_pCard->GetSuit());
 }
 
 
@@ -1168,16 +1168,16 @@ CUserCards::FirstBiggerOrLeastInColor(
 //
 BOOL	//WY TRUE - mamy karte do zagrania
 CUserCards::HasCardForPuzzle(
-	const CPuzzleRows* a_pPuzzleRow	// wszystkie ulozone wiersze 
+	const CPuzzleRowSet* a_pPuzzleRow	// wszystkie ulozone wiersze 
 	) const
 {
-	if (HasCardForPuzzleColor(a_pPuzzleRow, E_CC_HEART))
+	if (HasCardForPuzzleColor(a_pPuzzleRow, Suit::Heart))
 		return TRUE;
-	if (HasCardForPuzzleColor(a_pPuzzleRow, E_CC_DIAMOND))
+	if (HasCardForPuzzleColor(a_pPuzzleRow, Suit::Diamond))
 		return TRUE;
-	if (HasCardForPuzzleColor(a_pPuzzleRow, E_CC_SPADE))
+	if (HasCardForPuzzleColor(a_pPuzzleRow, Suit::Spade))
 		return TRUE;
-	if (HasCardForPuzzleColor(a_pPuzzleRow, E_CC_CLUB))
+	if (HasCardForPuzzleColor(a_pPuzzleRow, Suit::Club))
 		return TRUE;
 	return FALSE;
 }
@@ -1188,32 +1188,32 @@ CUserCards::HasCardForPuzzle(
 //
 BOOL	//WY TRUE: jest karta do zagrania
 CUserCards::HasCardForPuzzleColor(
-	const CPuzzleRows* a_pPuzzleRow,	//WE wszystkie wiersze
-	T_COLOR a_enColor					//WE sprawdzany kolor
+	const CPuzzleRowSet* a_pPuzzleRow,	//WE wszystkie wiersze
+	Suit a_suit					//WE sprawdzany kolor
 	) const
 {
 	const CCard* l_pCard;
-	l_pCard = a_pPuzzleRow->m_arPuzzleRow[a_enColor - 1].m_pCardTop;
+	l_pCard = (*a_pPuzzleRow)[a_suit].m_pCardTop;
 	if (l_pCard == NULL)
 	{
-		if (FindCard(a_enColor, E_CV_8) >= 0)
+		if (FindCard(a_suit, E_CV_8) >= 0)
 			return TRUE;
 	}
 	else
 	{
-		if (FindCard(a_enColor, (T_CARDVAL)(l_pCard->CardValue() + 1)) >= 0)
+		if (FindCard(a_suit, (T_CARDVAL)(l_pCard->CardValue() + 1)) >= 0)
 			return TRUE;
 	}
 
-	l_pCard = a_pPuzzleRow->m_arPuzzleRow[a_enColor - 1].m_pCardBottom;
+	l_pCard = (*a_pPuzzleRow)[a_suit].m_pCardBottom;
 	if (l_pCard == NULL)
 	{
-		if (FindCard(a_enColor, E_CV_8) >= 0)
+		if (FindCard(a_suit, E_CV_8) >= 0)
 			return TRUE;
 	}
 	else
 	{
-		if (FindCard(a_enColor, (T_CARDVAL)(l_pCard->CardValue() - 1)) >= 0)
+		if (FindCard(a_suit, (T_CARDVAL)(l_pCard->CardValue() - 1)) >= 0)
 			return TRUE;
 	}
 	return FALSE;

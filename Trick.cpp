@@ -54,11 +54,11 @@ CTrick::SetTrickOwner(
 	{
 		if ((*(m_tcCard[l_iAt - 1])) > (*l_ptcBiggest))
 			l_ptcBiggest = m_tcCard[l_iAt - 1] ;
-		if (a_enTrumps == E_CC_NOTHING)
+		if (a_enTrumps == Suit::Nothing)
 			continue;
-		if (l_ptcBiggest->GetColor() == a_enTrumps)
+		if (l_ptcBiggest->GetSuit() == a_enTrumps)
 			continue;
-		if (m_tcCard[l_iAt - 1]->GetColor() == a_enTrumps)
+		if (m_tcCard[l_iAt - 1]->GetSuit() == a_enTrumps)
 			l_ptcBiggest = m_tcCard[l_iAt - 1] ;
 	}
 
@@ -79,7 +79,7 @@ CTrick::GetTrickOwner() const
 
 // ---------------------------------------------------------
 //	Najwiêksza karta w lewie w kolorze pierwszej karty
-//	Jeœli a_enTrumps != E_CC_NOTHING uwzglêdnia te¿ atu
+//	Jeœli a_enTrumps != Suit::Nothing uwzglêdnia te¿ atu
 //
 const CCard*	//WY szukana karta
 CTrick::Biggest(
@@ -97,14 +97,14 @@ CTrick::Biggest(
 		if ((*(m_tcCard[l_nCard - 1])) > *l_pCard)
 			l_pCard = m_tcCard[l_nCard - 1];
 		
-		if (a_enTrumps == E_CC_NOTHING)
+		if (a_enTrumps == Suit::Nothing)
 			continue;
 		// je¿eli karta jest atutem, a nastêpna nie jest wy¿sza no to ok
-		if (l_pCard->GetColor() == a_enTrumps)
+		if (l_pCard->GetSuit() == a_enTrumps)
 			continue;
 		// ale jeœli poprzednia nie jest atutem, a nasza jest
 		// to nasza jest wy¿sza
-		if (m_tcCard[l_nCard - 1]->GetColor() == a_enTrumps)
+		if (m_tcCard[l_nCard - 1]->GetSuit() == a_enTrumps)
 			l_pCard = m_tcCard[l_nCard - 1];
 	}
 
@@ -124,7 +124,7 @@ CTrick::GetHeartsCnt() const
 	for (l_iAt = 1; l_iAt <= m_nCards; l_iAt++)
 	{
 		l_pCard = m_tcCard[l_iAt - 1] ;
-		if (l_pCard->GetColor() == E_CC_HEART)
+		if (l_pCard->GetSuit() == Suit::Heart)
 			l_nCnt++ ;
 
 	}
@@ -144,7 +144,7 @@ CTrick::CntInColor(
 	short l_nCntInColor = 0;
 	for(l_nCard = 1; l_nCard <= m_nCards; l_nCard++)
 	{
-		if (m_tcCard[l_nCard - 1]->GetColor() == a_enColor)
+		if (m_tcCard[l_nCard - 1]->GetSuit() == a_enColor)
 			l_nCntInColor++;
 	}
 	return l_nCntInColor;
@@ -220,7 +220,7 @@ CTrick::IsKingOfHeart() const
 	for (l_iAt = 1; l_iAt <= m_nCards; l_iAt++)
 	{
 		l_pCard = m_tcCard[l_iAt - 1] ;
-		if ((l_pCard->CardValue() == E_CV_K) && (l_pCard->GetColor() == E_CC_HEART))
+		if ((l_pCard->CardValue() == E_CV_K) && (l_pCard->GetSuit() == Suit::Heart))
 			return TRUE;
 
 	}
@@ -253,10 +253,10 @@ CTrick::InOneColor()	const
 {
 	short l_nCard;
 
-	T_COLOR l_enColor = m_tcCard[0]->GetColor();
+	T_COLOR l_enColor = m_tcCard[0]->GetSuit();
 	for (l_nCard = 2; l_nCard <= m_nCards; l_nCard++)
 	{
-		if (m_tcCard[l_nCard - 1]->GetColor() != l_enColor)
+		if (m_tcCard[l_nCard - 1]->GetSuit() != l_enColor)
 			return FALSE;
 	}
 	return TRUE;
@@ -275,7 +275,7 @@ CTrick::IsColor(
 
 	for (l_nCard = 1; l_nCard <= m_nCards; l_nCard++)
 	{
-		if (m_tcCard[l_nCard - 1]->GetColor() == a_enColor)
+		if (m_tcCard[l_nCard - 1]->GetSuit() == a_enColor)
 			return TRUE;
 	}
 	return FALSE;
@@ -303,7 +303,7 @@ CTrick::GetCardColor(
 {
 	ASSERT(a_nCard >= 0);
 	ASSERT(a_nCard < m_nCards);
-	return m_tcCard[a_nCard]->GetColor();
+	return m_tcCard[a_nCard]->GetSuit();
 }
 
 

@@ -1,6 +1,9 @@
 #pragma once
 
-typedef enum class Player : int {
+#include <array>
+
+typedef enum class Player : int 
+{
 	E_DL_NULL = -1,
 	South = 0,		// has to start with zero, as used as array index
 	West,
@@ -30,15 +33,24 @@ constexpr Player constAllPlayers[] = {
 };
 
 
-typedef enum 
+typedef enum class Suit : int
 {
-	E_CC_NOTHING = 0,
-	E_CC_CLUB = 1,
-	E_CC_DIAMOND,
-	E_CC_SPADE,
-	E_CC_HEART,
-	E_CC_NOTRUMPS
+	Nothing = 0,
+	Club = 1,
+	Diamond,
+	Spade,
+	Heart,
+	NoTrumps
 } T_COLOR ;
+
+inline constexpr short SuitToIndex(Suit a_suit)
+{
+	return static_cast<short>(a_suit) - 1;
+}
+
+inline constexpr std::array<Suit, 4> ConstStandardSuits = {
+	Suit::Heart, Suit::Spade, Suit::Diamond, Suit::Club
+};
 
 typedef enum {
 	E_GM_NOTHING = -1, 
@@ -83,19 +95,19 @@ typedef enum {
 
 
 
-
-
-const BYTE c_app_btPlayersCnt = 4;
-const BYTE c_app_btPlayerCards = 13;
+constexpr BYTE c_app_btPlayersCnt = 4;
+constexpr BYTE c_app_btPlayerCards = 13;
+constexpr BYTE c_app_btRounds = 4;
+constexpr BYTE c_app_btGamesCnt = 12;
 
 typedef struct S_SCORE
 {
-	short m_nPoints[12];
+	short m_nPoints[c_app_btGamesCnt];
 } SCORE, *LPSCORE;
 
 typedef struct S_PLAYERSCORE
 {
-	SCORE m_score[4];
+	SCORE m_score[c_app_btRounds];
 } PLAYERSCORE, *LPPLAYERSCORE;
 
 

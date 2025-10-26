@@ -100,19 +100,19 @@ CNoLadiesDecider::DecideColor(
 {
 	T_COLOR l_enColor;
 
-	l_enColor = E_CC_CLUB;
+	l_enColor = Suit::Club;
 	if (CanPlayColor(a_iTrick, l_enColor))
 		return l_enColor;
 
-	l_enColor = E_CC_DIAMOND;
+	l_enColor = Suit::Diamond;
 	if (CanPlayColor(a_iTrick, l_enColor))
 		return l_enColor;
 
-	l_enColor = E_CC_SPADE;
+	l_enColor = Suit::Spade;
 	if (CanPlayColor(a_iTrick, l_enColor))
 		return l_enColor;
 
-	l_enColor = E_CC_HEART;
+	l_enColor = Suit::Heart;
 	if (CanPlayColor(a_iTrick, l_enColor))
 		return l_enColor;
 	
@@ -161,7 +161,7 @@ CNoLadiesDecider::CanPlayColor(
 		return FALSE;
 	for (l_nCard = 0; l_nCard < 13; l_nCard++)	
 	{
-		if (m_pCards->GetCard(l_nCard).GetColor() != a_enColor)
+		if (m_pCards->GetCard(l_nCard).GetSuit() != a_enColor)
 			continue;
 		if (m_pCards->GetCard(l_nCard).IsUsed())
 			continue;
@@ -194,28 +194,28 @@ CNoLadiesDecider::CardForLadies(
 	switch (a_pCard->CardValue())
 	{
 	case E_CV_K:
-		l_nCardNr = m_pCards->FindCard(a_pCard->GetColor(), E_CV_D); 
+		l_nCardNr = m_pCards->FindCard(a_pCard->GetSuit(), E_CV_D); 
 		if (l_nCardNr >= 0)
 			return l_nCardNr;
-		l_nCardNr = m_pCards->GetBiggestBelow(a_pCard->GetColor(), E_CV_D);
+		l_nCardNr = m_pCards->GetBiggestBelow(a_pCard->GetSuit(), E_CV_D);
 		if (l_nCardNr >= 0)
 			return l_nCardNr;
-		return m_pCards->FirstInColor(a_pCard->GetColor());
+		return m_pCards->FirstInColor(a_pCard->GetSuit());
 
 	case E_CV_A:
-		l_nCardNr = m_pCards->FindCard(a_pCard->GetColor(), E_CV_D); 
+		l_nCardNr = m_pCards->FindCard(a_pCard->GetSuit(), E_CV_D); 
 		if (l_nCardNr >= 0)
 			return l_nCardNr;
-		l_nCardNr = m_pCards->FindCard(a_pCard->GetColor(), E_CV_K); 
+		l_nCardNr = m_pCards->FindCard(a_pCard->GetSuit(), E_CV_K); 
 		if (l_nCardNr >= 0)
 			return l_nCardNr;
 		break;
 	}
-	l_nCardNr = m_pCards->GetBiggestBelow(a_pCard->GetColor(), E_CV_D);
+	l_nCardNr = m_pCards->GetBiggestBelow(a_pCard->GetSuit(), E_CV_D);
 	if (l_nCardNr >= 0)
 		return l_nCardNr;
 
-	return m_pCards->FirstInColor(a_pCard->GetColor());
+	return m_pCards->FirstInColor(a_pCard->GetSuit());
 }
 
 

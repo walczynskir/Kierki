@@ -10,14 +10,14 @@
 #endif // _MSC_VER > 1000
 
 #include "Decider.h"
-#include "PuzzleRows.h"
+#include "PuzzleRowSet.h"
 #include "AllowedCards.h"
 
 
 class CPuzzleDecider : public CDecider
 {
 public:
-	CPuzzleDecider(const CUserCards* a_pUserCards, const CPuzzleRows* a_pPuzzleRow, T_PLAYER a_enPlayer);
+	CPuzzleDecider(const CUserCards* a_pUserCards, const CPuzzleRowSet* a_pPuzzleRow, T_PLAYER a_enPlayer);
 	virtual ~CPuzzleDecider();
 	virtual short GetCardNr(short a_nTrick) const;
 
@@ -27,8 +27,8 @@ private:
 	void DecidePointsFurthest(CAllowedCards* a_pAllowedCards, short a_nCard) const;
 	short FindFurthest(CAllowedCards* a_pAllowedCards) const;
 	short DecideCard(CAllowedCards* a_pAllowedCards) const;
-	short GetCardInColor(T_COLOR a_enColor, BOOL a_bTop) const;
-	const CPuzzleRows* m_pPuzzleRows;
+	short GetCardInColor(Suit a_suit, BOOL a_bTop) const;
+	const CPuzzleRowSet* m_pPuzzleRows;
 	void FillAllowedCards(CAllowedCards* a_pAllowedCards) const;
 };
 

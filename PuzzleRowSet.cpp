@@ -1,21 +1,22 @@
-// PuzzleRows.cpp: implementation of the CPuzzleRows class.
+// PuzzleRows.cpp: implementation of the CPuzzleRowSet class.
 //
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "PuzzleRows.h"
+#include "PuzzleRowSet.h"
+
 
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CPuzzleRows::CPuzzleRows()
+CPuzzleRowSet::CPuzzleRowSet()
 {
 
 }
 
-CPuzzleRows::~CPuzzleRows()
+CPuzzleRowSet::~CPuzzleRowSet()
 {
 
 }
@@ -25,12 +26,12 @@ CPuzzleRows::~CPuzzleRows()
 //	Wyczyszczenie wiersza
 //
 void 
-CPuzzleRows::Clear()
+CPuzzleRowSet::Clear()
 {
-	m_arPuzzleRow[E_CC_HEART - 1].Clear();
-	m_arPuzzleRow[E_CC_SPADE - 1].Clear();
-	m_arPuzzleRow[E_CC_DIAMOND - 1].Clear();
-	m_arPuzzleRow[E_CC_CLUB - 1].Clear();
+	for (Suit l_suit : ConstStandardSuits)
+	{
+		(*this)[l_suit].Clear();
+	}
 }
 
 
@@ -39,29 +40,29 @@ CPuzzleRows::Clear()
 //	W razie b³êdu wywa³ka (na razie - potem wyj¹tki)
 //
 void 
-CPuzzleRows::PutCard(
+CPuzzleRowSet::PutCard(
 	const CCard* a_pCard	//WE k³adziona karta
 	)
 {
 	T_CARDVAL l_val = a_pCard->CardValue();
 	if (l_val == E_CV_8)
 	{
-		ASSERT(m_arPuzzleRow[a_pCard->GetColor() - 1].m_pCardTop == NULL);
-		ASSERT(m_arPuzzleRow[a_pCard->GetColor() - 1].m_pCardBottom == NULL);
-		m_arPuzzleRow[a_pCard->GetColor() - 1].m_pCardTop = a_pCard;
-		m_arPuzzleRow[a_pCard->GetColor() - 1].m_pCardBottom = a_pCard;
+		ASSERT((*this)[a_pCard->GetSuit()].m_pCardTop == NULL);
+		ASSERT((*this)[a_pCard->GetSuit()].m_pCardBottom == NULL);
+		(*this)[a_pCard->GetSuit()].m_pCardTop = a_pCard;
+		(*this)[a_pCard->GetSuit()].m_pCardBottom = a_pCard;
 	}
 	else if (l_val < E_CV_8)
 	{
-		ASSERT(m_arPuzzleRow[a_pCard->GetColor() - 1].m_pCardBottom != NULL);
-		ASSERT(m_arPuzzleRow[a_pCard->GetColor() - 1].m_pCardBottom->CardValue() - 1 == l_val);
-		m_arPuzzleRow[a_pCard->GetColor() - 1].m_pCardBottom = a_pCard;
+		ASSERT((*this)[a_pCard->GetSuit()].m_pCardBottom != NULL);
+		ASSERT((*this)[a_pCard->GetSuit()].m_pCardBottom->CardValue() - 1 == l_val);
+		(*this)[a_pCard->GetSuit()].m_pCardBottom = a_pCard;
 	}
 	else if (l_val > E_CV_8)
 	{
-		ASSERT(m_arPuzzleRow[a_pCard->GetColor() - 1].m_pCardTop != NULL);
-		ASSERT(m_arPuzzleRow[a_pCard->GetColor() - 1].m_pCardTop->CardValue() + 1 == l_val);
-		m_arPuzzleRow[a_pCard->GetColor() - 1].m_pCardTop = a_pCard;
+		ASSERT((*this)[a_pCard->GetSuit()].m_pCardTop != NULL);
+		ASSERT((*this)[a_pCard->GetSuit()].m_pCardTop->CardValue() + 1 == l_val);
+		(*this)[a_pCard->GetSuit()].m_pCardTop = a_pCard;
 	}
 	else
 		ASSERT(FALSE);	// co to?
@@ -73,7 +74,7 @@ CPuzzleRows::PutCard(
 //	Wynulowanie wskaŸników
 //
 void 
-CPuzzleRows::CPuzzleRow::Clear()
+CPuzzleRowSet::CPuzzleRow::Clear()
 {
 	m_pCardTop = m_pCardBottom = NULL;
 }
@@ -83,11 +84,11 @@ CPuzzleRows::CPuzzleRow::Clear()
 //	Czy mozna po³o¿yæ dan¹ kartê
 //
 BOOL	//WY TRUE - mo¿na
-CPuzzleRows::CanPutCard(
+CPuzzleRowSet::CanPutCard(
 	const CCard& a_card	//WE karta sprawdzana
 	)	const
 {
-	return m_arPuzzleRow[a_card.GetColor() - 1].CanPutCard(a_card);
+	return (*this)[a_card.GetSuit()].CanPutCard(a_card);
 }
 
 
@@ -95,7 +96,7 @@ CPuzzleRows::CanPutCard(
 //	Czy mo¿na po³o¿yæ dan¹ kartê
 //
 BOOL	//WY TRUE - mo¿na p[o³o¿yæ
-CPuzzleRows::CPuzzleRow::CanPutCard(
+CPuzzleRowSet::CPuzzleRow::CanPutCard(
 	const CCard& a_card	//WE sprawdzana karta
 	) const
 {
@@ -117,11 +118,11 @@ CPuzzleRows::CPuzzleRow::CanPutCard(
 // Zwraca najwy¿sz¹ kartê w danym kolorze ju¿ po³o¿on¹
 //
 const CCard*	//WE najwy¿sza po³o¿ona karta
-CPuzzleRows::GetTopCard(
-	T_COLOR a_enColor	//WE kolor
+CPuzzleRowSet::GetTopCard(
+	Suit a_suit	//WE kolor
 	) const
 {
-	return m_arPuzzleRow[a_enColor - 1].m_pCardTop;
+	return (*this)[a_suit].m_pCardTop;
 }
 
 
@@ -129,11 +130,9 @@ CPuzzleRows::GetTopCard(
 // Zwraca najni¿sz¹ kartê w danym kolorze ju¿ po³o¿on¹
 //
 const CCard*	//WE najni¿sza po³o¿ona karta
-CPuzzleRows::GetBottomCard(
-	T_COLOR a_enColor	//WE kolor
-	) const
+CPuzzleRowSet::GetBottomCard(Suit a_suit) const
 {
-	return m_arPuzzleRow[a_enColor - 1].m_pCardBottom;
+	return (*this)[a_suit].m_pCardBottom;
 }
 
 
@@ -141,7 +140,7 @@ CPuzzleRows::GetBottomCard(
 // Zwraca iloœæ rzuconych na stó³ kart
 //
 short	//WY iloœæ wyrzuconych kart
-CPuzzleRows::GetCardsCnt() const
+CPuzzleRowSet::GetCardsCnt() const
 {
 	short l_iAt;
 	short l_nCnt = 0;
@@ -157,7 +156,7 @@ CPuzzleRows::GetCardsCnt() const
 // Zwraca iloœæ rzuconych na stó³ kart
 //
 short 
-CPuzzleRows::CPuzzleRow::GetCardsCnt() const
+CPuzzleRowSet::CPuzzleRow::GetCardsCnt() const
 {
 	short l_nCnt;
 	if (m_pCardTop == NULL)

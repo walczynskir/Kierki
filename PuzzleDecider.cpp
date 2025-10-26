@@ -13,7 +13,7 @@
 
 CPuzzleDecider::CPuzzleDecider(
 	const CUserCards*  a_pUserCards,	//WE karty gracza
-	const CPuzzleRows* a_pPuzzleRows, //WE po³o¿one wiersze
+	const CPuzzleRowSet* a_pPuzzleRows, //WE po³o¿one wiersze
 	T_PLAYER a_enPlayer			//WE gracz
 	)
 {
@@ -73,15 +73,16 @@ CPuzzleDecider::GetCardNr(
 //
 short	// WY	numer karty w rêce
 CPuzzleDecider::GetCardInColor(
-	T_COLOR a_enColor,  //WE kolor karty
+	Suit a_suit,  //WE kolor karty
 	BOOL a_bTop			//WE karta powy¿ej 8 czy poni¿ej 
 	) const
 {
+
 	const CCard* l_pCard;
 	T_CARDVAL l_val;
 	if (a_bTop)
 	{
-		l_pCard = m_pPuzzleRows->m_arPuzzleRow[a_enColor - 1].m_pCardTop;
+		l_pCard = m_pPuzzleRows->GetTopCard(a_suit);
 		if (l_pCard == NULL)
 			l_val = E_CV_8;
 		else
@@ -94,7 +95,7 @@ CPuzzleDecider::GetCardInColor(
 	}
 	else
 	{
-		l_pCard = m_pPuzzleRows->m_arPuzzleRow[a_enColor - 1].m_pCardBottom;
+		l_pCard = m_pPuzzleRows->GetBottomCard(a_suit);
 		if (l_pCard == NULL)
 			return -1;
 		else
@@ -105,7 +106,7 @@ CPuzzleDecider::GetCardInColor(
 			l_val = (T_CARDVAL)(l_val - 1);
 		}
 	}
-	return m_pCards->FindCard(a_enColor, l_val);
+	return m_pCards->FindCard(a_suit, l_val);
 }
 
 
@@ -117,14 +118,14 @@ CPuzzleDecider::FillAllowedCards(
 	CAllowedCards* a_pAllowedCards	//WE karty dopuszczalne
 	) const
 {
-	a_pAllowedCards->AddCard(GetCardInColor(E_CC_HEART, TRUE));
-	a_pAllowedCards->AddCard(GetCardInColor(E_CC_HEART, FALSE));
-	a_pAllowedCards->AddCard(GetCardInColor(E_CC_CLUB, TRUE));
-	a_pAllowedCards->AddCard(GetCardInColor(E_CC_CLUB, FALSE));
-	a_pAllowedCards->AddCard(GetCardInColor(E_CC_SPADE, TRUE));
-	a_pAllowedCards->AddCard(GetCardInColor(E_CC_SPADE, FALSE));
-	a_pAllowedCards->AddCard(GetCardInColor(E_CC_DIAMOND, TRUE));
-	a_pAllowedCards->AddCard(GetCardInColor(E_CC_DIAMOND, FALSE));
+	a_pAllowedCards->AddCard(GetCardInColor(Suit::Heart, TRUE));
+	a_pAllowedCards->AddCard(GetCardInColor(Suit::Heart, FALSE));
+	a_pAllowedCards->AddCard(GetCardInColor(Suit::Club, TRUE));
+	a_pAllowedCards->AddCard(GetCardInColor(Suit::Club, FALSE));
+	a_pAllowedCards->AddCard(GetCardInColor(Suit::Spade, TRUE));
+	a_pAllowedCards->AddCard(GetCardInColor(Suit::Spade, FALSE));
+	a_pAllowedCards->AddCard(GetCardInColor(Suit::Diamond, TRUE));
+	a_pAllowedCards->AddCard(GetCardInColor(Suit::Diamond, FALSE));
 	a_pAllowedCards->Sort();
 }
 
@@ -223,12 +224,12 @@ CPuzzleDecider::DecidePointsFurthest(
 	// jeœli ma K i A lub tylko K to nas nie interesuje
 	if (l_card.CardValue() == E_CV_D)
 	{
-		if (m_pCards->HasCards(l_card.GetColor(), TRUE, 2, E_CV_K, E_CV_A) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_K)))
+		if (m_pCards->HasCards(l_card.GetSuit(), TRUE, 2, E_CV_K, E_CV_A) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_K)))
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 0);
 		}
-		else if (m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_A))
+		else if (m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_A))
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 1);
 		}
@@ -240,12 +241,12 @@ CPuzzleDecider::DecidePointsFurthest(
 	// jeœli ma 3 i 2 lub tylko 3 to nas nie interesuje
 	else if (l_card.CardValue() == E_CV_4)
 	{
-		if (m_pCards->HasCards(l_card.GetColor(), TRUE, 2, E_CV_2, E_CV_3) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_3)))
+		if (m_pCards->HasCards(l_card.GetSuit(), TRUE, 2, E_CV_2, E_CV_3) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_3)))
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 0);
 		}
-		else if (m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_2))
+		else if (m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_2))
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 1);
 		}
@@ -259,27 +260,27 @@ CPuzzleDecider::DecidePointsFurthest(
 	else if (l_card.CardValue() == E_CV_J)
 	{
 
-		if (!m_pCards->HasOneOfCards(l_card.GetColor(), TRUE, 3, E_CV_D, E_CV_K, E_CV_A))
+		if (!m_pCards->HasOneOfCards(l_card.GetSuit(), TRUE, 3, E_CV_D, E_CV_K, E_CV_A))
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 0);
 		}
 		else if  (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 3, E_CV_D, E_CV_K, E_CV_A)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 2, E_CV_D, E_CV_K)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_D))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 3, E_CV_D, E_CV_K, E_CV_A)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 2, E_CV_D, E_CV_K)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_D))
 			)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 0);
 		}
 		else if (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 2, E_CV_D, E_CV_A)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 2, E_CV_K, E_CV_A))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 2, E_CV_D, E_CV_A)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 2, E_CV_K, E_CV_A))
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 1);
 		}
 		else if (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_K))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_K))
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 2);
@@ -292,27 +293,27 @@ CPuzzleDecider::DecidePointsFurthest(
 
 	else if (l_card.CardValue() == E_CV_5)
 	{
-		if (!m_pCards->HasOneOfCards(l_card.GetColor(), TRUE, 3, E_CV_2, E_CV_3, E_CV_4))
+		if (!m_pCards->HasOneOfCards(l_card.GetSuit(), TRUE, 3, E_CV_2, E_CV_3, E_CV_4))
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 0);
 		}
 		else if  (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 3, E_CV_4, E_CV_3, E_CV_2)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 2, E_CV_4, E_CV_3)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_4))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 3, E_CV_4, E_CV_3, E_CV_2)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 2, E_CV_4, E_CV_3)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_4))
 			)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 0);
 		}
 		else if (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 2, E_CV_4, E_CV_2)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 2, E_CV_3, E_CV_2))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 2, E_CV_4, E_CV_2)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 2, E_CV_3, E_CV_2))
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 1);
 		}
 		else if (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_3))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_3))
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 2);
@@ -326,27 +327,27 @@ CPuzzleDecider::DecidePointsFurthest(
 
 	else if (l_card.CardValue() == E_CV_10)
 	{
-		if (!m_pCards->HasOneOfCards(l_card.GetColor(), TRUE, 4, E_CV_J, E_CV_D, E_CV_K, E_CV_A))
+		if (!m_pCards->HasOneOfCards(l_card.GetSuit(), TRUE, 4, E_CV_J, E_CV_D, E_CV_K, E_CV_A))
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 0);
 		}
 		else if  (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 4, E_CV_J, E_CV_D, E_CV_K, E_CV_A)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 3, E_CV_J, E_CV_D, E_CV_K)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 2, E_CV_J, E_CV_D)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_J))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 4, E_CV_J, E_CV_D, E_CV_K, E_CV_A)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 3, E_CV_J, E_CV_D, E_CV_K)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 2, E_CV_J, E_CV_D)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_J))
 			)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 0);
 		}
 		else if (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_A))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_A))
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 3);
 		}
 		else if (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_K))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_K))
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 2);
@@ -359,27 +360,27 @@ CPuzzleDecider::DecidePointsFurthest(
 
 	else if (l_card.CardValue() == E_CV_6)
 	{
-		if (!m_pCards->HasOneOfCards(l_card.GetColor(), TRUE, 4, E_CV_2, E_CV_3, E_CV_4, E_CV_5))
+		if (!m_pCards->HasOneOfCards(l_card.GetSuit(), TRUE, 4, E_CV_2, E_CV_3, E_CV_4, E_CV_5))
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 0);
 		}
 		else if  (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 4, E_CV_5, E_CV_4, E_CV_3, E_CV_2)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 3, E_CV_5, E_CV_4, E_CV_3)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 2, E_CV_5, E_CV_4)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_5))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 4, E_CV_5, E_CV_4, E_CV_3, E_CV_2)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 3, E_CV_5, E_CV_4, E_CV_3)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 2, E_CV_5, E_CV_4)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_5))
 			)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 0);
 		}
 		else if (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_2))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_2))
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 3);
 		}
 		else if (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_3))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_3))
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 2);
@@ -392,34 +393,34 @@ CPuzzleDecider::DecidePointsFurthest(
 
 	else if (l_card.CardValue() == E_CV_9)
 	{
-		if (!m_pCards->HasOneOfCards(l_card.GetColor(), TRUE, 5, E_CV_10, E_CV_J, E_CV_D, E_CV_K, E_CV_A))
+		if (!m_pCards->HasOneOfCards(l_card.GetSuit(), TRUE, 5, E_CV_10, E_CV_J, E_CV_D, E_CV_K, E_CV_A))
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 0);
 		}
 		else if  (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 5, E_CV_10, E_CV_J, E_CV_D, E_CV_K, E_CV_A)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 4, E_CV_10, E_CV_J, E_CV_D, E_CV_K)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 3, E_CV_10, E_CV_J, E_CV_D)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 2, E_CV_10, E_CV_J)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_10))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 5, E_CV_10, E_CV_J, E_CV_D, E_CV_K, E_CV_A)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 4, E_CV_10, E_CV_J, E_CV_D, E_CV_K)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 3, E_CV_10, E_CV_J, E_CV_D)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 2, E_CV_10, E_CV_J)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_10))
 			)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 0);
 		}
 		else if (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_A))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_A))
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 4);
 		}
 		else if (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_K))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_K))
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 3);
 		}
 		else if (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_D))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_D))
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 2);
@@ -432,34 +433,34 @@ CPuzzleDecider::DecidePointsFurthest(
 
 	else if (l_card.CardValue() == E_CV_7)
 	{
-		if (!m_pCards->HasOneOfCards(l_card.GetColor(), TRUE, 5, E_CV_2, E_CV_3, E_CV_4, E_CV_5, E_CV_6))
+		if (!m_pCards->HasOneOfCards(l_card.GetSuit(), TRUE, 5, E_CV_2, E_CV_3, E_CV_4, E_CV_5, E_CV_6))
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 0);
 		}
 		else if  (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 5, E_CV_6, E_CV_5, E_CV_4, E_CV_3, E_CV_2)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 4, E_CV_6, E_CV_5, E_CV_4, E_CV_3)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 3, E_CV_6, E_CV_5, E_CV_4)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 2, E_CV_6, E_CV_5)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_6))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 5, E_CV_6, E_CV_5, E_CV_4, E_CV_3, E_CV_2)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 4, E_CV_6, E_CV_5, E_CV_4, E_CV_3)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 3, E_CV_6, E_CV_5, E_CV_4)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 2, E_CV_6, E_CV_5)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_6))
 			)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 0);
 		}
 		else if (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_2))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_2))
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 4);
 		}
 		else if (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_3))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_3))
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 3);
 		}
 		else if (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_4))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_4))
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 2);
@@ -472,51 +473,51 @@ CPuzzleDecider::DecidePointsFurthest(
 
 	else if (l_card.CardValue() == E_CV_8)
 	{
-		if (!m_pCards->HasOneOfCards(l_card.GetColor(), TRUE, 12, E_CV_2, E_CV_3, E_CV_4, E_CV_5, E_CV_6, E_CV_7, E_CV_9, E_CV_10, E_CV_J, E_CV_D, E_CV_K, E_CV_A))
+		if (!m_pCards->HasOneOfCards(l_card.GetSuit(), TRUE, 12, E_CV_2, E_CV_3, E_CV_4, E_CV_5, E_CV_6, E_CV_7, E_CV_9, E_CV_10, E_CV_J, E_CV_D, E_CV_K, E_CV_A))
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 0);
 		}
 		else if  (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 6, E_CV_9, E_CV_10, E_CV_J, E_CV_D, E_CV_K, E_CV_A)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 5, E_CV_9, E_CV_10, E_CV_J, E_CV_D, E_CV_K)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 4, E_CV_9, E_CV_10, E_CV_J, E_CV_D)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 3, E_CV_9, E_CV_10, E_CV_J)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 2, E_CV_9, E_CV_10)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_9)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 6, E_CV_7, E_CV_6, E_CV_5, E_CV_4, E_CV_3, E_CV_2)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 5, E_CV_7, E_CV_6, E_CV_5, E_CV_4, E_CV_3)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 4, E_CV_7, E_CV_6, E_CV_J, E_CV_D)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 3, E_CV_7, E_CV_6, E_CV_J)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 2, E_CV_7, E_CV_6)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_7))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 6, E_CV_9, E_CV_10, E_CV_J, E_CV_D, E_CV_K, E_CV_A)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 5, E_CV_9, E_CV_10, E_CV_J, E_CV_D, E_CV_K)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 4, E_CV_9, E_CV_10, E_CV_J, E_CV_D)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 3, E_CV_9, E_CV_10, E_CV_J)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 2, E_CV_9, E_CV_10)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_9)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 6, E_CV_7, E_CV_6, E_CV_5, E_CV_4, E_CV_3, E_CV_2)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 5, E_CV_7, E_CV_6, E_CV_5, E_CV_4, E_CV_3)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 4, E_CV_7, E_CV_6, E_CV_J, E_CV_D)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 3, E_CV_7, E_CV_6, E_CV_J)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 2, E_CV_7, E_CV_6)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_7))
 			)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 0);
 		}
 		else if (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_A)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_2))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_A)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_2))
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 5);
 		}
 		else if (
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_K)) ||
-			(m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_3))
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_K)) ||
+			(m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_3))
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 4);
 		}
 		else if (
-			m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_D) ||
-			m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_4)
+			m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_D) ||
+			m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_4)
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 3);
 		}
 		else if (
-			m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_J) ||
-			m_pCards->HasCards(l_card.GetColor(), TRUE, 1, E_CV_5)
+			m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_J) ||
+			m_pCards->HasCards(l_card.GetSuit(), TRUE, 1, E_CV_5)
 				)
 		{
 			a_pAllowedCards->SetPoints(a_nCard, 2);
@@ -553,14 +554,14 @@ CPuzzleDecider::FindForNoOne(
 
 		if (l_card.CardValue() >= E_CV_8)
 		{
-			if (m_pCards->FindCard(l_card.GetColor(), (T_CARDVAL)(l_card.CardValue() + 1), TRUE) >= 0)
+			if (m_pCards->FindCard(l_card.GetSuit(), (T_CARDVAL)(l_card.CardValue() + 1), TRUE) >= 0)
 			{
 				return a_pAllowedCards->GetCard(l_nAt);
 			}
 		}
 		else
 		{
-			if (m_pCards->FindCard(l_card.GetColor(), (T_CARDVAL)(l_card.CardValue() - 1), TRUE) >= 0)
+			if (m_pCards->FindCard(l_card.GetSuit(), (T_CARDVAL)(l_card.CardValue() - 1), TRUE) >= 0)
 			{
 				return a_pAllowedCards->GetCard(l_nAt);
 			}

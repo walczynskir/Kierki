@@ -1,15 +1,15 @@
-// Players.cpp: implementation of the CPlayers class.
+// Players.cpp: implementation of the CPlayerSet class.
 //
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-#include "Players.h"
+#include "PlayerSet.h"
 
 
 // ---------------------------------------------------------
 //	Konstruktor obiektu
 //
-CPlayers::CPlayers(
+CPlayerSet::CPlayerSet(
 	T_PLAYER a_enFirstDealer	//WE pierwszy rozdawaj¹cy
 	)
 {
@@ -24,7 +24,7 @@ CPlayers::CPlayers(
 // ---------------------------------------------------------
 //	Destruktor obiektu
 //
-CPlayers::~CPlayers()
+CPlayerSet::~CPlayerSet()
 {
 
 }
@@ -34,7 +34,7 @@ CPlayers::~CPlayers()
 //	Zwraca dane gracza
 //
 const CPlayer&	//WY gracz
-CPlayers::GetPlayer(
+CPlayerSet::GetPlayer(
 	T_PLAYER a_enPlayer	//WE który gracz
 	) const
 {
@@ -46,7 +46,7 @@ CPlayers::GetPlayer(
 //	Zwraca nastêpnego gracza po podanym
 //
 T_PLAYER	//WY nastêpny gracz
-CPlayers::NextPlayer(
+CPlayerSet::NextPlayer(
 	T_PLAYER a_enCurrentPlayer	//WE obecny gracz
 	)
 {
@@ -66,7 +66,7 @@ CPlayers::NextPlayer(
 //	Przestawia pierwszego rozdawacza na nastêpnego
 //
 void 
-CPlayers::SetNextFirstDealer()
+CPlayerSet::SetNextFirstDealer()
 {
 // TODO first dealer w dwu miejscach - przenieœæ do RegData, a tu tylko wskazanie
 	m_enFirstDealer = NextPlayer(m_enFirstDealer);
@@ -77,9 +77,9 @@ CPlayers::SetNextFirstDealer()
 //	Usuniêcie decydentów
 //
 void 
-CPlayers::RemoveDeciders()
+CPlayerSet::RemoveDeciders()
 {
-	for (Player l_player : constAllPlayers) 
+	for (Player l_player : ConstAllPlayers) 
 	{
 		m_arPlayers[l_player].RemoveDecider();
 	}
@@ -89,7 +89,7 @@ CPlayers::RemoveDeciders()
 // ---------------------------------------------------------
 //	Posortowanie kart dla konkretnego gracza
 void 
-CPlayers::Sort(
+CPlayerSet::Sort(
 	T_PLAYER a_player,	//WE gracz sortowany
 	short	 a_nStart,	//WE od której zacz¹æ sortowanie
 	short	 a_nEnd		//WE na której skoñczyæ
@@ -103,7 +103,7 @@ CPlayers::Sort(
 //	Posortowanie kart
 //
 void 
-CPlayers::SortAll(
+CPlayerSet::SortAll(
 	short a_nStart,	// od której zacz¹æ sortowanie
 	short a_nEnd	// na której skoñczyæ
 	)
@@ -121,7 +121,7 @@ CPlayers::SortAll(
 //	potasowanych
 //
 void 
-CPlayers::DistributeCards(
+CPlayerSet::DistributeCards(
 	const CSortCards& a_sortcards	//WE karty potasowane
 	)
 {
@@ -142,7 +142,7 @@ CPlayers::DistributeCards(
 //	Wybór atu
 //
 T_COLOR		//WY wybrany kolor
-CPlayers::ChooseTrumps(
+CPlayerSet::ChooseTrumps(
 	T_PLAYER a_player	//WE gracz wybieraj¹cy
 	) const
 {
@@ -154,7 +154,7 @@ CPlayers::ChooseTrumps(
 // utworzenie decydentów
 //
 void 
-CPlayers::CreateDeciders(
+CPlayerSet::CreateDeciders(
 	T_GAMES				a_enGame,		//WE gra
 	const CTakenTricks* a_pTricks,		//WE lewe
 	T_COLOR				a_colorTrumps	//WE ew. kolor atutowy
@@ -170,7 +170,7 @@ CPlayers::CreateDeciders(
 //	Utworzenie decydentów - puzzle
 //
 void 
-CPlayers::CreateDeciders(
+CPlayerSet::CreateDeciders(
 	const CPuzzleRowSet* a_pPuzzleRow	//WE wskazanie na polo¿one karty
 	)
 {
@@ -183,7 +183,7 @@ CPlayers::CreateDeciders(
 // Zwraca wskaŸnik na karty gracza
 //
 const CUserCards& 
-CPlayers::GetPlayerCards(
+CPlayerSet::GetPlayerCards(
 	T_PLAYER a_enPlayer		//WE gracz
 	) const
 {
@@ -195,7 +195,7 @@ CPlayers::GetPlayerCards(
 // Zwraca referencjê na karty gracza
 //
 short	//WY zagrana karta
-CPlayers::DecideCardNr(
+CPlayerSet::DecideCardNr(
 	T_PLAYER a_player,	//WE gracz
 	short    a_iTrick	//WE która lewa
 	)
@@ -208,7 +208,7 @@ CPlayers::DecideCardNr(
 //	Ustawia kartê na u¿yt¹ dla gracza
 //
 void 
-CPlayers::SetUsedCard(
+CPlayerSet::SetUsedCard(
 	T_PLAYER a_enPlayer, //WE gracz
 	short a_nCard,		 //WE karta
 	BOOL a_bUsed		 //WE czy u¿yta
@@ -222,7 +222,7 @@ CPlayers::SetUsedCard(
 // Dodaje punkty dla gracza
 //
 void 
-CPlayers::AddScore(
+CPlayerSet::AddScore(
 	T_PLAYER a_enPlayer,	//WE gracz
 	T_SERIE a_enSerie,		//WE seria
 	T_GAMES a_enGame,		//WE gra
@@ -237,7 +237,7 @@ CPlayers::AddScore(
 // Ustawia punkty dla gracza
 //
 void 
-CPlayers::SetScore(
+CPlayerSet::SetScore(
 	T_PLAYER a_enPlayer,	//WE gracz
 	T_SERIE a_enSerie,			//WE seria
 	T_GAMES a_enGame,		//WE gra
@@ -252,7 +252,7 @@ CPlayers::SetScore(
 // Ustawienie punktów w uk³adance	
 //
 void 
-CPlayers::SetPuzzleScore(
+CPlayerSet::SetPuzzleScore(
 	T_PLAYER a_enPlayer,	//WE gracz
 	short a_nScore,			//WE wynik
 	T_SERIE a_enSerie		//WE seria
@@ -266,11 +266,11 @@ CPlayers::SetPuzzleScore(
 // Wyczyszczenie wyników
 //
 void 
-CPlayers::ClearScores(
+CPlayerSet::ClearScores(
 	T_SERIE a_enSerie	//WE seria
 	)
 {
-	for (Player l_player : constAllPlayers)
+	for (Player l_player : ConstAllPlayers)
 	{
 		m_arPlayers[l_player].ClearScore(a_enSerie);
 	}
@@ -281,7 +281,7 @@ CPlayers::ClearScores(
 // Zapamiêtanie wskaŸnika na imiê gracza
 //
 void 
-CPlayers::SetName(
+CPlayerSet::SetName(
 	T_PLAYER a_enPlayer,	//WE gracz
 	const tstring* a_pName	//WE wskaŸnik na imiê gracza
 	)
@@ -294,9 +294,9 @@ CPlayers::SetName(
 // Wyczyszczenie wszystkich wyników
 //
 void 
-CPlayers::ClearAllScores()
+CPlayerSet::ClearAllScores()
 {
-	for (Player l_player : constAllPlayers)
+	for (Player l_player : ConstAllPlayers)
 	{
 		m_arPlayers[l_player].ClearAllScores();
 	}	
@@ -308,7 +308,7 @@ CPlayers::ClearAllScores()
 // grami
 //
 short	//WY suma punktów
-CPlayers::SumPlayerScore(
+CPlayerSet::SumPlayerScore(
 	T_PLAYER a_enPlayer,	//WE gracz
 	T_SERIE a_enSerie		//WE seria
 	) const
@@ -322,7 +322,7 @@ CPlayers::SumPlayerScore(
 // grami
 //
 short	//WY suma punktów
-CPlayers::SumPlayerAllScore(
+CPlayerSet::SumPlayerAllScore(
 	T_PLAYER a_enPlayer,	//WE gracz
 	T_SERIE a_enSerie		//WE seria
 	) const
@@ -334,10 +334,10 @@ CPlayers::SumPlayerAllScore(
 //	---------------------------------------------------------
 //	Saves players data to file (serialization)
 //
-void CPlayers::SaveState(LPSAVERESTORE a_pSaveRestore) const
+void CPlayerSet::SaveState(LPSAVERESTORE a_pSaveRestore) const
 {
 	a_pSaveRestore->m_enFirstDealer = m_enFirstDealer;
-	for (Player l_player : constAllPlayers)
+	for (Player l_player : ConstAllPlayers)
 	{
 		m_arPlayers[l_player].SaveState(&(a_pSaveRestore->m_playerscore[static_cast<int>(l_player)]));
 	}
@@ -348,10 +348,10 @@ void CPlayers::SaveState(LPSAVERESTORE a_pSaveRestore) const
 //	---------------------------------------------------------
 //	Loads players data from file (serialization)
 //
-void CPlayers::RestoreState(const LPSAVERESTORE a_pSaveRestore)
+void CPlayerSet::RestoreState(const LPSAVERESTORE a_pSaveRestore)
 {
 	m_enFirstDealer = a_pSaveRestore->m_enFirstDealer;
-	for (Player l_player : constAllPlayers)
+	for (Player l_player : ConstAllPlayers)
 	{
 		m_arPlayers[l_player].RestoreState(&(a_pSaveRestore->m_playerscore[static_cast<int>(l_player)]));	// I need to use plain-old static_Cast, as it is plain-c struct
 	}

@@ -765,16 +765,6 @@ LeftCardEdgePuzzle(
 		(3 - static_cast<int>(a_suit)) * c_dxCard;
 
 	return l_dxStart;
-
-#pragma todo ("more elegant version below")
-	/*
-	const auto l_fSuitOffset = [](Suit suit) {
-		constexpr int l_iLastSuitNumber = 3;
-		return (l_iLastSuitNumber - static_cast<int>(suit)) * c_dxCard;
-		};
-
-	return C_VIEW_WIDTH / 2 + c_dxPuzzleGap / 2 - l_fSuitOffset(a_suit);
-	*/
 }
 
 
@@ -927,7 +917,7 @@ DrawNames(
 
 	// all players
 
-	for (Player l_player : constAllPlayers) 
+	for (Player l_player : ConstAllPlayers) 
 	{
 		tstring l_sDrawText;
 		const CRegData& l_regData = l_pData->m_pGameData->m_regData;

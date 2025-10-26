@@ -28,7 +28,7 @@ CPuzzleRowSet::~CPuzzleRowSet()
 void 
 CPuzzleRowSet::Clear()
 {
-	for (Suit l_suit : ConstStandardSuits)
+	for (Suit l_suit : ConstAllSuits)
 	{
 		(*this)[l_suit].Clear();
 	}

@@ -11,6 +11,7 @@ typedef enum class Player : int
 	East
 }	T_PLAYER ;
 
+
 template<typename T>
 class PlayerArray {
 	T m_data[4];
@@ -25,7 +26,7 @@ public:
 	}
 };
 
-constexpr Player constAllPlayers[] = {
+constexpr Player ConstAllPlayers[] = {
 	Player::South,
 	Player::West,
 	Player::North,
@@ -48,7 +49,7 @@ inline constexpr short SuitToIndex(Suit a_suit)
 	return static_cast<short>(a_suit) - 1;
 }
 
-inline constexpr std::array<Suit, 4> ConstStandardSuits = {
+inline constexpr std::array<Suit, 4> ConstAllSuits = {
 	Suit::Heart, Suit::Spade, Suit::Diamond, Suit::Club
 };
 

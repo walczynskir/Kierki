@@ -43,7 +43,7 @@ GameData::~GameData()
 void 
 GameData::CreatePlayers()
 {
-	m_pPlayers = new CPlayers(m_regData.m_regAuto.m_enFirstDealer);
+	m_pPlayers = new CPlayerSet(m_regData.m_regAuto.m_enFirstDealer);
 	m_pPlayers->SetName(Player::South, &(m_regData.GetPlayerName(Player::South)));
 	m_pPlayers->SetName(Player::West, &(m_regData.GetPlayerName(Player::West)));
 	m_pPlayers->SetName(Player::North, &(m_regData.GetPlayerName(Player::North)));
@@ -145,7 +145,7 @@ GameData::DealEnd()
 	}
 
 	m_enThrower = m_enDealer;
-	m_enDealer = CPlayers::NextPlayer(m_enDealer);
+	m_enDealer = CPlayerSet::NextPlayer(m_enDealer);
 	if (m_enGame != E_GM_PUZZLE)
 	{
 		NextTrick();
@@ -753,7 +753,7 @@ GameData::SumPlayerAll(
 void 
 GameData::SetNextPlayer()
 {
-	m_enThrower = CPlayers::NextPlayer(m_enThrower);
+	m_enThrower = CPlayerSet::NextPlayer(m_enThrower);
 }
 
 
@@ -1028,7 +1028,7 @@ bool GameData::Restore(LPCTSTR a_psFile)
 Player GameData::GetFirstDealerAndSetNext()
 {
 	Player l_playerLast = m_regData.m_regAuto.m_enFirstDealer;
-	Player l_playerNew = CPlayers::NextPlayer(l_playerLast);
+	Player l_playerNew = CPlayerSet::NextPlayer(l_playerLast);
 	m_regData.m_regAuto.m_enFirstDealer = l_playerNew;
 	return l_playerLast;
 }

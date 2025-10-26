@@ -1,4 +1,4 @@
-// Players.h: interface for the CPlayers class.
+// Players.h: interface for the CPlayerSet class.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -8,7 +8,7 @@
 #include <rcommon/RString.h>
 #include <array>
 
-class CPlayers
+class CPlayerSet
 {
 
 public:
@@ -18,8 +18,8 @@ public:
 	void SetName(T_PLAYER a_enPlayer, const tstring* a_pName);
 	void ClearScores(T_SERIE a_enSerie);
 	void SetPuzzleScore(T_PLAYER a_enPlayer, short a_nScore, T_SERIE a_enSerie);
-	CPlayers(T_PLAYER a_enFirstDealer);
-	virtual ~CPlayers();
+	CPlayerSet(T_PLAYER a_enFirstDealer);
+	virtual ~CPlayerSet();
 
 	void CreateDeciders(T_GAMES	a_enGame, const CTakenTricks* a_pTricks, T_COLOR a_colorTrumps);
 	void CreateDeciders(const CPuzzleRowSet* a_pPuzzleRows);

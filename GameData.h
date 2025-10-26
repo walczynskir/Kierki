@@ -1,7 +1,7 @@
 #pragma once
 #include "TakenTricks.h"
 #include "PuzzleRowSet.h"	
-#include "Players.h"	
+#include "PlayerSet.h"	
 #include "SortCards.h"	
 #include "Scores.h"	
 #include "RegData.h"	
@@ -94,7 +94,7 @@ private:
 	BOOL		 m_bDealed;
 	T_PLAYER	 m_enDealer;
 	T_PLAYER	 m_enThrower;
-	CPlayers*    m_pPlayers;	// bêdzie utworzony w konstruktorze
+	CPlayerSet*    m_pPlayers;	// bêdzie utworzony w konstruktorze
 	short		 m_nPuzzleScore;
 	T_SERIE		 m_enSerie;
 	bool		 m_bPass;

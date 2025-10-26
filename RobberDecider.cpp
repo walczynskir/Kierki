@@ -43,7 +43,7 @@ CRobberDecider::GetCardNr(
 	{
 		l_nCardNr =  FirstCard(a_iTrick);
 #ifdef _DEBUG
-		if ((*m_pCards)[l_nCardNr].GetColor() == E_CC_HEART)
+		if ((*m_pCards)[l_nCardNr].GetSuit() == Suit::Heart)
 		{
 			ASSERT(!m_pCards->AreNoHearts());
 		}
@@ -117,10 +117,10 @@ CRobberDecider::NextCard(
 void 
 CRobberDecider::DecideTactic()
 {
-	short l_nHearts = m_pCards->ColorAllCnt(E_CC_HEART);
-	short l_nSpades = m_pCards->ColorAllCnt(E_CC_SPADE);
-	short l_nDiamonds = m_pCards->ColorAllCnt(E_CC_DIAMOND);
-	short l_nClubs = m_pCards->ColorAllCnt(E_CC_CLUB);
+	short l_nHearts = m_pCards->ColorAllCnt(Suit::Heart);
+	short l_nSpades = m_pCards->ColorAllCnt(Suit::Spade);
+	short l_nDiamonds = m_pCards->ColorAllCnt(Suit::Diamond);
+	short l_nClubs = m_pCards->ColorAllCnt(Suit::Club);
 	// jeœli mniej kierów ni¿ 4 to sytuacja mo¿e byæ ciê¿ka
 	if (l_nHearts < 4)
 	{
@@ -135,13 +135,14 @@ CRobberDecider::DecideTactic()
 void 
 CRobberDecider::DecideTacticFewHearts()
 {
-	short l_nSpades = m_pCards->ColorAllCnt(E_CC_SPADE);
-	short l_nDiamonds = m_pCards->ColorAllCnt(E_CC_DIAMOND);
-	short l_nClubs = m_pCards->ColorAllCnt(E_CC_CLUB);
+#pragma todo("do sprawdzenia, co to jest")
+	short l_nSpades = m_pCards->ColorAllCnt(Suit::Spade);
+	short l_nDiamonds = m_pCards->ColorAllCnt(Suit::Diamond);
+	short l_nClubs = m_pCards->ColorAllCnt(Suit::Club);
 	BOOL l_bSituationOK = TRUE;	// sprawdzamy sytuacjê
 
 	// sprawdŸmy SPADE
-	m_pCards->CardsBetween(CCard(E_CC_SPADE, E_CV_3), CCard(E_CC_SPADE, E_CV_4));
+	m_pCards->CardsBetween(CCard(Suit::Spade, E_CV_3), CCard(Suit::Spade, E_CV_4));
 }
 
 
@@ -158,7 +159,7 @@ CRobberDecider::FirstCardBefore6(
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
 		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
 			continue;
@@ -177,7 +178,7 @@ CRobberDecider::FirstCardBefore6(
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
 		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
 			continue;
@@ -205,7 +206,7 @@ CRobberDecider::FirstCard6(
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
 		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
 			continue;
@@ -227,7 +228,7 @@ CRobberDecider::FirstCard6(
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
 		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
 			continue;
@@ -246,7 +247,7 @@ CRobberDecider::FirstCard6(
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
 		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
 			continue;
@@ -261,7 +262,7 @@ CRobberDecider::FirstCard6(
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
 		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
 			continue;
@@ -291,7 +292,7 @@ CRobberDecider::FirstCardAfter6(
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
 		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
 			continue;
@@ -323,7 +324,7 @@ CRobberDecider::FirstCardAfter6(
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
 		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
 			continue;
@@ -342,7 +343,7 @@ CRobberDecider::FirstCardAfter6(
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
 		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
 			continue;
@@ -358,7 +359,7 @@ CRobberDecider::FirstCardAfter6(
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
 		T_COLOR l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
 			continue;
@@ -483,11 +484,11 @@ CRobberDecider::DecideOtherCard() const
 	
 	// jeœli mamy króla kier lub asa to siê go pozb¹dŸmy
 	short l_nCardNr;
-	l_nCardNr = m_pCards->FindCard(E_CC_HEART, E_CV_K);
+	l_nCardNr = m_pCards->FindCard(Suit::Heart, E_CV_K);
 	if (l_nCardNr >= 0)
 		return l_nCardNr;
 
-	l_nCardNr = m_pCards->FindCard(E_CC_HEART, E_CV_A);
+	l_nCardNr = m_pCards->FindCard(Suit::Heart, E_CV_A);
 	if (l_nCardNr >= 0)
 		return l_nCardNr;
 
@@ -515,8 +516,8 @@ CRobberDecider::DecideOtherCard() const
 	}
 	
 	// spróbujmy wyrzuciæ najwy¿szego kiera
-	if (m_pCards->HasColor(E_CC_HEART))
-		return m_pCards->Biggest(E_CC_HEART);
+	if (m_pCards->HasColor(Suit::Heart))
+		return m_pCards->Biggest(Suit::Heart);
 	
 	// wyrzuæ w najkrótszym posiadanym
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)

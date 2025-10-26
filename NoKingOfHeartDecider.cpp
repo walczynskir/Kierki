@@ -60,7 +60,7 @@ CNoKingOfHeartDecider::FirstCard(
 	) const
 {
 	T_COLOR l_enColor = DecideColor(a_iTrick);
-	if (l_enColor == E_CC_HEART)
+	if (l_enColor == Suit::Heart)
 		return m_pCards->FirstInColor(l_enColor);
 	else
 	{
@@ -86,12 +86,12 @@ CNoKingOfHeartDecider::DecideColor(
 	T_COLOR l_enColor;
 	// mo¿e nie ma innego koloru oprócz kierów
 	if (!m_pCards->HasNoHeartsColor())
-		return E_CC_HEART;
+		return Suit::Heart;
 	// pierwsza próba - najkrótszy kolor - najmniej lew
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
 		l_enColor = m_pCards->GetShortestColorRank(l_nRank);
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
 			continue;
@@ -107,7 +107,7 @@ CNoKingOfHeartDecider::DecideColor(
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
 		l_enColor = m_pCards->GetShortestColorAllRank(l_nRank);
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
 			continue;
@@ -124,7 +124,7 @@ CNoKingOfHeartDecider::DecideColor(
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
 	{
 		l_enColor = LeftInColorOthersRank(l_nRank);
-		if (l_enColor == E_CC_HEART)
+		if (l_enColor == Suit::Heart)
 			continue;
 		if (!m_pCards->HasColor(l_enColor))
 			continue;
@@ -197,7 +197,7 @@ CNoKingOfHeartDecider::FindCardOther() const
 	short l_nCardNr;
 
 	// jesli mamy króla to go zrzucamy
-	if ((l_nCardNr = m_pCards->FindCard(E_CC_HEART, E_CV_K)) > 0)
+	if ((l_nCardNr = m_pCards->FindCard(Suit::Heart, E_CV_K)) > 0)
 		return l_nCardNr;
 
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)
@@ -206,7 +206,7 @@ CNoKingOfHeartDecider::FindCardOther() const
 		if (!m_pCards->HasColor(l_enColor))
 			continue;
 		// kiery na koñcu, chyba ¿e masz jednego
-		if ((l_enColor == E_CC_HEART) && (m_pCards->ColorAllCnt(l_enColor) > 1))
+		if ((l_enColor == Suit::Heart) && (m_pCards->ColorAllCnt(l_enColor) > 1))
 			continue;
 		if (LeftInColorOthers(l_enColor) == 0)
 			continue;
@@ -218,8 +218,8 @@ CNoKingOfHeartDecider::FindCardOther() const
 	}
 
 	// spróbujmy wyrzuciæ kiera
-	if (m_pCards->HasColor(E_CC_HEART))
-		return m_pCards->Biggest(E_CC_HEART);
+	if (m_pCards->HasColor(Suit::Heart))
+		return m_pCards->Biggest(Suit::Heart);
 
 	// teraz jest ju¿ mi wszystko jedno byle coœ znaleŸæ
 	for (l_nRank = 1; l_nRank <= 4; l_nRank++)

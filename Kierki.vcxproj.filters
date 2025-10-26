@@ -78,7 +78,7 @@
     <ClCompile Include="PuzzleDecider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PuzzleRows.cpp">
+    <ClCompile Include="PuzzleRowSet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RecoverDecider.cpp">
@@ -209,7 +209,7 @@
     <ClInclude Include="PuzzleDecider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PuzzleRows.h">
+    <ClInclude Include="PuzzleRowSet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="RecoverDecider.h">

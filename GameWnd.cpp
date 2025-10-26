@@ -744,9 +744,9 @@ InvalidatePuzzleCard(
 	)
 {
 	RECT l_rect = {
-		LeftCardEdgePuzzle(a_card.GetColor()),
+		LeftCardEdgePuzzle(a_card.GetSuit()),
 		TopCardEdgePuzzle(a_card),
-		LeftCardEdgePuzzle(a_card.GetColor()) + c_dxCard,
+		LeftCardEdgePuzzle(a_card.GetSuit()) + c_dxCard,
 		TopCardEdgePuzzle(a_card) + c_dyCard};
 
 	::InvalidateRect(a_hWnd, &l_rect, TRUE);
@@ -758,13 +758,23 @@ InvalidatePuzzleCard(
 //
 int		//IN left edge
 LeftCardEdgePuzzle(
-	T_COLOR a_enColor	//WE dla koloru
+	Suit a_suit	//WE dla koloru
 	)
 {
 	int l_dxStart = C_VIEW_WIDTH / 2 + c_dxPuzzleGap / 2 - 
-		(3 - a_enColor) * c_dxCard;
+		(3 - static_cast<int>(a_suit)) * c_dxCard;
 
 	return l_dxStart;
+
+#pragma todo ("more elegant version below")
+	/*
+	const auto l_fSuitOffset = [](Suit suit) {
+		constexpr int l_iLastSuitNumber = 3;
+		return (l_iLastSuitNumber - static_cast<int>(suit)) * c_dxCard;
+		};
+
+	return C_VIEW_WIDTH / 2 + c_dxPuzzleGap / 2 - l_fSuitOffset(a_suit);
+	*/
 }
 
 
@@ -808,10 +818,10 @@ InvalidateAllPuzzleRows(
 	HWND a_hWnd		//IN game wnd
 	)
 {
-	InvalidatePuzzleRow(a_hWnd, E_CC_CLUB);
-	InvalidatePuzzleRow(a_hWnd, E_CC_DIAMOND);
-	InvalidatePuzzleRow(a_hWnd, E_CC_SPADE);
-	InvalidatePuzzleRow(a_hWnd, E_CC_HEART);
+	InvalidatePuzzleRow(a_hWnd, Suit::Club);
+	InvalidatePuzzleRow(a_hWnd, Suit::Diamond);
+	InvalidatePuzzleRow(a_hWnd, Suit::Spade);
+	InvalidatePuzzleRow(a_hWnd, Suit::Heart);
 }
 
 // ---------------------------------------------------------
@@ -1143,10 +1153,10 @@ DrawPuzzle(
 	)
 {
 	ASSERT(GetData(a_hWnd)->m_pGameData->GetGame() == E_GM_PUZZLE);
-	DrawPuzzleColor(a_hWnd, a_hDC, E_CC_HEART);
-	DrawPuzzleColor(a_hWnd, a_hDC, E_CC_DIAMOND);
-	DrawPuzzleColor(a_hWnd, a_hDC, E_CC_SPADE);
-	DrawPuzzleColor(a_hWnd, a_hDC, E_CC_CLUB);
+	DrawPuzzleColor(a_hWnd, a_hDC, Suit::Heart);
+	DrawPuzzleColor(a_hWnd, a_hDC, Suit::Diamond);
+	DrawPuzzleColor(a_hWnd, a_hDC, Suit::Spade);
+	DrawPuzzleColor(a_hWnd, a_hDC, Suit::Club);
 }
 
 
@@ -1161,7 +1171,7 @@ DrawPuzzleColor(
 	)
 {
 	ASSERT(GetData(a_hWnd)->m_pGameData->GetGame() == E_GM_PUZZLE);
-	const CPuzzleRows& l_PuzzleRows = GetData(a_hWnd)->m_pGameData->GetPuzzleRows();
+	const CPuzzleRowSet& l_PuzzleRows = GetData(a_hWnd)->m_pGameData->GetPuzzleRows();
 	const CCard* l_pCardTop = l_PuzzleRows.GetTopCard(a_enColor);
 	// jeszcze nie ma ¿adnej karty w tym kolorze
 	if (l_pCardTop == NULL) 
@@ -1376,7 +1386,7 @@ bool CanPlayCard(HWND a_hWnd, short a_nCard, T_PLAYER a_enPlayer)
 	{
 		// czy zagrana w kolorze
 		const CTrick& l_trick = l_pData->GetLastTrick();
-		if (l_trick.GetCardColor(0) != l_card.GetColor())
+		if (l_trick.GetCardColor(0) != l_card.GetSuit())
 		{
 			if (l_pData->GetPlayerCards(a_enPlayer).HasColor(l_trick.GetCardColor(0)))
 			{
@@ -1390,10 +1400,10 @@ bool CanPlayCard(HWND a_hWnd, short a_nCard, T_PLAYER a_enPlayer)
 			// jeœli nie braæ króla kier to trzeba przy pierwszej 
 			// okazji go zagraæ. Tutaj juz wiemy, ¿e gra w kolorze
 			// albo nie ma koloru
-			if (l_trick.GetCardColor(0) != l_card.GetColor())
+			if (l_trick.GetCardColor(0) != l_card.GetSuit())
 			{
 				if (l_pData->GetPlayerCards(a_enPlayer).HasKingOfHeart())
-					if (!((l_card.GetColor() == E_CC_HEART) && (l_card.CardValue() == E_CV_K)))
+					if (!((l_card.GetSuit() == Suit::Heart) && (l_card.CardValue() == E_CV_K)))
 						return false;
 			}
 			break;
@@ -1413,7 +1423,7 @@ bool CanPlayCard(HWND a_hWnd, short a_nCard, T_PLAYER a_enPlayer)
 				// sprawdŸmy czy mamy wy¿sz¹ od zagranej
 				// jeœli tak to sprawdŸmy czy zagraliœmy
 				// wy¿sz¹
-				if (l_pData->GetTrumps() == E_CC_NOTRUMPS)
+				if (l_pData->GetTrumps() == Suit::NoTrumps)
 				{
 					const CCard* l_pBiggest = l_trick.Biggest();
 					if	(
@@ -1443,10 +1453,10 @@ bool CanPlayCard(HWND a_hWnd, short a_nCard, T_PLAYER a_enPlayer)
 						(l_pData->GetPlayerCards(a_enPlayer).HasColor(l_pData->GetTrumps()))
 						)
 					{
-						if (l_card.GetColor() != l_pData->GetTrumps())
+						if (l_card.GetSuit() != l_pData->GetTrumps())
 							return false;
 						if  (
-							(l_pBiggest->GetColor() == l_pData->GetTrumps()) &&
+							(l_pBiggest->GetSuit() == l_pData->GetTrumps()) &&
 							(l_card < (*l_pBiggest)) &&
 							((*(l_pData->GetPlayerCards(a_enPlayer).BiggestInColorCard(l_pData->GetTrumps()))) > (*l_pBiggest))
 							)
@@ -1475,7 +1485,7 @@ bool CanPlayFirstCard(HWND a_hWnd, const CCard& a_card, T_PLAYER a_enPlayer)
 	case E_GM_NOHEARTS:
 	case E_GM_NOKINGOFHEART:
 	case E_GM_ROBBER:
-		if (a_card.GetColor() == E_CC_HEART)
+		if (a_card.GetSuit() == Suit::Heart)
 		{
 			if (l_pData->GetPlayerCards(a_enPlayer).HasNoHeartsColor())
 			{
@@ -1578,7 +1588,7 @@ void OnNotify(HWND a_hWnd, LPNMHDR a_pNmHdr)
 {
 	if ((a_pNmHdr->idFrom == IDB_NOTRUMP) && (a_pNmHdr->code == NM_CLICK))
 	{
-		TrumpsChosen(a_hWnd, E_CC_NOTRUMPS);
+		TrumpsChosen(a_hWnd, Suit::NoTrumps);
 	}
 }
 
@@ -1632,7 +1642,7 @@ void ClickOnCardsTrumps(HWND a_hWnd, const POINT& a_point)
 
 	GameWndData* l_pData = GetData(a_hWnd);
 	const CUserCards& l_usercards = l_pData->m_pGameData->GetPlayerCards(Player::South);
-	T_COLOR l_enColor = l_usercards[l_nCardNr].GetColor();
+	T_COLOR l_enColor = l_usercards[l_nCardNr].GetSuit();
 
 	TrumpsChosen(a_hWnd, l_enColor);
 }

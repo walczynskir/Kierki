@@ -195,7 +195,7 @@ int RunApp(HINSTANCE a_hInst,
 	}
 	catch (RException& l_exc)
 	{
-		RecordExceptionInfo(NULL, l_exc.GetFormattedMsg().c_str());
+		RecordExceptionInfo(NULL, l_exc.GetFormattedMsg());
 		return 6;
 	}
 	return l_iRes;
@@ -238,7 +238,7 @@ int RunAppThrow(HINSTANCE a_hInst,
 	{
 		TCHAR l_sTitle[1024];
 		::LoadString(a_hInst, IDS_MSGBOXTITLE, l_sTitle, ArraySize(l_sTitle));
-		::MessageBox(NULL, l_exc.GetFormattedMsg().c_str(), l_sTitle, MB_OK | MB_ICONEXCLAMATION);
+		::MessageBox(NULL, l_exc.GetFormattedMsg(), l_sTitle, MB_OK | MB_ICONEXCLAMATION);
 		return 1;
 	}
 

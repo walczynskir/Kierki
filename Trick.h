@@ -24,7 +24,7 @@ public:
 
 	short AllPointsCnt() const;
 	short CntInColor(T_COLOR a_enColor)	const;
-	const CCard* Biggest(T_COLOR a_enTrumps = E_CC_NOTHING)	const;
+	const CCard* Biggest(T_COLOR a_enTrumps = Suit::Nothing)	const;
 
 	T_PLAYER SetTrickOwner(T_COLOR a_enTrumps);
 	T_PLAYER GetTrickOwner() const;
